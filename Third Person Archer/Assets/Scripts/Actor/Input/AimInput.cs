@@ -6,6 +6,14 @@ namespace Actor
 {
     public class AimInput : Input
     {
+        public void StartAiming()
+        {
 
+        }
+
+        public void FinishAiming()
+        {
+
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
@@ -19,6 +20,8 @@ namespace Actor
         {
             _agent.speed = _speed.Value;
             _agent.acceleration = _acceleration.Value;
+
+            TargetPosition = position;
             _agent.destination = position;
         }
 
@@ -26,6 +29,14 @@ namespace Actor
         {
             base.InitActor(actor);
             _agent = actor.GetComponent<NavMeshAgent>();
+        }
+
+        private void Update()
+        {
+            if (_agent == null)
+                return;
+
+            Velocity = _agent.velocity;
         }
     }
 }

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SequenceManager : MonoBehaviour
 {
+    [SerializeField] private Sequence _currentSequence;
     [SerializeField] private bool _beginOnAwake;
-    private Sequence _currentSequence;
 
     private void Awake()
     {

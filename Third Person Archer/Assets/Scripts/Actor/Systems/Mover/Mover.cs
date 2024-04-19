@@ -9,6 +9,8 @@ namespace Actor
     {
         protected Speed _speed;
         protected Acceleration _acceleration;
+        public Vector3 Velocity { get; protected set;  }
+        public Vector3 TargetPosition { get; protected set; }
 
         public abstract void Move(Transform destination);
         public abstract void Move(Vector3 position);
