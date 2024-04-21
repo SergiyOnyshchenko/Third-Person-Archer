@@ -5,7 +5,7 @@ using UnityEngine;
 public class MainState : State
 {
     [SerializeField] private List<StateTransition> _transitions = new List<StateTransition>();
-    private List<SubState> _subStates = new List<SubState>();
+    [SerializeField] private List<SubState> _subStates = new List<SubState>();
     public List<StateTransition> Transitions { get => _transitions;}
 
     protected override void Awake()

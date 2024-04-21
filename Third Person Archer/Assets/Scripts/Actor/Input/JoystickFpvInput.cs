@@ -8,6 +8,11 @@ namespace Actor
     {
         [SerializeField] private Joystick _joystick;
 
+        private void Awake()
+        {
+            
+        }
+
         private void Update()
         {
             Horizontal = _joystick.Horizontal;

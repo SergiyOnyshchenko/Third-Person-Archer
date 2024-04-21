@@ -11,6 +11,7 @@ public class ShootingSequence : Sequence, ITargetActor
     public override void Begin()
     {
         base.Begin();
+        StartShooting();
     }
 
     protected override void Finish()
