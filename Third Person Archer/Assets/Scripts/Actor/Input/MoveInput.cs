@@ -16,7 +16,6 @@ namespace Actor
 
         public void MoveToDestination(Transform destination)
         {
-            Debug.Log($"Actor {gameObject.name} moving to {destination.name}");
             MovePostion = destination.position;
             IsMoving = true;
         }

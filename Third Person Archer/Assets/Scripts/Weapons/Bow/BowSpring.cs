@@ -18,7 +18,7 @@ public class BowSpring : MonoBehaviour
         _spring = new SpringFloat(_springPower, _springDumping, _normalPosition.y);
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (_handIK == null)
         {

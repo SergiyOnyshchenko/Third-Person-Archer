@@ -4,16 +4,9 @@ using UnityEngine;
 
 namespace Actor
 {
-    public class AimInput : Input
+    public abstract class AimInput : Input
     {
-        public void StartAiming()
-        {
-
-        }
-
-        public void FinishAiming()
-        {
-
-        }
+        public abstract Vector3 GetAimDirection();
+        public abstract Transform GetAimTarget();
     }
 }

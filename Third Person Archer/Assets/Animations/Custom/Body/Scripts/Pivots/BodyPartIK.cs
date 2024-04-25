@@ -26,7 +26,7 @@ namespace CustomAnimation.Body
             _springMotion.SetSpringParams(2.5f, 0.25f);
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if(UseSpring)
                 _springMotion.Update(transform);
@@ -35,6 +35,11 @@ namespace CustomAnimation.Body
         public void SetSpringParams(float power, float dumping) => _springMotion.SetSpringParams(power, dumping);
         public void SetTargetPosition(Vector3 position) => _springMotion.SetTargetPosition(position);
         public void SetTargetRotation(Quaternion rotation) => _springMotion.SetTargetRotation(rotation);
+
+        public void ApplySpring(bool value)
+        {
+            UseSpring = value;
+        }
 
         public void Shake(float power)
         {

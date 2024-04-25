@@ -3,14 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using System;
+using Actor;
 
-public class BowShootingCameraSubstate : SubState
+public class BowShootingCameraSubstate : SubState, IActorIniter
 {
     [SerializeField] private CinemachineVirtualCamera _camera;
-    [SerializeField] protected BowShootingState _shooting;
     private const float _springPower = 2.5f;
     private const float _springDumping = 0.5f;
     private SpringFloat _spring;
+    private BowController _bowController;
+
+    public void InitActor(ActorController actor)
+    {
+        if (actor.TryGetSystem(out BowController bow))
+            _bowController = bow;
+    }
 
     private void Start()
     {
@@ -24,7 +31,7 @@ public class BowShootingCameraSubstate : SubState
 
     private void Update()
     {
-        float fov = Mathf.Lerp(90, 110, _shooting.PullPower);
+        float fov = Mathf.Lerp(90, 110, _bowController.PullPower);
 
         _spring.UpdateValue(fov);
 

@@ -8,7 +8,7 @@ public class TargetActorSetter : MonoBehaviour
     [SerializeField] private ActorController _targetActor;
     [SerializeField] private bool _invokeOnAvake = true;
 
-    private void Awake()
+    private void Start()
     {
         if (_invokeOnAvake)
             Set();
@@ -16,9 +16,9 @@ public class TargetActorSetter : MonoBehaviour
 
     public void Set()
     {
-        var holders = GetComponentsInChildren<ITargetActor>();
+        var holders = GetComponentsInChildren<IActorIniter>();
 
         foreach (var holder in holders)
-            holder.TargetActor = _targetActor;
+            holder.InitActor(_targetActor);
     }
 }

@@ -8,16 +8,6 @@ public class ShootingSequence : Sequence, ITargetActor
     [SerializeField] private ActorController[] _enemies;
     public ActorController TargetActor { get; set; }
 
-    public override void Begin()
-    {
-        base.Begin();
-        StartShooting();
-    }
-
-    protected override void Finish()
-    {
-        base.Finish();
-    }
 
     private void StartShooting()
     {

@@ -14,15 +14,15 @@ namespace Actor
         [Space]
         [SerializeField] private CinemachineVirtualCamera _fpvCamera;
         [SerializeField] private GameObject _fpvModel;
-        //[SerializeField] private CinemachineVirtualCamera _projectileCamera;
         private const int _noPriorityIndex = 0;
         private const int _activePriorityIndex = 1;
         private CinemachineVirtualCamera[] _allCameras;
         private GameObject[] _allModels;
         private CinemachineBrain _cinemachineBrain;
+        public CinemachineVirtualCamera FpvCamera => _fpvCamera; 
         public UnityEvent OnFPV = new UnityEvent();
         public UnityEvent OnFTV = new UnityEvent();
-
+   
         private void Start()
         {
             _cinemachineBrain = FindObjectOfType<CinemachineBrain>();
@@ -37,7 +37,7 @@ namespace Actor
         {
             SetCamera(_tpvCamera);
 
-            DOVirtual.DelayedCall(_cinemachineBrain.m_DefaultBlend.BlendTime * 0.1f, () => 
+            DOVirtual.DelayedCall(0.1f, () => 
             {
                 SetModel(_tpvModel);
                 OnFTV?.Invoke();
@@ -48,7 +48,7 @@ namespace Actor
         {
             SetCamera(_fpvCamera);
 
-            DOVirtual.DelayedCall(_cinemachineBrain.m_DefaultBlend.BlendTime * 0.8f, () => 
+            DOVirtual.DelayedCall(0.8f, () => 
             {
                 SetModel(_fpvModel);
                 OnFPV?.Invoke();

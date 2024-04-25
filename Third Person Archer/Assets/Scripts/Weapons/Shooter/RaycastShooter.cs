@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public class ActiveAnimation : MonoBehaviour
+public class RaycastShooter : MonoBehaviour
 {
-
+    
 }
