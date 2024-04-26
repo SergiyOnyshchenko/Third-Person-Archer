@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using DG.Tweening;
 
 public class Projectile : MonoBehaviour
 {
@@ -8,10 +10,14 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float _speed = 50f;
     [Space]
     [SerializeField] private LayerMask _hitLayers;
+    [Space]
     [SerializeField] private Rigidbody _rigidbody;
+    [SerializeField] private Collider _collider;
     private ProjectileState _state = ProjectileState.Loaded;
     private Vector3 _direction;
     private float _power;
+    public UnityEvent OnShooted = new UnityEvent();
+    public UnityEvent OnTargetHited = new UnityEvent();
 
     private void Awake()
     {
@@ -25,6 +31,7 @@ public class Projectile : MonoBehaviour
         _power = power;
         _state = ProjectileState.Flying;
         transform.rotation = Quaternion.LookRotation(_direction, Vector3.up);
+        OnShooted?.Invoke();
     }
 
     public void FixedUpdate()
@@ -42,9 +49,39 @@ public class Projectile : MonoBehaviour
         {
             if ((_hitLayers.value & (1 << collision.transform.gameObject.layer)) > 0)
             {
-                _state = ProjectileState.Hited;
-                _rigidbody.isKinematic = true;
+                Hit(collision);
             }
         }
+    }
+
+    private void Hit(Collision collision)
+    {
+        _collider.enabled = false;
+
+        _state = ProjectileState.Hited;
+        _rigidbody.isKinematic = true;
+
+        transform.parent = collision.transform;
+        transform.position = collision.contacts[0].point;
+        transform.position -= transform.forward * 0.6f;
+
+        if (collision.collider.TryGetComponent(out IDamageable damager))
+        {
+            damager.DoDamage(100);
+            OnTargetHited?.Invoke();
+        }
+
+        if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
+        {
+            Vector3 pushDirection = _direction + (Vector3.up * 0.5f);
+
+            StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
+        }
+    }
+
+    private IEnumerator PushWithDelay(Rigidbody rigidbody, Vector3 direction, float power, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        rigidbody.AddForce(direction * power, ForceMode.VelocityChange);
     }
 }

@@ -25,7 +25,7 @@ namespace Actor
 
         private void Update()
         {
-            if (UnityEngine.Input.GetMouseButtonDown(0))
+            if (UnityEngine.Input.GetMouseButtonUp(0))
                 Shoot();
         }
 

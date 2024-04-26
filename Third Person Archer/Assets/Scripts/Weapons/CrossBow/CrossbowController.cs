@@ -16,6 +16,7 @@ namespace Actor
         private FpvController _fpv;
         private AimInput _aimInput;
         private Shooter _shooter;
+        public UnityEvent OnShoot = new UnityEvent();
 
         private void Start()
         {
@@ -40,6 +41,8 @@ namespace Actor
         {
             onComplete += HideArrow;
             onComplete += ShootProjectile;
+            onComplete += InvokeShootEvent;
+
             _crossbowAnimator.Shoot(onComplete);
         }
 
@@ -65,6 +68,11 @@ namespace Actor
         private void ShowArrow() => ShowArrow(true);
         private void HideArrow() => ShowArrow(false);
         private void ShowArrow(bool value) => _arrow.SetActive(value);
+
+        private void InvokeShootEvent()
+        {
+            OnShoot?.Invoke();
+        }
     }
 }
 

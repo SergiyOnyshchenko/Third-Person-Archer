@@ -4,8 +4,5 @@ using UnityEngine;
 
 namespace Actor.Properties
 {
-    public class FloatProperty : SingleProperty<float>
-    {
-    
-    }
+    public class FloatProperty : SingleProperty<float>{}
 }

@@ -29,7 +29,7 @@ namespace Actor
         private FpvController _fpv;
         private float _pullPower;
         public float PullPower { get => _pullPower; }
-
+        
         public void InitActor(ActorController actor)
         {
             if (actor.TryGetSystem(out FpvController fpv))
