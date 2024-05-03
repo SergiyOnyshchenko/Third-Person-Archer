@@ -20,6 +20,11 @@ namespace Actor
             OnDamaged?.Invoke(calculatedDamage);
         }
 
+        public void SetCollisionMask(LayerMask collisionMask)
+        {
+            _collisionMask = collisionMask;
+        }
+
         private void OnCollisionEnter(Collision collision)
         {
             if ((_collisionMask.value & 1 << collision.gameObject.layer) == 1 << collision.gameObject.layer)
