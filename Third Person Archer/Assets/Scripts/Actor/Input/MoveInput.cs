@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Actor
 {
@@ -14,9 +15,14 @@ namespace Actor
             IsActive = true;
         }
 
-        public void MoveToDestination(Transform destination)
+        public void MoveToDestination(Transform destination, UnityAction onComplete = null)
         {
-            MovePostion = destination.position;
+            MoveToDestination(destination.position, onComplete);
+        }
+
+        public void MoveToDestination(Vector3 destination, UnityAction onComplete = null)
+        {
+            MovePostion = destination;
             IsMoving = true;
         }
 

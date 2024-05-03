@@ -16,6 +16,13 @@ public class SpringMotion : ISpringMotion
     public void UpdateMotionParams() => 
         SpringCalculator.CalcDampedSpringMotionParams(ref _springParams, Time.fixedDeltaTime, _power, _dumping);
 
+    public SpringMotion(){}
+
+    public SpringMotion(float power, float dumping) 
+    {
+        SetSpringParams(power, dumping);
+    }
+
     public void SetSpringParams(float power, float dumping)
     {
         if(_power == power && _dumping == dumping)

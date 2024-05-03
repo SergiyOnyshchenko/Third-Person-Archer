@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Actor;
 using Animator = Actor.Animator;
+using Actor.Properties;
+using CustomAnimation;
 
 public class MoveAnimationSubstate : SubState, IActorIniter
 {
@@ -24,13 +26,12 @@ public class MoveAnimationSubstate : SubState, IActorIniter
     public override void Enter()
     {
         base.Enter();
-
-        
-        
     }
 
     public override void Exit() 
-    { 
+    {
+        _animator.SetFloat("Speed", 0);
+
         base.Exit();
     }
 
