@@ -7,23 +7,22 @@ using WeaponController = Actor.ThirdPerson.WeaponController;
 
 public class ShootingState : MainState, IActorIniter
 {
-    private WeaponController _weaponController;
-    private PerceptionInput _input;
+    private AimInput _aimer;
+    private IAnimator _animator;
 
     public void InitActor(ActorController actor)
     {
-        if(actor.TryGetSystem(out WeaponController weaponController))
-            _weaponController = weaponController;
+        if (actor.TryGetInput(out AimInput aimer))
+            _aimer = aimer;
 
-        if (actor.TryGetInput(out PerceptionInput input))
-            _input = input;
+        if (actor.TryGetSystem(out Actor.Animator animator))
+            _animator = animator;
     }
 
     public override void Enter()
     {
         base.Enter();
 
-        _weaponController.SetFire();
-        _weaponController.SetTarget(_input.Target.transform);
+        _animator.SetTrigger("Shoot"); 
     }
 }

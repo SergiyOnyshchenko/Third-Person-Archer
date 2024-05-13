@@ -22,8 +22,8 @@ public class ActorMoveSequence : Sequence, ITargetActor
 
     protected override void Finish()
     {
-        if (TargetActor.TryGetInput(out MoveInput mover))
-            mover.Stop();
+        //if (TargetActor.TryGetInput(out MoveInput mover))
+        //    mover.Stop();
 
         base.Finish();
     }

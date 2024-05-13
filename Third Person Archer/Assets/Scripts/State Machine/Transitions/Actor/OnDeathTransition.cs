@@ -18,11 +18,6 @@ namespace Actor
         {
             base.Enter();
 
-            if (_health == null)
-                Debug.Log("NO HEALTH");
-            else
-                Debug.Log("NO HEALTH");
-
             _health.OnHealthZero.AddListener(DoTransition);
         }
 

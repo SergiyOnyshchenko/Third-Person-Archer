@@ -6,6 +6,7 @@ using CustomAnimation.Body;
 using DG.Tweening;
 using Actor;
 using Input = UnityEngine.Input;
+using UnityEditor.Experimental.GraphView;
 
 public class BowShootingState : ProcessState, IActorIniter
 {
@@ -13,11 +14,15 @@ public class BowShootingState : ProcessState, IActorIniter
     [SerializeField] private Transform _directionCamera;
     [SerializeField] private GameObject _bowArrow;
     private BowController _bowController;
+    private AttackInput _attackInput;
 
     public void InitActor(ActorController actor)
     {
         if(actor.TryGetSystem(out BowController bow))
             _bowController = bow;
+
+        if (actor.TryGetInput(out AttackInput attackInput))
+            _attackInput = attackInput;
     }
 
     public override void Enter()
@@ -25,32 +30,31 @@ public class BowShootingState : ProcessState, IActorIniter
         base.Enter();
 
         _bowController.SetStartSettings();
+        _attackInput.OnAttackRelease.AddListener(PullArrow);
     }
 
     public override void Exit() 
     {
+        _attackInput.OnAttackRelease.RemoveListener(PullArrow);
         base.Exit();
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (_attackInput.IsHold)
         {
-            _bowController.BeginPull();
-        }
+            if(!_bowController.IsPulling)
+                _bowController.BeginPull();
 
-        if (Input.GetMouseButton(0))
-        {
             _bowController.HoldPull();
         }
+    }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            ShootProjectile();
-            _bowController.ReleasePull();
-
-            DOVirtual.DelayedCall(0.5f, FinishProcess);
-        }
+    private void PullArrow()
+    {
+        ShootProjectile();
+        _bowController.ReleasePull();
+        FinishProcess();
     }
 
     private void ShootProjectile()

@@ -10,8 +10,10 @@ namespace Actor
 {
     public class NavmeshMover : Mover
     {
+        private const float _breakDistanceThreshold = 0.25f;
         private NavMeshAgent _agent;
-        private IEnumerator _movingProcess;
+        private IEnumerator _moveProcess;
+        private UnityAction OnMoveComplete;
 
         public override void Move(Transform destination, UnityAction onCompleted = null)
         {
@@ -26,12 +28,19 @@ namespace Actor
             TargetPosition = position;
             _agent.destination = position;
 
-            if (_movingProcess != null)
-                StopCoroutine(_movingProcess);
+            OnMoveComplete = onCompleted;
 
-            _movingProcess = MovingProcess(position, onCompleted);
+            if (_moveProcess != null)
+                StopCoroutine(_moveProcess);
 
-            StartCoroutine(_movingProcess);
+            _moveProcess = MoveProcess(position, onCompleted);
+
+            StartCoroutine(_moveProcess);
+        }
+
+        public void FinishMovingManualy()
+        {
+            FinishMoving();
         }
 
         public override void InitActor(ActorController actor)
@@ -48,12 +57,20 @@ namespace Actor
             Velocity = _agent.velocity;
         }
 
-        private IEnumerator MovingProcess(Vector3 targetPosition, UnityAction onCompleted)
+        private IEnumerator MoveProcess(Vector3 targetPosition, UnityAction onCompleted)
         {
-            while(Vector3.Distance(_agent.transform.position, targetPosition) >= 0.25f)
+            while(Vector3.Distance(_agent.transform.position, targetPosition) >= _breakDistanceThreshold)
                 yield return null;
 
-            onCompleted?.Invoke();
+            //onCompleted?.Invoke();
+            FinishMoving();
+        }
+
+        private void FinishMoving()
+        {
+            if (OnMoveComplete != null)
+                OnMoveComplete.Invoke();
+
             OnMovingFinished?.Invoke();
         }
     }

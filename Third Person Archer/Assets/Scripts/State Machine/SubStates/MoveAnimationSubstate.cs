@@ -5,12 +5,14 @@ using Actor;
 using Animator = Actor.Animator;
 using Actor.Properties;
 using CustomAnimation;
+using UnityEngine.AI;
 
 public class MoveAnimationSubstate : SubState, IActorIniter
 {
     private Transform _transform;
     private IAnimator _animator;
     private Mover _mover;
+    private NavMeshAgent _agent;
 
     public void InitActor(ActorController actor)
     {
@@ -21,6 +23,8 @@ public class MoveAnimationSubstate : SubState, IActorIniter
 
         if (actor.TryGetSystem(out Mover mover))
             _mover = mover;
+
+        _agent = actor.GetComponent<NavMeshAgent>();
     }
 
     public override void Enter()
@@ -37,7 +41,7 @@ public class MoveAnimationSubstate : SubState, IActorIniter
 
     private void Update()
     {
-        Vector3 moveDirection = _mover.TargetPosition - _transform.position;
+        Vector3 moveDirection = _agent.steeringTarget - _transform.position;
         moveDirection = moveDirection.normalized;
 
         Vector3 relativeDirection = _transform.InverseTransformDirection(moveDirection);
@@ -45,8 +49,10 @@ public class MoveAnimationSubstate : SubState, IActorIniter
         _animator.SetFloat("XDir", relativeDirection.x);
         _animator.SetFloat("ZDir", relativeDirection.z);
 
-        float speed = Mathf.InverseLerp(0, 6, _mover.Velocity.magnitude);
+        float speed = Mathf.InverseLerp(0, 7, _mover.Velocity.magnitude);
 
         _animator.SetFloat("Speed", speed);
+
+        
     }
 }

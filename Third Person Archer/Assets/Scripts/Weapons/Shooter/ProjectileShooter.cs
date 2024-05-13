@@ -9,6 +9,7 @@ public class ProjectileShooter : Shooter
 
     public override void Shoot(Vector3 direction, float multiplier)
     {
+        Debug.Log("SHOOOOOOOOOT");
         Projectile arrow = Instantiate(_prefab, _shootPoint.position, _shootPoint.rotation);
         arrow.Shoot(direction, multiplier);
     }

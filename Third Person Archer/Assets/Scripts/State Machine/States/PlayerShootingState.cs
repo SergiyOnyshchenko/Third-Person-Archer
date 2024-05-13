@@ -2,27 +2,69 @@ using System.Collections;
 using System.Collections.Generic;
 using Actor;
 using UnityEngine;
+using DG.Tweening;
 
 public class PlayerShootingState : ProcessState, IActorIniter
 {
     [SerializeField] private ActorController[] _enemies;
-    private ShootingInput _shootingInput;
+    [SerializeField] private Transform _lookAtPoint;
+    private AttackInput _attackInput;
+    private ActorController _player;
+
+    private void Start()
+    {
+        InitShootingData();
+    }
 
     public void InitActor(ActorController actor)
     {
-        if (actor.TryGetInput(out ShootingInput shootInput))
-            _shootingInput = shootInput;
+        _player = actor;
+
+        if (actor.TryGetInput(out AttackInput attackInput))
+            _attackInput = attackInput;
     }
 
     public override void Enter()
     {
         base.Enter();
-        _shootingInput.StartShooting();
+
+        DOVirtual.DelayedCall(0.1f, () =>
+        {
+            ActivateEnemies();
+            _attackInput.AllowAttack(true);
+
+            if (_lookAtPoint != null && _player.TryGetSystem(out BodyRotator rotator))
+                rotator.RotateToInstant(_lookAtPoint);
+        });
     }
 
     public override void Exit()
     {
-        _shootingInput.FinishShooting();
+        _attackInput.AllowAttack(false);
         base.Exit();
+    }
+
+    private void InitShootingData()
+    {
+        IShootingTargetsData[] shootingData = GetComponentsInChildren<IShootingTargetsData>();
+
+        foreach (var data in shootingData)
+            data.InitShootingTargets(_enemies);
+    }
+
+    private void ActivateEnemies()
+    {
+        ITarget playerTarget;
+
+        if (_player.TryGetSystem(out Target target))
+            playerTarget = target;
+        else
+            return;
+
+        ITarget[] targetsForEnemies = new ITarget[] { playerTarget };
+
+        foreach (var enemy in _enemies)
+            if (enemy.TryGetInput(out PerceptionInput perception))
+                perception.ActivatePerception(targetsForEnemies);
     }
 }

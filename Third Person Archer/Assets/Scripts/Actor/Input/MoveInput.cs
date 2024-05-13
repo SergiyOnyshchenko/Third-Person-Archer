@@ -5,9 +5,10 @@ using UnityEngine.Events;
 
 namespace Actor
 {
-    public class MoveInput : Input, IMoveInput
+    public class MoveInput : Input, IMoveInput, IActorIniter
     {
-        public bool IsMoving { get; private set; }
+        private Mover _mover;
+        [field: SerializeField] public bool IsMoving { get; private set; }
         public Vector3 MovePostion { get; private set; }
 
         private void Start()
@@ -15,19 +16,28 @@ namespace Actor
             IsActive = true;
         }
 
-        public void MoveToDestination(Transform destination, UnityAction onComplete = null)
+        public void InitActor(ActorController actor)
         {
-            MoveToDestination(destination.position, onComplete);
+            if(actor.TryGetSystem(out Mover mover))
+                _mover = mover;
         }
 
-        public void MoveToDestination(Vector3 destination, UnityAction onComplete = null)
+        public void MoveToDestination(Transform destination)
+        {
+            MoveToDestination(destination.position);
+        }
+
+        public void MoveToDestination(Vector3 destination)
         {
             MovePostion = destination;
             IsMoving = true;
+
+            _mover.OnMovingFinished.AddListener(Stop);
         }
 
-        public void Stop()
+        private void Stop()
         {
+            _mover.OnMovingFinished.RemoveListener(Stop);
             IsMoving = false;
         }
     }

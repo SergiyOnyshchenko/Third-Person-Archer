@@ -6,7 +6,7 @@ namespace Actor
 {
     public abstract class WeaponController : System
     {
-        //public abstract void Shoot(Vector3 direction);
+        
     }
 }
 

@@ -2,24 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Actor;
-using UnityEngine.Windows;
 
-public class BeginShootingTrasnition : StateTransition, IActorIniter
+public class BeginShootingTrasnition : ShootingTrasnition
 {
-    protected ShootingInput _input;
-
-    public void InitActor(ActorController actor)
+    public override bool CheckTransition()
     {
-        if (actor.TryGetInput(out ShootingInput input))
-            _input = input;
-    }
-
-    private void Update()
-    {
-        if (_input == null)
-            return;
-
-        if (_input.IsActive)
-            DoTransition();
+        return _input.IsActive;
     }
 }

@@ -15,6 +15,11 @@ namespace Actor
         private FpvInput _input;
         public float Sensitivity { get { return sensitivity; } set { sensitivity = value; } }
 
+        private void OnEnable()
+        {
+            transform.localEulerAngles = Vector3.zero;
+        }
+
         public void InitActor(ActorController actor)
         {
             if (actor.TryGetInput(out JoystickFpvInput input))

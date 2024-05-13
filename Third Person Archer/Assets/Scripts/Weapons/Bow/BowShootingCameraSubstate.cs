@@ -8,7 +8,8 @@ using Actor;
 public class BowShootingCameraSubstate : SubState, IActorIniter
 {
     [SerializeField] private CinemachineVirtualCamera _camera;
-    private const float _springPower = 2.5f;
+    //private const float _springPower = 2.5f;
+    private const float _springPower = 8f;
     private const float _springDumping = 0.5f;
     private SpringFloat _spring;
     private BowController _bowController;
@@ -29,9 +30,10 @@ public class BowShootingCameraSubstate : SubState, IActorIniter
         base.Enter();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        float fov = Mathf.Lerp(90, 110, _bowController.PullPower);
+        //float fov = Mathf.Lerp(90, 110, _bowController.PullPower);
+        float fov = Mathf.Lerp(90, 60, _bowController.PullPower);
 
         _spring.UpdateValue(fov);
 

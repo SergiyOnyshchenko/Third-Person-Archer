@@ -17,6 +17,7 @@ public class Projectile : MonoBehaviour
     private Vector3 _direction;
     private float _power;
     public UnityEvent OnShooted = new UnityEvent();
+    public UnityEvent OnHited = new UnityEvent();
     public UnityEvent OnTargetHited = new UnityEvent();
 
     private void Awake()
@@ -38,7 +39,6 @@ public class Projectile : MonoBehaviour
     {
         if (_state == ProjectileState.Flying)
         {
-            //transform.position += _direction * Time.fixedDeltaTime * _speed;
             _rigidbody.velocity = _direction * _speed;
         }
     }
@@ -74,9 +74,10 @@ public class Projectile : MonoBehaviour
         if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
         {
             Vector3 pushDirection = _direction + (Vector3.up * 0.5f);
-
             StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
         }
+
+        OnHited?.Invoke();
     }
 
     private IEnumerator PushWithDelay(Rigidbody rigidbody, Vector3 direction, float power, float delay)

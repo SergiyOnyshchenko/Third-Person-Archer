@@ -29,12 +29,13 @@ public class PlayerMoveToPointState : ProcessState, IActorIniter
 
     public override void Exit()
     {
-        _mover.Stop();
+        //_mover.Stop();
         base.Exit();
     }
 
     private void Update()
     {
+        /*
         if (_stop)
             return;
 
@@ -45,5 +46,6 @@ public class PlayerMoveToPointState : ProcessState, IActorIniter
             _stop = true;
             DOVirtual.DelayedCall(0.1f, FinishProcess);
         }
+        */
     }
 }
