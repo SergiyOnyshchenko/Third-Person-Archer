@@ -35,7 +35,7 @@ namespace Actor
             _mover.OnMovingFinished.AddListener(Stop);
         }
 
-        private void Stop()
+        public void Stop()
         {
             _mover.OnMovingFinished.RemoveListener(Stop);
             IsMoving = false;

@@ -25,9 +25,16 @@ public abstract class AnimationAttackState : MainState, IActorIniter
         PlayShootAnimation();
     }
 
+    public override void Exit()
+    {
+        if (_attackEvent != null)
+            _attackEvent.Event.RemoveListener(Attack);
+
+        base.Exit();
+    }
+
     protected virtual void Attack()
     {
-        _attackEvent.Event.RemoveListener(Attack);
         OnAttacked?.Invoke();
     }
 

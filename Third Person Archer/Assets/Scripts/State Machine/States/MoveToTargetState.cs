@@ -37,6 +37,8 @@ public class MoveToTargetState : MainState, IActorIniter
         if (_moving != null)
             StopCoroutine(_moving);
 
+        _moverInput.Stop();
+
         base.Exit();
     }
 

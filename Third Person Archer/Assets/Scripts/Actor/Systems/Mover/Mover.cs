@@ -16,6 +16,7 @@ namespace Actor
 
         public abstract void Move(Transform destination, UnityAction onCompleted = null);
         public abstract void Move(Vector3 position, UnityAction onCompleted = null);
+        public abstract void Stop();
 
         public virtual void InitActor(ActorController actor)
         {

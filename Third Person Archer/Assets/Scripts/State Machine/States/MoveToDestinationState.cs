@@ -20,7 +20,12 @@ public class MoveToDestinationState : MainState, IActorIniter
     public override void Enter()
     {
         base.Enter();
-
         _mover.Move(_input.MovePostion);
+    }
+
+    public override void Exit() 
+    {
+        _mover.Stop();
+        base.Exit();
     }
 }

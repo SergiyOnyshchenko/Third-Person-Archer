@@ -22,6 +22,8 @@ namespace Actor
 
         public override void Move(Vector3 position, UnityAction onCompleted = null)
         {
+            _agent.isStopped = false;
+
             _agent.speed = _speed.Value;
             _agent.acceleration = _acceleration.Value;
 
@@ -36,6 +38,11 @@ namespace Actor
             _moveProcess = MoveProcess(position, onCompleted);
 
             StartCoroutine(_moveProcess);
+        }
+
+        public override void Stop()
+        {
+            _agent.isStopped = true;
         }
 
         public void FinishMovingManualy()
@@ -62,7 +69,6 @@ namespace Actor
             while(Vector3.Distance(_agent.transform.position, targetPosition) >= _breakDistanceThreshold)
                 yield return null;
 
-            //onCompleted?.Invoke();
             FinishMoving();
         }
 

@@ -9,6 +9,7 @@ using UnityEngine.AI;
 
 public class MoveAnimationSubstate : SubState, IActorIniter
 {
+    [SerializeField] private float _maxSpeed = 7f;
     private Transform _transform;
     private IAnimator _animator;
     private Mover _mover;
@@ -49,7 +50,7 @@ public class MoveAnimationSubstate : SubState, IActorIniter
         _animator.SetFloat("XDir", relativeDirection.x);
         _animator.SetFloat("ZDir", relativeDirection.z);
 
-        float speed = Mathf.InverseLerp(0, 7, _mover.Velocity.magnitude);
+        float speed = Mathf.InverseLerp(0, _maxSpeed, _mover.Velocity.magnitude);
 
         _animator.SetFloat("Speed", speed);
 
