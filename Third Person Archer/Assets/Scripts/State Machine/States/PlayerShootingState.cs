@@ -11,11 +11,6 @@ public class PlayerShootingState : ProcessState, IActorIniter
     private AttackInput _attackInput;
     private ActorController _player;
 
-    private void Start()
-    {
-        InitShootingData();
-    }
-
     public void InitActor(ActorController actor)
     {
         _player = actor;
@@ -26,6 +21,8 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
     public override void Enter()
     {
+        InitShootingData();
+
         base.Enter();
 
         DOVirtual.DelayedCall(0.1f, () =>
