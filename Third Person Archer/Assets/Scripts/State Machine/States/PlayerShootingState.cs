@@ -21,9 +21,9 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
     public override void Enter()
     {
-        InitShootingData();
-
         base.Enter();
+
+        InitShootingData();
 
         DOVirtual.DelayedCall(0.1f, () =>
         {

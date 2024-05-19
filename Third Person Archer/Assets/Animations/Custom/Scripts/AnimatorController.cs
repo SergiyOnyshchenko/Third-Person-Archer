@@ -83,7 +83,6 @@ namespace CustomAnimation
         private void SetAnimator(Animator<T, D> animator)
         {
             _currentAnimator = animator;
-            Debug.Log(gameObject.name + " Set Animator " + animator.Type);
         }
 
         private void InitLayout()
