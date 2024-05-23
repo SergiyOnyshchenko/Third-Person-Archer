@@ -6,16 +6,14 @@ using DG.Tweening;
 
 public class HitPointView : MonoBehaviour
 {
-    private Animator _animator;
+    [SerializeField] private Animator _animator;
     private HitPoint _hitPoint;
     private Camera _camera;
 
     private void Awake()
     {
         _camera = Camera.main;
-        _animator = GetComponent<Animator>();
-
-        StopAnimation();
+        _animator.gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -28,6 +26,9 @@ public class HitPointView : MonoBehaviour
 
     private void Update()
     {
+        if (!_animator.gameObject.activeSelf)
+            return;
+
         Vector3 screenPos = _camera.WorldToScreenPoint(_hitPoint.transform.position);
         transform.position = screenPos;
     }
@@ -43,26 +44,16 @@ public class HitPointView : MonoBehaviour
 
     public void Activate()
     {
-        PlayIdleAnimation();
+        _animator.gameObject.SetActive(true);
     }
 
     public void Deactivate()
     {
-        StopAnimation();
-    }
-
-    public void PlayIdleAnimation()
-    {
-        _animator.SetTrigger("Show");
+        _animator.gameObject.SetActive(false);
     }
 
     public void PlayDamageAnimation()
     {
         _animator.SetTrigger("Damage");
-    }
-
-    public void StopAnimation()
-    {
-        _animator.SetTrigger("Hide");
     }
 }

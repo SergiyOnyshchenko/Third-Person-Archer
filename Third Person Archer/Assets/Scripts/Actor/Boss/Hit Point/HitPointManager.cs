@@ -24,12 +24,8 @@ namespace Actor
         {
             point = null;
 
-            Debug.Log("AAAAAAAAAA " + _hitPoints.Length);
-
             if (_hitPoints.Length <= index)
                 return false;
-
-            Debug.Log("XXXXXXXXXX");
 
             point = _hitPoints[index];
             return true;

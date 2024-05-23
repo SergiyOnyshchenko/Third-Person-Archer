@@ -9,9 +9,14 @@ public class HitPointViewManager : MonoBehaviour
     [SerializeField] private List<HitPoint> _hitPoints = new List<HitPoint>();
     [SerializeField] private List<HitPointView> _views = new List<HitPointView>();
 
+    private void Start()
+    {
+        InitHitPoints();
+    }
+
     public void InitHitPoints()
     {
-        _hitPoints = FindObjectsOfType<HitPoint>().ToList();
+        _hitPoints = FindObjectsOfType<HitPoint>(true).ToList();
 
         foreach (var hitPoint in _hitPoints)
         {

@@ -11,16 +11,20 @@ public class StateTransition : MonoBehaviour
     public bool IsTransit { get => _isTransit; }
 
     public UnityEvent OnTransotion;
+    public UnityEvent OnEnter;
+    public UnityEvent OnExit;
 
     public virtual void Enter()
     {
         this.enabled = true;
         _isTransit = false;
+        OnEnter?.Invoke();
     }
 
     public virtual void Exit()
     {
         this.enabled = false;
+        OnExit?.Invoke();
     }
 
     protected virtual void DoTransition()

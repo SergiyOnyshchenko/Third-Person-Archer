@@ -20,10 +20,8 @@ public class AllHitPointsHitedTransition : StateTransition, IHitPointsData
 
         foreach (var hitPoint in _hitPoints)
         {
-            Debug.Log("Hit Point");
             hitPoint.OnDamaged.AddListener(CheckHited);
         }
-            
     }
 
     public override void Exit() 

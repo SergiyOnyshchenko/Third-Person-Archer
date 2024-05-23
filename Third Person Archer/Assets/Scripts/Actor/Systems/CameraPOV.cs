@@ -35,7 +35,6 @@ namespace Actor
 
         public void SetThirdPerson()
         {
-            Debug.Log("THIRD PERSON");
             SetCamera(_tpvCamera);
 
             DOVirtual.DelayedCall(0.1f, () => 

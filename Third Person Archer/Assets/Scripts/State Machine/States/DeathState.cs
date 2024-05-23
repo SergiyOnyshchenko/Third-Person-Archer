@@ -17,7 +17,8 @@ namespace Actor
         {
             base.Enter();
 
-            _ragdoll.MakePhysical();
+            if(_ragdoll != null)
+                _ragdoll.MakePhysical();
         }
     }
 }

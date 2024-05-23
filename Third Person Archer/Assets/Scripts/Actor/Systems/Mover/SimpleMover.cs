@@ -24,8 +24,6 @@ namespace Actor
 
         public override void Move(Vector3 position, UnityAction onCompleted = null)
         {
-            Debug.Log("MOOOOOVE");
-
             float distance = Vector3.Distance(_transform.position, position);
             float duration = distance / _speed.Value;
 
