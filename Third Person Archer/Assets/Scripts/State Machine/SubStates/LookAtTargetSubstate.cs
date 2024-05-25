@@ -18,7 +18,7 @@ public class LookAtTargetSubstate : SubState, IActorIniter
     [SerializeField] private Transform _manualTarget;
     private PerceptionInput _input;
     private Transform _transform;
-    [SerializeField] private Transform _target;
+    private Transform _target;
 
     public void InitActor(ActorController actor)
     {

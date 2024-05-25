@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using MoreMountains.Tools;
 using UnityEngine;
 
 public class DelayStateTransitionView : MonoBehaviour
 {
+    [SerializeField] private TimerView _timerView;
     [SerializeField] private DelayTransition _delayTransition;
 
     private void Awake()
@@ -26,11 +28,21 @@ public class DelayStateTransitionView : MonoBehaviour
 
     private void ShowTimerView()
     {
-
+        _timerView.Show();
     }
 
     private void HideTimerView()
     {
+        _timerView.Hide();
+    }
 
+    private void Update()
+    {
+        if (!_delayTransition.enabled)
+            return;
+
+        Debug.Log("RARIO " + _delayTransition.Ratio);
+
+        _timerView.UpdateBar(_delayTransition.Ratio);
     }
 }

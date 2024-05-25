@@ -6,6 +6,7 @@ public class DelayTransition : StateTransition
 {
     [SerializeField] private float _delay;
     private float _timer;
+    public float Ratio { get => _timer / _delay; }
 
     public override void Enter()
     {
