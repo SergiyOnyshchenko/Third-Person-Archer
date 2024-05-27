@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Actor;
 using Cinemachine.Utility;
+using DG.Tweening;
 using UnityEngine;
 
 public class PlayerJumpState : MainState, IActorIniter
@@ -18,6 +19,7 @@ public class PlayerJumpState : MainState, IActorIniter
     public override void Enter()
     {
         base.Enter();
-        _jumper.Jump(_jumpSpline);
+
+        DOVirtual.DelayedCall(0.25f, () => _jumper.Jump(_jumpSpline));
     }
 }

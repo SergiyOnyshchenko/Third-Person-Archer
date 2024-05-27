@@ -27,22 +27,23 @@ namespace Actor
             SubscribeDamageRecievers();
         }
 
-        private void InitCurrentHealth(MaxHealth maxHealth)
+        public void ApplyDamage(int damage)
         {
-            _health = _maxHealth.Value;
-        }
+            if (_health <= 0)
+                return;
 
-        private void ApplyDamage(int damage)
-        {
             _health -= damage;
             _health = Mathf.Clamp(_health, 0, _maxHealth.Value);
 
             OnHealthModified?.Invoke(_health, _maxHealth.Value);
 
             if (_health == 0)
-            {
                 OnHealthZero?.Invoke();
-            }
+        }
+
+        private void InitCurrentHealth(MaxHealth maxHealth)
+        {
+            _health = _maxHealth.Value;
         }
 
         private void SubscribeDamageRecievers()

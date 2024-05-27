@@ -6,7 +6,7 @@ public class Unparanter : MonoBehaviour
 {
     [SerializeField] private bool _onAwake;
 
-    private void Awake()
+    private void Start()
     {
         if (_onAwake)
             Unparent();

@@ -27,5 +27,11 @@ namespace Actor
 
             base.Exit();
         }
+
+        private void Update()
+        {
+            if (_health.Value == 0)
+                DoTransition();
+        }
     }
 }

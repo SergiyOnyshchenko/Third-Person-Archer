@@ -6,5 +6,6 @@ public interface ITarget
 {
     Transform TargetPoint { get; }
     Transform RootPoint { get; }
+    IDamageable Damageable { get; }
     bool IsDead { get; }
 }

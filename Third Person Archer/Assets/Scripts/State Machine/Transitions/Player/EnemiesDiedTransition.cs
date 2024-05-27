@@ -45,13 +45,13 @@ public class EnemiesDiedTransition : StateTransition, IShootingTargetsData
 
     private IEnumerator CheckProcess()
     {
+        yield return new WaitForSeconds(0.5f);
+
         while (GetDeadCount() < TargetDeadCount)
         {
-            Debug.Log("DDDDD " + GetDeadCount() + " " + TargetDeadCount);
             yield return null;
         }
 
-        Debug.Log("DDDDD " + GetDeadCount() + " " + TargetDeadCount);
         yield return new WaitForSeconds(_delayAfter);
 
         DoTransition();

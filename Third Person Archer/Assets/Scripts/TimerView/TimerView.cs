@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class TimerView : MonoBehaviour
 {
-    [SerializeField] private Image _bar;
+    [SerializeField] private Slider _bar;
     [SerializeField] private GameObject _parent;
 
     public void Show()
@@ -20,6 +20,6 @@ public class TimerView : MonoBehaviour
 
     public void UpdateBar(float ratio)
     {
-        _bar.fillAmount = ratio;
+        _bar.value = ratio;
     }
 }

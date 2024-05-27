@@ -19,16 +19,10 @@ public class TargetInRangeTransition : StateTransition, IActorIniter
 
     private void Update()
     {
-        Debug.Log(1);
-
-        Debug.Log(2);
-
         if (_perception.Target == null)
             return;
 
         float distance = Vector3.Distance(_perception.Target.RootPoint.position, _transform.position);
-
-        Debug.Log(distance);
 
         if (distance > _range)
             return;

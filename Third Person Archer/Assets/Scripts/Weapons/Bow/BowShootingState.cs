@@ -52,14 +52,15 @@ public class BowShootingState : ProcessState, IActorIniter
 
     private void PullArrow()
     {
-        ShootProjectile();
         _bowController.ReleasePull();
         FinishProcess();
     }
-
+    
+    /*
     private void ShootProjectile()
     {
         Projectile arrow = Instantiate(_projectile, _bowArrow.transform.position, _bowArrow.transform.rotation);
-        arrow.Shoot(_directionCamera.forward, _bowController.PullPower);
+        arrow.Shoot(_directionCamera.forward, _bowController.PullPower, null);
     }
+    */
 }

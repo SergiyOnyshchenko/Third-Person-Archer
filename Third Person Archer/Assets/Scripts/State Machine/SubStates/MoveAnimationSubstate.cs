@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Actor;
-using Animator = Actor.Animator;
 using Actor.Properties;
 using CustomAnimation;
 using UnityEngine.AI;
+using Animator = Actor.Animator;
 
 public class MoveAnimationSubstate : SubState, IActorIniter
 {

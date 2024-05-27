@@ -36,8 +36,6 @@ public class AllHitPointsHitedTransition : StateTransition, IHitPointsData
     {
         _hitedCount++;
 
-        Debug.Log("HITED COUNT - " + _hitedCount);
-
         if (_hitedCount < _hitPoints.Length)
             return;
 

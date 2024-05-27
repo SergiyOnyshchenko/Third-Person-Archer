@@ -62,7 +62,7 @@ namespace Actor
 
         private void ShootProjectile()
         {
-            _shooter.Shoot(_aimInput.GetAimDirection(), 1f);
+            _shooter.Shoot(_aimInput.GetAimDirection(), 1f, null);
         }
 
         private void ShowArrow() => ShowArrow(true);

@@ -60,8 +60,6 @@ public class BloodSpashSpawnSubstate : SubState, IActorIniter
 
             FakeDecal blood = Instantiate(_bloodPrefab, collision.contacts[0].point, Quaternion.FromToRotation(Vector3.up, collision.contacts[0].normal));
             _bloodSplashes.Add(blood);
-
-            Debug.Log("COLLIDE " + collision.contacts[0].otherCollider.gameObject.name);
         }
     }
 }

@@ -22,8 +22,6 @@ namespace Actor
 
             JumpSpline = spline;
             OnBeginJump?.Invoke();
-
-            Debug.Log("Jump Input");
         }
     }
 }

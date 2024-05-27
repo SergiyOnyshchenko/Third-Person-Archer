@@ -41,8 +41,6 @@ public class DelayStateTransitionView : MonoBehaviour
         if (!_delayTransition.enabled)
             return;
 
-        Debug.Log("RARIO " + _delayTransition.Ratio);
-
         _timerView.UpdateBar(_delayTransition.Ratio);
     }
 }

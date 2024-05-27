@@ -49,6 +49,6 @@ public class SpearThrowState : ProcessState, IActorIniter
     private void ShootProjectile()
     {
         Projectile arrow = Instantiate(_projectile, _spearModel.transform.position, _spearModel.transform.rotation);
-        arrow.Shoot(_directionCamera.forward, _spearController.PullPower);
+        arrow.Shoot(_directionCamera.forward, _spearController.PullPower, null);
     }
 }

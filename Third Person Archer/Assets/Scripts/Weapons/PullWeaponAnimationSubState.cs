@@ -20,7 +20,7 @@ public class PullWeaponAnimationSubState : SubState, IActorIniter
     {
         base.Enter();
 
-        int weaponTypeIndex = 2;
+        int weaponTypeIndex = 0;
         _animator.SetInteger(_weaponTypeParamName, weaponTypeIndex);
         _animator.SetTrigger(_pullWeaponParamName);
     }

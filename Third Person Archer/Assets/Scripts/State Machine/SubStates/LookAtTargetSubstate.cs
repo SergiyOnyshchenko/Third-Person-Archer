@@ -14,6 +14,7 @@ public class LookAtTargetSubstate : SubState, IActorIniter
 
     [SerializeField] private TargetType _targetType;
     [SerializeField] private float _rotationSpeed = 10;
+    [SerializeField] private bool _useY;
     [Space]
     [SerializeField] private Transform _manualTarget;
     private PerceptionInput _input;
@@ -46,10 +47,14 @@ public class LookAtTargetSubstate : SubState, IActorIniter
     private void Update()
     {
         Vector3 myPosition = _transform.position;
-        myPosition.y = 0;
+
+        if(!_useY)
+            myPosition.y = 0;
 
         Vector3 targetPosition = _target.position;
-        targetPosition.y = 0;
+
+        if (!_useY)
+            targetPosition.y = 0;
 
         Quaternion targetRotation = Quaternion.LookRotation(targetPosition - myPosition);
         _transform.rotation = Quaternion.RotateTowards(_transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);

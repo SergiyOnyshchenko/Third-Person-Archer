@@ -23,6 +23,6 @@ public class AnimationShootState : AnimationAttackState
     protected override void Attack()
     {
         base.Attack();
-        _shooter.Shoot(_aim.GetAimDirection(), 1f);
+        _shooter.Shoot(_aim.GetAimDirection(), 1f, null);
     }
 }

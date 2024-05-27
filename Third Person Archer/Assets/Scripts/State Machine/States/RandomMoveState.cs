@@ -36,7 +36,6 @@ public class RandomMoveState : ProcessState, IActorIniter
 
         while (!TryCalculatePath(out movePosition))
         {
-            Debug.Log(" NO PATH ");
             yield return null;
         }
             

@@ -10,6 +10,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float _speed = 50f;
     [Space]
     [SerializeField] private LayerMask _hitLayers;
+    [SerializeField] private bool _destroyAfterHit;
     [Space]
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private Collider _collider;
@@ -26,13 +27,15 @@ public class Projectile : MonoBehaviour
             _rigidbody = GetComponent<Rigidbody>();
     }
 
-    public void Shoot(Vector3 direction, float power)
+    public void Shoot(Vector3 direction, float power, UnityAction onHited)
     {
         _direction = direction.normalized;
         _power = power;
         _state = ProjectileState.Flying;
         transform.rotation = Quaternion.LookRotation(_direction, Vector3.up);
         OnShooted?.Invoke();
+
+        OnTargetHited.AddListener(onHited);
     }
 
     public void FixedUpdate()
@@ -48,7 +51,7 @@ public class Projectile : MonoBehaviour
         if (_state == ProjectileState.Flying)
         {
             if ((_hitLayers.value & (1 << collision.transform.gameObject.layer)) > 0)
-            {
+            { 
                 Hit(collision);
             }
         }
@@ -67,17 +70,23 @@ public class Projectile : MonoBehaviour
 
         if (collision.collider.TryGetComponent(out IDamageable damager))
         {
-            damager.DoDamage(100);
+            damager.DoDamage(Mathf.RoundToInt(_damage * _power));
             OnTargetHited?.Invoke();
         }
 
         if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
         {
-            Vector3 pushDirection = _direction + (Vector3.up * 0.5f);
-            StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
+            if(!rigidbody.isKinematic)
+            {
+                Vector3 pushDirection = _direction + (Vector3.up * 0.5f);
+                StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
+            }
         }
 
         OnHited?.Invoke();
+
+        if(_destroyAfterHit)
+            Destroy(gameObject);
     }
 
     private IEnumerator PushWithDelay(Rigidbody rigidbody, Vector3 direction, float power, float delay)
