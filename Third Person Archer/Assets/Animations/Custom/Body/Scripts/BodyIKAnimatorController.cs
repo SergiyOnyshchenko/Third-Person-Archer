@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RootMotion.FinalIK;
-using UnityEditor.ShaderGraph;
 using JetBrains.Annotations;
 
 namespace CustomAnimation.Body

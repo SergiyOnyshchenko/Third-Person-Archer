@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
+//using UnityEditor;
 
 namespace CustomAnimation
 {
@@ -13,7 +13,11 @@ namespace CustomAnimation
         [SerializeField] protected AnimatorController<T, D> _animator;
 
         [ContextMenu("Create Pose Data")]
-        public virtual void CreatePoseData() => AssetDatabase.CreateAsset(GetNewData(), _path + _poseName + ".asset");
+        public virtual void CreatePoseData() 
+        {
+            //AssetDatabase.CreateAsset(GetNewData(), _path + _poseName + ".asset");
+        }
+       
         protected abstract AnimationPoseData<D> GetNewData();
     }
 }
