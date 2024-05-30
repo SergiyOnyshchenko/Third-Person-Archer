@@ -33,8 +33,8 @@ public class Projectile : MonoBehaviour
         _power = power;
         _state = ProjectileState.Flying;
         transform.rotation = Quaternion.LookRotation(_direction, Vector3.up);
-        OnShooted?.Invoke();
 
+        OnShooted?.Invoke();
         OnTargetHited.AddListener(onHited);
     }
 
@@ -42,7 +42,9 @@ public class Projectile : MonoBehaviour
     {
         if (_state == ProjectileState.Flying)
         {
-            _rigidbody.velocity = _direction * _speed;
+            //_rigidbody.velocity = _direction * _speed;
+
+            transform.position += _direction * Time.fixedTime * _speed * 0.01f;
         }
     }
 

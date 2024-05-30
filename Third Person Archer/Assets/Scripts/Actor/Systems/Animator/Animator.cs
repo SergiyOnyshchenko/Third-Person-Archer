@@ -63,8 +63,7 @@ namespace Actor
         {
             foreach (var myEvent in _events)
             {
-                if(myEvent.TryInvoke(name));
-                    return;
+                myEvent.TryInvoke(name);
             }
         }
     }

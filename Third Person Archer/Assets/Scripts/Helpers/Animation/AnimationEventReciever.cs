@@ -11,9 +11,10 @@ public class AnimationEventReciever : MonoBehaviour
 
     public void InvokeAnimationEvent(string name)
     {
-        foreach (var animationEvent in _events)
+        foreach (AnimationEvent animationEvent in _events)
         {
-            animationEvent.TryInvoke(name);
+            if (animationEvent.TryInvoke(name))
+                break;
         }
 
         OnAnimationEvent?.Invoke(name);

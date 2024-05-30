@@ -8,6 +8,7 @@ using UnityEngine;
 public class FieldOfView
 {
     [SerializeField] private float _maxDistance;
+    [SerializeField, Range(0, 360)] private float _viewAngle;
     [SerializeField] private LayerMask _obstacleMask;
     [SerializeField] private Transform _eyesPoint;
 
@@ -30,6 +31,10 @@ public class FieldOfView
             return false;
 
         Vector3 direction = target.TargetPoint.position - _eyesPoint.position;
+
+        if (Vector3.Angle(_eyesPoint.forward, direction) >= _viewAngle / 2)
+            return false;
+
         if (Physics.Raycast(_eyesPoint.position, direction.normalized, distance, _obstacleMask))
             return false;
 

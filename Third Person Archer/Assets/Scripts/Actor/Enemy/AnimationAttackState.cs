@@ -5,18 +5,24 @@ using UnityEngine.Events;
 using Actor;
 using Animator = Actor.Animator;
 
-public abstract class AnimationAttackState : MainState, IActorIniter
+public abstract class AnimationAttackState : ProcessState, IActorIniter
 {
     [SerializeField] private string _attackAnimParamName = "Attack";
     [SerializeField] private string _attackAnimEventName = "Attack";
+    [SerializeField] private string _finishAnimEventName = "FinishAttack";
     private Animator _animator;
+    private AttackInput _attackInput;
     private AnimationEvent _attackEvent;
+    private AnimationEvent _finishEvent;
     public UnityEvent OnAttacked = new UnityEvent();
 
     public virtual void InitActor(ActorController actor)
     {
         if (actor.TryGetSystem(out Animator animator))
             _animator = animator;
+
+        if (actor.TryGetInput(out AttackInput attackInput))
+            _attackInput = attackInput;
     }
 
     public override void Enter()
@@ -30,12 +36,21 @@ public abstract class AnimationAttackState : MainState, IActorIniter
         if (_attackEvent != null)
             _attackEvent.Event.RemoveListener(Attack);
 
+        if(_finishEvent != null)
+            _finishEvent.Event.RemoveListener(Finish);
+
         base.Exit();
     }
 
     protected virtual void Attack()
     {
         OnAttacked?.Invoke();
+    }
+
+    private void Finish()
+    {
+        _attackInput.AllowAttack(false);
+        FinishProcess();
     }
 
     private void PlayShootAnimation()
@@ -46,6 +61,12 @@ public abstract class AnimationAttackState : MainState, IActorIniter
         {
             _attackEvent = shootEvent;
             _attackEvent.Event.AddListener(Attack);
+        }
+
+        if (_animator.TryGetAnimationEvent(_finishAnimEventName, out AnimationEvent finishEvent))
+        {
+            _finishEvent = finishEvent;
+            _finishEvent.Event.AddListener(Finish);
         }
     }
 }
