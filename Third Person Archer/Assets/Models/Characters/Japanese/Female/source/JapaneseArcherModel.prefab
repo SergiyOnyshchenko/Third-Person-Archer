@@ -2133,6 +2133,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 681402225ea28964087553860b0959b9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2284062963796460086}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 681402225ea28964087553860b0959b9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2558630520021519647}
     - targetCorrespondingSourceObject: {fileID: 3256684802130647663, guid: 681402225ea28964087553860b0959b9, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3556160860775340168}
@@ -2944,7 +2947,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3805482267623429220}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 776adaaacdc5c4e8ab0395120a6e972b, type: 3}
   m_Name: 
@@ -3062,6 +3065,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _propertyName: SpeedRandomizer
+  _randomizwOverTime: 0
+  _randomizeDelay: 1
 --- !u!114 &2284062963796460086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3082,6 +3087,18 @@ MonoBehaviour:
   OnAnimationEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2558630520021519647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3805482267623429220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb59fac9727f3cb47a21edb0a30028b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &4576810992734719710 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 681402225ea28964087553860b0959b9, type: 3}

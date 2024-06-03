@@ -6,6 +6,8 @@ using UnityEngine;
 public class HighlightModelSubState : SubState, IActorIniter
 {
     [SerializeField] private StatePlacement _placement;
+    [SerializeField] private bool _value = true;
+    [Space]
     [SerializeField] private bool _isPermanent = true;
     private ModelView _modelView;
 
@@ -24,7 +26,7 @@ public class HighlightModelSubState : SubState, IActorIniter
 
         if (_placement == StatePlacement.OnEnter)
         {
-            _modelView.Highlight(true);
+            _modelView.Highlight(_value);
         }
     }
 
@@ -35,11 +37,11 @@ public class HighlightModelSubState : SubState, IActorIniter
 
         if (_placement == StatePlacement.OnExit)
         {
-            _modelView.Highlight(true);
+            _modelView.Highlight(_value);
         }
         else if (_placement == StatePlacement.OnEnter && !_isPermanent)
         {
-            _modelView.Highlight(false);
+            _modelView.Highlight(!_value);
         }
 
         base.Exit();

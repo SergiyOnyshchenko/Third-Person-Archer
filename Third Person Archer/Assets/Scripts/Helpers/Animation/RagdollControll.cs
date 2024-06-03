@@ -36,5 +36,13 @@ public class RagdollControll : MonoBehaviour
             rigidbody.isKinematic = false;
             rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
+
+        StartCoroutine(Freeze());
+    }
+
+    private IEnumerator Freeze()
+    {
+        yield return new WaitForSeconds(5);
+        MakeKinematic();
     }
 }
