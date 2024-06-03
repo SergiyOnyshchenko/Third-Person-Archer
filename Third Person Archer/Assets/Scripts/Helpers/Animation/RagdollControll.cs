@@ -43,6 +43,8 @@ public class RagdollControll : MonoBehaviour
     private IEnumerator Freeze()
     {
         yield return new WaitForSeconds(5);
-        MakeKinematic();
+
+        foreach (Rigidbody rigidbody in _allRigidbodys)
+            rigidbody.isKinematic = true;
     }
 }
