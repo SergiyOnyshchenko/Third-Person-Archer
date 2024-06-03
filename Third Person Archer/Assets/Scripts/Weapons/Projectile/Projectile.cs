@@ -42,9 +42,9 @@ public class Projectile : MonoBehaviour
     {
         if (_state == ProjectileState.Flying)
         {
-            //_rigidbody.velocity = _direction * _speed;
+            _rigidbody.velocity = _direction * _speed * Time.fixedTime;
 
-            transform.position += _direction * Time.fixedTime * _speed * 0.01f;
+            //transform.position += _direction * Time.fixedTime * _speed * 0.01f;
         }
     }
 
@@ -78,11 +78,8 @@ public class Projectile : MonoBehaviour
 
         if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
         {
-            if(!rigidbody.isKinematic)
-            {
-                Vector3 pushDirection = _direction + (Vector3.up * 0.5f);
-                StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
-            }
+            Vector3 pushDirection = _direction + (Vector3.up * 0.5f);
+            StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
         }
 
         OnHited?.Invoke();

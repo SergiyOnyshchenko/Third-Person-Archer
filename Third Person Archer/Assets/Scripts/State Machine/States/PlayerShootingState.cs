@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Actor;
 using UnityEngine;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 public class PlayerShootingState : ProcessState, IActorIniter
 {
@@ -63,5 +64,31 @@ public class PlayerShootingState : ProcessState, IActorIniter
         foreach (var enemy in _enemies)
             if (enemy.TryGetInput(out PerceptionInput perception))
                 perception.ActivatePerception(targetsForEnemies);
+    }
+
+    private void TryGetEnemies()
+    {
+        var childEnemies = GetComponentsInChildren<ActorController>();
+
+        List<ActorController> allEnemies = new List<ActorController>(_enemies);
+
+        foreach (var childEneemy in childEnemies)
+        {
+            bool hasEnemy = false;
+
+            foreach (var enemy in _enemies)
+            {
+                if (childEneemy == enemy)
+                {
+                    hasEnemy = true;
+                    break;
+                }
+            }
+
+            if (!hasEnemy)
+                allEnemies.Add(childEneemy);
+        }
+
+        _enemies = allEnemies.ToArray();
     }
 }

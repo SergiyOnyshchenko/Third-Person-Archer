@@ -9,7 +9,6 @@ public class StateTransition : MonoBehaviour
     [SerializeField] protected bool _isTransit;
     public MainState NextState { get => _nextState; }
     public bool IsTransit { get => _isTransit; }
-
     public UnityEvent OnTransotion;
     public UnityEvent OnEnter;
     public UnityEvent OnExit;
@@ -25,6 +24,11 @@ public class StateTransition : MonoBehaviour
     {
         this.enabled = false;
         OnExit?.Invoke();
+    }
+
+    public void SetNextStateManualy(MainState state)
+    {
+        SetNextState(state);
     }
 
     protected virtual void DoTransition()
