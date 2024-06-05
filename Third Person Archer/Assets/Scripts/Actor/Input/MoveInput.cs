@@ -39,6 +39,8 @@ namespace Actor
         {
             _mover.OnMovingFinished.RemoveListener(Stop);
             IsMoving = false;
+
+            _mover.Stop();
         }
     }
 }

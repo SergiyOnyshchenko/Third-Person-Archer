@@ -42,6 +42,7 @@ namespace Actor
         public override void Stop()
         {
             _agent.isStopped = true;
+            OnMovingFinished?.Invoke();
         }
 
         public void FinishMovingManualy()

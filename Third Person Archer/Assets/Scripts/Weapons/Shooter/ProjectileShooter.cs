@@ -6,17 +6,10 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using EventSystem = Actor.EventSystem;
 
-public class ProjectileShooter : Shooter, IActorIniter
+public class ProjectileShooter : Shooter
 {
     [SerializeField] private Projectile _prefab;
-    private EventSystem _eventSystem;
     public UnityEvent OnShooted = new UnityEvent();
-
-    public void InitActor(ActorController actor)
-    {
-        if (actor.TryGetSystem(out EventSystem eventSystem))
-            _eventSystem = eventSystem;
-    }
 
     public override void Shoot(Vector3 direction, float multiplier, UnityAction onHited)
     {
@@ -26,13 +19,5 @@ public class ProjectileShooter : Shooter, IActorIniter
         arrow.Shoot(direction, multiplier, onHited);
 
         OnShooted?.Invoke();
-    }
-
-    private void SetTargetHitedEvent()
-    {
-        if (_eventSystem == null)
-            return;
-
-        _eventSystem.TryInvokeEvent("TargetHited");
     }
 }
