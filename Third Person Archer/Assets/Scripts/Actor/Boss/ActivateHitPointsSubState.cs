@@ -20,8 +20,6 @@ public class ActivateHitPointsSubState : SubState, IActorIniter
 
     public override void Enter()
     {
-       
-
         base.Enter();
 
         foreach (var point in _hitPoints)

@@ -30,5 +30,11 @@ namespace Actor
             point = _hitPoints[index];
             return true;
         }
+
+        public HitPoint GetRandomHitPoint()
+        {
+            int random = Random.Range(0, _hitPoints.Length);
+            return _hitPoints[random];
+        }
     }
 }

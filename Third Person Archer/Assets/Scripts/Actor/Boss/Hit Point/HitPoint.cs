@@ -30,6 +30,11 @@ public class HitPoint : MonoBehaviour
         _hitbox.OnDamaged -= DoDamage;
     }
 
+    private void Start()
+    {
+        Desactivate();
+    }
+
     public void Activate()
     {
         Activate(true);

@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Actor;
 using UnityEngine;
+using DG.Tweening;
 
 public class AnimationTriggerSubstate : SubState, IActorIniter
 {
     [SerializeField] private string _enterTriggerName;
+    [SerializeField] private float _enterDelay;
+    [Space]
     [SerializeField] private string _exitTriggerName;
     private IAnimator _animator;
 
@@ -21,7 +24,7 @@ public class AnimationTriggerSubstate : SubState, IActorIniter
 
         if (!string.IsNullOrEmpty(_enterTriggerName))
         {
-            _animator.SetTrigger(_enterTriggerName);
+            DOVirtual.DelayedCall(_enterDelay, () => _animator.SetTrigger(_enterTriggerName));
         }
     }
 

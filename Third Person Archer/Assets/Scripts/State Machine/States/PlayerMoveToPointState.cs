@@ -26,26 +26,4 @@ public class PlayerMoveToPointState : ProcessState, IActorIniter
         _stop = false;
         _mover.MoveToDestination(_destination);
     }
-
-    public override void Exit()
-    {
-        //_mover.Stop();
-        base.Exit();
-    }
-
-    private void Update()
-    {
-        /*
-        if (_stop)
-            return;
-
-        float distance = Vector3.Distance(_target.position, _destination.position);
-
-        if (distance < 0.1f)
-        {
-            _stop = true;
-            DOVirtual.DelayedCall(0.1f, FinishProcess);
-        }
-        */
-    }
 }
