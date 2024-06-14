@@ -42,10 +42,7 @@ namespace Actor
         public void SetTrigger(string name)
         {
             _animator.SetTrigger(name);
-
-            Debug.Log("TRIGGER " + name);
         }
-
         public bool TryGetAnimationEvent(string name, out AnimationEvent animEvent)
         {
             foreach (var myEvent in _events)

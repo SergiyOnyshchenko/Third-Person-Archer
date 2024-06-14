@@ -17,6 +17,7 @@ namespace Actor
 
         private void OnEnable()
         {
+            _rotation = Vector2.zero;
             transform.localEulerAngles = Vector3.zero;
         }
 

@@ -46,7 +46,9 @@ namespace Actor
 
         public void SetFirstPerson()
         {
-            _fpvCamera.transform.localEulerAngles = Vector3.zero;
+            _fpvCamera.gameObject.SetActive(false);
+            _fpvCamera.gameObject.SetActive(true);
+
             SetCamera(_fpvCamera);
 
             DOVirtual.DelayedCall(0.8f, () => 
