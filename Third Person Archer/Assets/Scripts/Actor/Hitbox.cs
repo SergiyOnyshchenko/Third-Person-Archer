@@ -13,6 +13,7 @@ namespace Actor
         [SerializeField] private LayerMask _collisionMask;
         public event Action<int> OnDamaged;
         public event Action<string, GameObject> OnTriggered;
+        public UnityEvent<int> OnDamagedEvent = new UnityEvent<int>();
         public UnityEvent<Collision> OnCollided = new UnityEvent<Collision>();
 
         public void ReciveTrigger(string name, GameObject owner) => OnTriggered?.Invoke(name, owner);
@@ -21,6 +22,7 @@ namespace Actor
         {
             int calculatedDamage = Mathf.RoundToInt(damage * _demageMultiplier);
             OnDamaged?.Invoke(calculatedDamage);
+            OnDamagedEvent?.Invoke(calculatedDamage);
         }
 
         public void SetCollisionMask(LayerMask collisionMask)

@@ -121,6 +121,7 @@ MonoBehaviour:
   _hitLayers:
     serializedVersion: 2
     m_Bits: 4294967295
+  _destroyAfterHit: 0
   _rigidbody: {fileID: 3244016391885278285}
   _collider: {fileID: 7014120761498455768}
   OnShooted:
@@ -140,10 +141,13 @@ MonoBehaviour:
         m_CallState: 2
   OnHited:
     m_PersistentCalls:
+      m_Calls: []
+  OnTargetHited:
+    m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 501056795912534197}
-        m_TargetAssemblyTypeName: HitSoundTrigger, Assembly-CSharp
-        m_MethodName: Play
+      - m_Target: {fileID: 1917846028942860711}
+        m_TargetAssemblyTypeName: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Feedbacks
+        m_MethodName: PlayFeedbacks
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -153,12 +157,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  OnTargetHited:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1917846028942860711}
-        m_TargetAssemblyTypeName: MoreMountains.Feedbacks.MMF_Player, MoreMountains.Feedbacks
-        m_MethodName: PlayFeedbacks
+      - m_Target: {fileID: 501056795912534197}
+        m_TargetAssemblyTypeName: HitSoundTrigger, Assembly-CSharp
+        m_MethodName: Play
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

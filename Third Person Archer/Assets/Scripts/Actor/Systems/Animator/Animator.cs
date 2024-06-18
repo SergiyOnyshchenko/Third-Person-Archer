@@ -24,6 +24,12 @@ namespace Actor
                 _aniamtionEventReciever.OnAnimationEvent.RemoveListener(TryInvokeAnimationEvent);
         }
 
+
+        public void SwapAnimatorController(RuntimeAnimatorController animatorController)
+        {
+            _animator.runtimeAnimatorController = animatorController;
+        }
+
         public void SetBool(string name, bool value)
         {
             _animator.SetBool(name, value);
@@ -65,5 +71,6 @@ namespace Actor
                 myEvent.TryInvoke(name);
             }
         }
+
     }
 }

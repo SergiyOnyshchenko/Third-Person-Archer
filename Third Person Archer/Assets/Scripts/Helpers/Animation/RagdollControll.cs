@@ -6,6 +6,7 @@ public class RagdollControll : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
     private Rigidbody[] _allRigidbodys;
+    private bool _isPhysical;
 
     private void Awake()
     {
@@ -24,10 +25,15 @@ public class RagdollControll : MonoBehaviour
 
         foreach (Rigidbody rigidbody in _allRigidbodys)
             rigidbody.isKinematic = true;
+
+        _isPhysical = false;
     }
 
     public void MakePhysical()
     {
+        if (_isPhysical)
+            return;
+
         if (_animator != null)
             _animator.enabled = false;
 
@@ -36,6 +42,8 @@ public class RagdollControll : MonoBehaviour
             rigidbody.isKinematic = false;
             rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
+
+        _isPhysical = true;
 
         StartCoroutine(Freeze());
     }

@@ -43,8 +43,6 @@ public class Projectile : MonoBehaviour
         if (_state == ProjectileState.Flying)
         {
             _rigidbody.velocity = _direction * _speed * Time.fixedTime;
-
-            //transform.position += _direction * Time.fixedTime * _speed * 0.01f;
         }
     }
 
