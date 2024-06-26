@@ -20,4 +20,9 @@ public class ProjectileShooter : Shooter
 
         OnShooted?.Invoke();
     }
+
+    public void SetProjectile(Projectile projectile)
+    {
+        _prefab = projectile;
+    }
 }

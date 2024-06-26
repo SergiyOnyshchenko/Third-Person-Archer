@@ -24,6 +24,10 @@ namespace Actor
                 _aniamtionEventReciever.OnAnimationEvent.RemoveListener(TryInvokeAnimationEvent);
         }
 
+        public void SetAnimator(UnityEngine.Animator animator)
+        {
+            _animator = animator;
+        }
 
         public void SwapAnimatorController(RuntimeAnimatorController animatorController)
         {

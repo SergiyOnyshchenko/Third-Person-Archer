@@ -21,7 +21,7 @@ namespace Actor.ThirdPerson
             SetIndle();
         }
 
-        private void Update()
+        private void FuxedUpdate()
         {
             _motion.Update(_weapon);
 

@@ -1926,74 +1926,6 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
---- !u!1 &3502507926115829191
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 556848199898949101}
-  - component: {fileID: 5609119533042398191}
-  - component: {fileID: 3149096990314521104}
-  m_Layer: 7
-  m_Name: CrossbowController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &556848199898949101
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3502507926115829191}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7602301233552892138}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5609119533042398191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3502507926115829191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b41e265c937849b44bc2c6874ba6b0dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _crossbow: {fileID: 0}
-  _crossbowAnimator: {fileID: 0}
-  _arrow: {fileID: 0}
-  OnShoot:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &3149096990314521104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3502507926115829191}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f7a8936a01779c48bdf6b92c9181488, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _shootPoint: {fileID: 0}
-  _prefab: {fileID: 4888770277049612117, guid: 7b903ca9329390648990bea19c86d92e, type: 3}
-  OnShooted:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &3503758584370399911
 GameObject:
   m_ObjectHideFlags: 0
@@ -2446,89 +2378,6 @@ MonoBehaviour:
       m_Calls: []
   _enterActionName: Alert
   _exitActionName: 
---- !u!1 &4956379792702761835
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4816781944801977641}
-  - component: {fileID: 7652613776369023580}
-  - component: {fileID: 7602427021331924570}
-  m_Layer: 7
-  m_Name: BowController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4816781944801977641
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4956379792702761835}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7602301233552892138}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7652613776369023580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4956379792702761835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 006beee189ab74b46ba0519052b2af40, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _bowModel: {fileID: 0}
-  _bowSpring: {fileID: 0}
-  _bowArrow: {fileID: 0}
-  _handArrow: {fileID: 0}
-  _transitArrow: {fileID: 0}
-  _hidePose: {fileID: 11400000, guid: da32c2b4d6ab046428b95ec7c4a7763c, type: 2}
-  _idlePose: {fileID: 11400000, guid: da32c2b4d6ab046428b95ec7c4a7763c, type: 2}
-  _pullPose: {fileID: 11400000, guid: 30edbfcf6d923a44282e557907f2574a, type: 2}
-  _releasePose: {fileID: 11400000, guid: 923e96ff1faa178498411d9fa4041a0a, type: 2}
-  _reloadAnimation:
-    _poses:
-    - {fileID: 11400000, guid: da32c2b4d6ab046428b95ec7c4a7763c, type: 2}
-    - {fileID: 11400000, guid: ee76106095ce875429dd3bc0997f4dd0, type: 2}
-    - {fileID: 11400000, guid: ae25946c3bf0aff43af95d349d9b1b60, type: 2}
-    - {fileID: 11400000, guid: 02dc44ac884fa2c4987d0546d4031836, type: 2}
-    - {fileID: 11400000, guid: da32c2b4d6ab046428b95ec7c4a7763c, type: 2}
-    - {fileID: 11400000, guid: da32c2b4d6ab046428b95ec7c4a7763c, type: 2}
-    _animator: {fileID: 0}
-  OnPullStarted:
-    m_PersistentCalls:
-      m_Calls: []
---- !u!114 &7602427021331924570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4956379792702761835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f7a8936a01779c48bdf6b92c9181488, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _shootPoint: {fileID: 0}
-  _prefab: {fileID: 4888770277049612117, guid: 7b903ca9329390648990bea19c86d92e, type: 3}
-  OnShooted:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &5262034761127496017
 GameObject:
   m_ObjectHideFlags: 0
@@ -4482,12 +4331,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 557883306131764195, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6791970610632683119}
-    - targetCorrespondingSourceObject: {fileID: 466068559861368972, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4816781944801977641}
-    - targetCorrespondingSourceObject: {fileID: 466068559861368972, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 556848199898949101}
     - targetCorrespondingSourceObject: {fileID: 4962022276933925451, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: -1
       addedObject: {fileID: 571671212297774322}
@@ -4649,11 +4492,6 @@ Transform:
 --- !u!4 &7515097907603069829 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 557883306131764195, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
-  m_PrefabInstance: {fileID: 8067919815964944486}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &7602301233552892138 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 466068559861368972, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
   m_PrefabInstance: {fileID: 8067919815964944486}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &7629823817826439328 stripped

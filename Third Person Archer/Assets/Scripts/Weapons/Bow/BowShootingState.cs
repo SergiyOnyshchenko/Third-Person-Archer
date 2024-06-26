@@ -9,9 +9,6 @@ using Input = UnityEngine.Input;
 
 public class BowShootingState : ProcessState, IActorIniter
 {
-    [SerializeField] private Projectile _projectile;
-    [SerializeField] private Transform _directionCamera;
-    [SerializeField] private GameObject _bowArrow;
     private BowController _bowController;
     private AttackInput _attackInput;
 
@@ -54,12 +51,4 @@ public class BowShootingState : ProcessState, IActorIniter
         _bowController.ReleasePull();
         FinishProcess();
     }
-    
-    /*
-    private void ShootProjectile()
-    {
-        Projectile arrow = Instantiate(_projectile, _bowArrow.transform.position, _bowArrow.transform.rotation);
-        arrow.Shoot(_directionCamera.forward, _bowController.PullPower, null);
-    }
-    */
 }

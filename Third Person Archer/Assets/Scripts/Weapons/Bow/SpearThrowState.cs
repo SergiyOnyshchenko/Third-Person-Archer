@@ -7,9 +7,6 @@ using Input = UnityEngine.Input;
 
 public class SpearThrowState : ProcessState, IActorIniter
 {
-    [SerializeField] private Projectile _projectile;
-    [SerializeField] private Transform _directionCamera;
-    [SerializeField] private GameObject _spearModel;
     private SpearController _spearController;
 
     public void InitActor(ActorController actor)
@@ -39,16 +36,8 @@ public class SpearThrowState : ProcessState, IActorIniter
 
         if (Input.GetMouseButtonUp(0))
         {
-            ShootProjectile();
             _spearController.ReleasePull();
-
             DOVirtual.DelayedCall(0.5f, FinishProcess);
         }
-    }
-
-    private void ShootProjectile()
-    {
-        Projectile arrow = Instantiate(_projectile, _spearModel.transform.position, _spearModel.transform.rotation);
-        arrow.Shoot(_directionCamera.forward, _spearController.PullPower, null);
     }
 }

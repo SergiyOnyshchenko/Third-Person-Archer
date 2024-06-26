@@ -51,6 +51,11 @@ public class LevelManager : MonoBehaviour
         LoadLevel(_database.CurrentLevel);
     }
 
+    public void LoadMainMenu()
+    {
+        LoadLevel(_database.MainMenu);
+    }
+
     private void LoadLevel(LevelData data)
     {
         if (Preloader.Instance == null)

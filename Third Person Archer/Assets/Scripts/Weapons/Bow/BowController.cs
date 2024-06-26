@@ -13,11 +13,7 @@ namespace Actor
 {
     public class BowController : WeaponController, IActorIniter
     {
-        [Header("Bow")]
-        [SerializeField] private GameObject _bowModel;
-        [SerializeField] private BowSpring _bowSpring;
-        [Header("Arrow")]
-        [SerializeField] private GameObject _bowArrow;
+        [Header("Arrows")]
         [SerializeField] private GameObject _handArrow;
         [SerializeField] private GameObject _transitArrow;
         [Header("Animation")]
@@ -31,8 +27,12 @@ namespace Actor
         private AimInput _aimInput;
         private WeaponPull _weaponPull;
         private FpvController _fpv;
+        private IBowView _bowView;
         private float _pullPower;
         private bool _isPulling;
+        private GameObject _bowModel => _bowView.Model;
+        private BowSpring _bowSpring => _bowView.BowSpring;
+        private GameObject _bowArrow => _bowView.Arrow;
         public float PullPower { get => _pullPower; }
         public bool IsPulling { get => _isPulling;}
         public UnityEvent OnPullStarted = new UnityEvent();
@@ -46,6 +46,9 @@ namespace Actor
         {
             if (actor.TryGetInput(out AimInput aimInput))
                 _aimInput = aimInput;
+
+            if (actor.TryGetSystem(out BowViewController bowView))
+                _bowView = bowView;
 
             if (actor.TryGetSystem(out FpvController fpv))
                 _fpv = fpv;
@@ -66,14 +69,16 @@ namespace Actor
         public void SetStartSettings()
         {
             if (_fpv.FpvAnimator.Properties.TryGetProperty(out SpringPower power))
-                power.SetValue(50f);
-            
+                power.SetValue(12f);//power.SetValue(50f);
+
             _fpv.FpvAnimator.TrySetAnimator(AnimatorType.Spring);
 
             _bowModel.gameObject.SetActive(true);
             _fpv.ApplyHandsSpring(true);
 
             PlayAnimation(_idlePose);
+
+
         }
 
         public void BeginPull()
@@ -114,7 +119,7 @@ namespace Actor
 
         private void SetTargetHitedEvent()
         {
-            //Debug.Log("TargetHited");
+            
         }
 
         #region Reloading
