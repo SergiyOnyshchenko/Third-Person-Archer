@@ -37,7 +37,7 @@ namespace Actor
         private void Shoot()
         {
             _crossbowController.Shoot(null);
-            DOVirtual.DelayedCall(1, FinishProcess);
+            DOVirtual.DelayedCall(0.5f, FinishProcess);
         }
     }
 }

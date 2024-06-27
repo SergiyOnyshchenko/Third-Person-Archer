@@ -12,7 +12,7 @@ using Actor.Properties;
 
 namespace Actor
 {
-    public class BowController : WeaponController, IActorIniter
+    public class BowController : WeaponController, IActorIniter, IPull
     {
         [Header("Arrows")]
         [SerializeField] private GameObject _handArrow;
@@ -35,7 +35,6 @@ namespace Actor
         public float PullPower { get => _pullPower; }
         public bool IsPulling { get => _isPulling;}
         public UnityEvent OnPullStarted = new UnityEvent();
-
 
         public override void InitActor(ActorController actor)
         {

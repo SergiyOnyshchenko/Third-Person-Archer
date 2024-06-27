@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum WeaponType
 {
-    Bow,
-    Crossbow,
-    Spear
+    Bow = 0,
+    Crossbow = 1,
+    Spear = 2
 }

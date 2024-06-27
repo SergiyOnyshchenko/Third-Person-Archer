@@ -48,6 +48,9 @@ namespace Actor
 
         public void Equip(WeaponData weapon)
         {
+            if (_equipedWeapon != null)
+                _equipedWeapon.Unequip(_actor);
+
             weapon.Equip(_actor);
             _equipedWeapon = weapon;
             OnWeaponChanged?.Invoke();

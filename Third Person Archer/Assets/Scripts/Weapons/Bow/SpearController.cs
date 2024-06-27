@@ -5,11 +5,12 @@ using Actor.Properties;
 using CustomAnimation;
 using CustomAnimation.Body;
 using DG.Tweening;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
 
-public class SpearController : WeaponController, IActorIniter
+public class SpearController : WeaponController, IActorIniter, IPull
 {
     [Header("Animation")]
     [SerializeField] private BodyIKPoseData _idlePose;
@@ -18,9 +19,11 @@ public class SpearController : WeaponController, IActorIniter
     [SerializeField] private BodyIKPoseData _reloadPose;
     private FpvController _fpv;
     private SpearHolder _spearHolder;
+    private WeaponPull _weaponPull;
+    private bool _isPulling;
     private float _pullPower;
     public float PullPower { get => _pullPower; }
-
+    public bool IsPulling { get => _isPulling; }
 
     public override void InitActor(ActorController actor)
     {
@@ -31,6 +34,9 @@ public class SpearController : WeaponController, IActorIniter
 
         if (actor.TryGetProperty(out SpearAmmo ammo))
             _ammoCount = ammo;
+
+        if (actor.TryGetProperty(out WeaponPull weaponPull))
+            _weaponPull = weaponPull;
 
         if (actor.TryGetPropertys(out SpearHolder[] holders))
             foreach (var holder in holders)
@@ -61,7 +67,8 @@ public class SpearController : WeaponController, IActorIniter
         if (!CanAttack())
             return;
 
-        _pullPower = 0;
+        _isPulling = true;
+        SetPullPower(0);
         _spearHolder.ShowWeapon(true);
     }
 
@@ -70,8 +77,7 @@ public class SpearController : WeaponController, IActorIniter
         if (!CanAttack())
             return;
 
-        _pullPower += 1.5f * Time.deltaTime;
-        _pullPower = Mathf.Clamp(_pullPower, 0f, 1f);
+        SetPullPower(_pullPower + 1.5f * Time.deltaTime);
 
         var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
         PlayAnimation(lerpPose);
@@ -84,11 +90,18 @@ public class SpearController : WeaponController, IActorIniter
 
         Shoot(_pullPower, () => SetTargetHitedEvent());
 
-        _pullPower = 0;
+        _isPulling = false;
+        SetPullPower(0);
         _spearHolder.ShowWeapon(false);
 
         _fpv.FpvAnimator.DoPose(_throwPose);
         DOVirtual.DelayedCall(0.15f, () => _fpv.FpvAnimator.DoPose(_reloadPose));
+    }
+
+    private void SetPullPower(float pull)
+    {
+        _pullPower = Mathf.Clamp(pull, 0f, 1f);
+        _weaponPull.SetValue(_pullPower);
     }
 
     private void SetTargetHitedEvent()
