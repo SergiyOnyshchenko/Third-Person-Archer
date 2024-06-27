@@ -8,6 +8,7 @@ using DG.Tweening;
 using UnityEngine.Events;
 using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.EventSystems;
+using Actor.Properties;
 
 namespace Actor
 {
@@ -23,8 +24,6 @@ namespace Actor
         [SerializeField] private BodyIKPoseData _releasePose;
         [Space]
         [SerializeField] private Animation<BodyPartIK, BodyPartIKData> _reloadAnimation;
-        private Shooter _shooter;
-        private AimInput _aimInput;
         private WeaponPull _weaponPull;
         private FpvController _fpv;
         private IBowView _bowView;
@@ -37,15 +36,10 @@ namespace Actor
         public bool IsPulling { get => _isPulling;}
         public UnityEvent OnPullStarted = new UnityEvent();
 
-        private void Start()
-        {
-            _shooter = GetComponent<Shooter>();
-        }
 
-        public void InitActor(ActorController actor)
+        public override void InitActor(ActorController actor)
         {
-            if (actor.TryGetInput(out AimInput aimInput))
-                _aimInput = aimInput;
+            base.InitActor(actor);
 
             if (actor.TryGetSystem(out BowViewController bowView))
                 _bowView = bowView;
@@ -55,6 +49,9 @@ namespace Actor
 
             if (actor.TryGetProperty(out WeaponPull weaponPull))
                 _weaponPull = weaponPull;
+
+            if (actor.TryGetProperty(out BowAmmo ammo))
+                _ammoCount = ammo;
 
             _reloadAnimation.Init(_fpv.FpvAnimator);
         }
@@ -77,12 +74,13 @@ namespace Actor
             _fpv.ApplyHandsSpring(true);
 
             PlayAnimation(_idlePose);
-
-
         }
 
         public void BeginPull()
         {
+            if (!CanAttack())
+                return;
+
             SetPullPower(0);
             _bowSpring.SetHandIK(_fpv.RightHand.IkPoint);
             _bowArrow.SetActive(true);
@@ -93,6 +91,9 @@ namespace Actor
 
         public void HoldPull()
         {
+            if (!CanAttack())
+                return;
+
             SetPullPower(_pullPower + 1.5f * Time.deltaTime);
 
             var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
@@ -101,7 +102,10 @@ namespace Actor
 
         public void ReleasePull()
         {
-            _shooter.Shoot(_aimInput.GetAimDirection(), _pullPower, () => SetTargetHitedEvent());
+            if (!CanAttack())
+                return;
+
+            Shoot(_pullPower, () => SetTargetHitedEvent());
 
             _isPulling = false;
             _bowSpring.ResetHandIK();
@@ -165,8 +169,6 @@ namespace Actor
         }
 
         #endregion
-
-
     }
 }
 

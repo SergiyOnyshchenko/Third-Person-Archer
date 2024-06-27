@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Actor.Properties;
 using UnityEngine;
 using UnityEngine.Events;
 using static UnityEngine.Rendering.DebugUI;
@@ -14,22 +15,18 @@ namespace Actor
         [Header("Arrow View")]
         [SerializeField] private GameObject _arrow;
         private FpvController _fpv;
-        private AimInput _aimInput;
-        private Shooter _shooter;
+        private CrossbowAmmo _ammo;
         public UnityEvent OnShoot = new UnityEvent();
 
-        private void Start()
+        public override void InitActor(ActorController actor)
         {
-            _shooter = GetComponent<Shooter>();
-        }
+            base.InitActor(actor);
 
-        public void InitActor(ActorController actor)
-        {
             if (actor.TryGetSystem(out FpvController fpv))
                 _fpv = fpv;
 
-            if (actor.TryGetInput(out AimInput aimInput))
-                _aimInput = aimInput;
+            if (actor.TryGetProperty(out CrossbowAmmo ammo))
+                _ammoCount = ammo;
         }
 
         public void ShowView()
@@ -39,6 +36,9 @@ namespace Actor
 
         public void Shoot(UnityAction onComplete)
         {
+            if (!CanAttack())
+                return;
+
             onComplete += HideArrow;
             onComplete += ShootProjectile;
             onComplete += InvokeShootEvent;
@@ -48,6 +48,9 @@ namespace Actor
 
         public void Reload()
         {
+            if (!CanAttack())
+                return;
+
             _crossbowAnimator.Reload(ShowArrow);
         }
 
@@ -62,7 +65,7 @@ namespace Actor
 
         private void ShootProjectile()
         {
-            _shooter.Shoot(_aimInput.GetAimDirection(), 1f, null);
+            Shoot(1f, null);
         }
 
         private void ShowArrow() => ShowArrow(true);

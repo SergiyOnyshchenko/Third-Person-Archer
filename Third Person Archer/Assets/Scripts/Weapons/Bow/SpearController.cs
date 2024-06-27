@@ -6,6 +6,7 @@ using CustomAnimation;
 using CustomAnimation.Body;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 
 public class SpearController : WeaponController, IActorIniter
@@ -15,25 +16,21 @@ public class SpearController : WeaponController, IActorIniter
     [SerializeField] private BodyIKPoseData _pullPose;
     [SerializeField] private BodyIKPoseData _throwPose;
     [SerializeField] private BodyIKPoseData _reloadPose;
-    private Shooter _shooter;
     private FpvController _fpv;
-    private AimInput _aimInput;
     private SpearHolder _spearHolder;
     private float _pullPower;
     public float PullPower { get => _pullPower; }
 
-    private void Start()
-    {
-        _shooter = GetComponent<Shooter>();
-    }
 
-    public void InitActor(ActorController actor)
+    public override void InitActor(ActorController actor)
     {
-        if (actor.TryGetInput(out AimInput aimInput))
-            _aimInput = aimInput;
+        base.InitActor(actor);
 
         if (actor.TryGetSystem(out FpvController fpv))
             _fpv = fpv;
+
+        if (actor.TryGetProperty(out SpearAmmo ammo))
+            _ammoCount = ammo;
 
         if (actor.TryGetPropertys(out SpearHolder[] holders))
             foreach (var holder in holders)
@@ -61,12 +58,18 @@ public class SpearController : WeaponController, IActorIniter
 
     public void BeginPull()
     {
+        if (!CanAttack())
+            return;
+
         _pullPower = 0;
         _spearHolder.ShowWeapon(true);
     }
 
     public void HoldPull()
     {
+        if (!CanAttack())
+            return;
+
         _pullPower += 1.5f * Time.deltaTime;
         _pullPower = Mathf.Clamp(_pullPower, 0f, 1f);
 
@@ -76,7 +79,10 @@ public class SpearController : WeaponController, IActorIniter
 
     public void ReleasePull()
     {
-        _shooter.Shoot(_aimInput.GetAimDirection(), _pullPower, () => SetTargetHitedEvent());
+        if (!CanAttack())
+            return;
+
+        Shoot(_pullPower, () => SetTargetHitedEvent());
 
         _pullPower = 0;
         _spearHolder.ShowWeapon(false);

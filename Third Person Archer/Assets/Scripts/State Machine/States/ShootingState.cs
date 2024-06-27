@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Actor;
-using Actor.ThirdPerson;
-using WeaponController = Actor.ThirdPerson.WeaponController;
 
 public class ShootingState : MainState, IActorIniter
 {

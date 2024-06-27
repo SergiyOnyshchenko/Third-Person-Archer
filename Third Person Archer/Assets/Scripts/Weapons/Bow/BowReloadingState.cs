@@ -21,17 +21,8 @@ public class BowReloadingState : ProcessState, IActorIniter
     public override void Enter()
     {
         base.Enter();
+
         _bowController.SetReloadSettings();
         _bowController.Reload(FinishProcess);
     }
-
-    private void FixedUpdate()
-    {
-        /*
-        var pose = _animatorController.LerpPoses(_poses[_index], _poses[_index + 1], _value - (float)_index);
-        _animatorController.DoPose(pose);
-        */
-    }
-
-    
 }
