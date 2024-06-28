@@ -8,6 +8,6 @@ public class PreGameIniter : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;
-        LevelEventSystem.SendReloadLevel(); 
+        LevelEventSystem.SendLoadMainMenu();
     }
 }

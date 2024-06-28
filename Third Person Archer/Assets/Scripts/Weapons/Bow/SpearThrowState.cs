@@ -8,11 +8,15 @@ using Input = UnityEngine.Input;
 public class SpearThrowState : ProcessState, IActorIniter
 {
     private SpearController _spearController;
+    private AttackInput _attackInput;
 
     public void InitActor(ActorController actor)
     {
         if (actor.TryGetSystem(out SpearController spear))
             _spearController = spear;
+
+        if (actor.TryGetInput(out AttackInput attackInput))
+            _attackInput = attackInput;
     }
 
     public override void Enter()
@@ -20,24 +24,29 @@ public class SpearThrowState : ProcessState, IActorIniter
         base.Enter();
 
         _spearController.SetStartSettings();
+        _attackInput.OnAttackRelease.AddListener(PullArrow);
+    }
+
+    public override void Exit() 
+    { 
+        base.Exit();
+        _attackInput.OnAttackRelease.RemoveListener(PullArrow);
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (_attackInput.IsHold)
         {
-            _spearController.BeginPull();
-        }
+            if (!_spearController.IsPulling)
+                _spearController.BeginPull();
 
-        if (Input.GetMouseButton(0))
-        {
             _spearController.HoldPull();
         }
+    }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            _spearController.ReleasePull();
-            DOVirtual.DelayedCall(0.5f, FinishProcess);
-        }
+    private void PullArrow()
+    {
+        _spearController.ReleasePull();
+        DOVirtual.DelayedCall(0.5f, FinishProcess);
     }
 }
