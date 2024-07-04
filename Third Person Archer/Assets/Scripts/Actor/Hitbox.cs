@@ -7,16 +7,19 @@ using UnityEngine.UI;
 
 namespace Actor
 {
-    public class Hitbox : MonoBehaviour, IDamageReciever, IDamageable, ITriggerReciever, IDamageChecker
+    public class Hitbox : MonoBehaviour, IDamageReciever, IDamageable, ITriggerReciever, IDamageChecker, IMotionFreezeReceiver
     {
         [SerializeField, Range(0, 100)] private float _demageMultiplier = 1f;
         [SerializeField] private LayerMask _collisionMask;
         public event Action<int> OnDamaged;
         public event Action<string, GameObject> OnTriggered;
         public IDamageReciever.OnTryDamaged TryDamagedCallback { get; set; }
+
+        public IMotionFreezeReceiver.FreezeStateChange FreezeAction { get; set; }
+
         public UnityEvent<int> OnDamagedEvent = new UnityEvent<int>();
         public UnityEvent<Collision> OnCollided = new UnityEvent<Collision>();
-    
+
         public void ReciveTrigger(string name, GameObject owner) => OnTriggered?.Invoke(name, owner);
 
         public void DoDamage(int damage)
@@ -46,7 +49,7 @@ namespace Actor
             if ((_collisionMask.value & 1 << collision.gameObject.layer) == 1 << collision.gameObject.layer)
             {
                 OnCollided?.Invoke(collision);
-            } 
+            }
         }
     }
 }

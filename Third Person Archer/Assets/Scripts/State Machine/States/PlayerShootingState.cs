@@ -9,6 +9,8 @@ public class PlayerShootingState : ProcessState, IActorIniter
 {
     [SerializeField] private ActorController[] _enemies;
     [SerializeField] private Transform _lookAtPoint;
+    [SerializeField] private float _delay = 0.1f;
+
     private AttackInput _attackInput;
     private ActorController _player;
     private ShootingTargets _shootingTargets;
@@ -30,7 +32,7 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
         InitShootingData();
 
-        DOVirtual.DelayedCall(0.1f, () =>
+        DOVirtual.DelayedCall(_delay, () =>
         {
             ActivateEnemies();
             _attackInput.AllowAttack(true);

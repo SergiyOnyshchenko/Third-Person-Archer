@@ -12,7 +12,7 @@ namespace Actor
         [Range(0f, 90f)][SerializeField] float xRotationLimit = 90f;
         [Range(0f, 90f)][SerializeField] float yRotationLimit = 88f;
         private Vector2 _rotation = Vector2.zero;
-        private JoystickFpvInput _input;
+        private FpvInput _input;
         public float Sensitivity { get { return sensitivity; } set { sensitivity = value; } }
 
         private void OnEnable()
@@ -23,17 +23,17 @@ namespace Actor
 
         public void InitActor(ActorController actor)
         {
-            if (actor.TryGetInput(out JoystickFpvInput input))
+            if (actor.TryGetInput(out FpvInput input))
                 _input = input;
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             if (_input == null)
                 return;
 
-            _rotation.x += _input.Horizontal * sensitivity * _input.Distance;
-            _rotation.y += _input.Vertical * sensitivity * _input.Distance;
+            _rotation.x += _input.Horizontal * sensitivity/* * _input.Distance*/;
+            _rotation.y += _input.Vertical * sensitivity/* * _input.Distance*/;
 
             _rotation.x = Mathf.Clamp(_rotation.x, -xRotationLimit, xRotationLimit);
             _rotation.y = Mathf.Clamp(_rotation.y, -yRotationLimit, yRotationLimit);
@@ -41,7 +41,7 @@ namespace Actor
             var xQuat = Quaternion.AngleAxis(_rotation.x, Vector3.up);
             var yQuat = Quaternion.AngleAxis(_rotation.y, Vector3.left);
 
-            transform.localRotation = xQuat * yQuat;
+            transform.localRotation = Quaternion.Lerp(transform.localRotation, xQuat * yQuat, Time.deltaTime* 15);
         }
     }
 }

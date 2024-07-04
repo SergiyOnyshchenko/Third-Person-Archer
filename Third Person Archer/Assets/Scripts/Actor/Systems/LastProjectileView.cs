@@ -51,6 +51,8 @@ namespace Actor
         {
             _camera.transform.SetParent(null);
 
+            projectile.ChangeSpeed(3000);
+
             _camera.Follow = projectile.transform;
             _camera.LookAt = projectile.transform;
             OnActivated?.Invoke();

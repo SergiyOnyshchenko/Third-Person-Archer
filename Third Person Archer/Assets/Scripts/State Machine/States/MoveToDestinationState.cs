@@ -28,4 +28,14 @@ public class MoveToDestinationState : MainState, IActorIniter
         _mover.Stop();
         base.Exit();
     }
+
+    public void Freeze()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Unfreeze()
+    {
+        throw new System.NotImplementedException();
+    }
 }

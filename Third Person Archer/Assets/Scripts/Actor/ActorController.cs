@@ -1,10 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 using Actor.Properties;
-using DG.Tweening;
-using System.Linq;
 
 namespace Actor
 {

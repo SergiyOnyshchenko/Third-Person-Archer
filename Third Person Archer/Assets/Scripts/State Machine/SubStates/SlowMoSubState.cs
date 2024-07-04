@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using Actor;
-using UnityEngine;
 using UnityEngine.Events;
 
 public class SlowMoSubState : SubState, IActorIniter
@@ -29,7 +26,7 @@ public class SlowMoSubState : SubState, IActorIniter
     {
         _attackInput.OnAttackStart.RemoveListener(DoSlowMo);
         _attackInput.OnAttackRelease.RemoveListener(ResetSlowMo);
-        ResetSlowMo();
+        /*ResetSlowMo();*/
         base.Exit();
     }
 
@@ -40,6 +37,7 @@ public class SlowMoSubState : SubState, IActorIniter
 
     public void ResetSlowMo()
     {
+        UnityEngine.Debug.Log("Reset Slomo");
         OnReset?.Invoke();
     }
 }

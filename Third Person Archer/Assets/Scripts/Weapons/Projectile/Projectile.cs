@@ -22,6 +22,8 @@ public class Projectile : MonoBehaviour
     public UnityEvent OnHited = new UnityEvent();
     public UnityEvent OnTargetHited = new UnityEvent();
 
+    public float Speed => _speed;
+
     private void Awake()
     {
         if (_rigidbody == null)
@@ -50,9 +52,13 @@ public class Projectile : MonoBehaviour
             if (hit.collider.TryGetComponent(out IDamageChecker damageChecker))
             {
                 if (damageChecker.GetHealthAfterDamage(_damage) > 0)
+                {
                     return false;
+                }
                 else
+                {
                     return true;
+                }
             }
         }
 
@@ -72,7 +78,7 @@ public class Projectile : MonoBehaviour
         if (_state == ProjectileState.Flying)
         {
             if ((_hitLayers.value & (1 << collision.transform.gameObject.layer)) > 0)
-            { 
+            {
                 Hit(collision);
             }
         }
@@ -103,7 +109,7 @@ public class Projectile : MonoBehaviour
 
         OnHited?.Invoke();
 
-        if(_destroyAfterHit)
+        if (_destroyAfterHit)
             Destroy(gameObject);
     }
 
@@ -113,4 +119,8 @@ public class Projectile : MonoBehaviour
         rigidbody.AddForce(direction * power, ForceMode.VelocityChange);
     }
 
+    public void ChangeSpeed(float newSpeed)
+    {
+        _speed = newSpeed;
+    }
 }
