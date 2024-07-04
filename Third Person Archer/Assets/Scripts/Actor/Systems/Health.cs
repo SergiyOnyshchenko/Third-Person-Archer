@@ -41,6 +41,13 @@ namespace Actor
                 OnHealthZero?.Invoke();
         }
 
+        private int TryApplyDamage(int damage)
+        {
+            int health = _health;
+            health -= damage;
+            return health;
+        }
+
         private void InitCurrentHealth(MaxHealth maxHealth)
         {
             _health = _maxHealth.Value;
@@ -49,13 +56,19 @@ namespace Actor
         private void SubscribeDamageRecievers()
         {
             foreach (var reciever in _damageRecievers)
+            {
                 reciever.OnDamaged += ApplyDamage;
+                reciever.TryDamagedCallback += TryApplyDamage;
+            }
         }
 
         private void UnsubscribeDamageRecievers()
         {
             foreach (var reciever in _damageRecievers)
+            {
                 reciever.OnDamaged -= ApplyDamage;
+                reciever.TryDamagedCallback -= TryApplyDamage;
+            }
         }
     }
 }

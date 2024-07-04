@@ -10,12 +10,18 @@ namespace Actor
         [SerializeField] private bool _allowDebug;
         protected bool _isHold;
         public bool IsHold { get => _isHold; }
+        public UnityEvent OnAttackStart = new UnityEvent();
         public UnityEvent OnAttackRelease = new UnityEvent();
 
         public void AllowAttack(bool value)
         {
             IsActive = value;
             _allowDebug = IsActive;
+        }
+
+        protected void SendAttackStart()
+        {
+            OnAttackStart?.Invoke();
         }
 
         protected void SendAttackRelease()

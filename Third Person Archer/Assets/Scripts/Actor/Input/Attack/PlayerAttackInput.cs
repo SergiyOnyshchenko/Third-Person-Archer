@@ -21,6 +21,7 @@ namespace Actor
 
                 if (!_isHold && _timer >= _delay)
                 {
+                    SendAttackStart();
                     _isHold = true;
                 }
             }
@@ -33,13 +34,6 @@ namespace Actor
                 }
 
                 _timer = 0;
-            }
-
-            if (UnityEngine.Input.GetMouseButtonUp(0))
-            {
-
-
-                //
             }
         }
     }

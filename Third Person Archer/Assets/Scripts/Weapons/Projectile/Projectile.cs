@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
+using Unity.Burst.CompilerServices;
 
 public class Projectile : MonoBehaviour
 {
@@ -36,13 +37,33 @@ public class Projectile : MonoBehaviour
 
         OnShooted?.Invoke();
         OnTargetHited.AddListener(onHited);
+
+        PreCheckTargetDeath();
+    }
+
+    public bool PreCheckTargetDeath()
+    {
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position + _direction * 2, _direction, out hit, _hitLayers))
+        {
+            if (hit.collider.TryGetComponent(out IDamageChecker damageChecker))
+            {
+                if (damageChecker.GetHealthAfterDamage(_damage) > 0)
+                    return false;
+                else
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     public void FixedUpdate()
     {
         if (_state == ProjectileState.Flying)
         {
-            _rigidbody.velocity = _direction * _speed * Time.fixedTime;
+            _rigidbody.velocity = _direction * _speed * Time.fixedDeltaTime;
         }
     }
 
@@ -66,7 +87,7 @@ public class Projectile : MonoBehaviour
 
         transform.parent = collision.transform;
         transform.position = collision.contacts[0].point;
-        transform.position -= transform.forward * 0.6f;
+        //transform.position -= transform.forward * 0.6f;
 
         if (collision.collider.TryGetComponent(out IDamageable damager))
         {
@@ -91,4 +112,5 @@ public class Projectile : MonoBehaviour
         yield return new WaitForSeconds(delay);
         rigidbody.AddForce(direction * power, ForceMode.VelocityChange);
     }
+
 }

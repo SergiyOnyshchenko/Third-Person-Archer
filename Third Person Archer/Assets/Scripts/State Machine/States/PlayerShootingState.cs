@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Actor;
+using Actor.Properties;
 using UnityEngine;
 using DG.Tweening;
 
@@ -10,6 +11,7 @@ public class PlayerShootingState : ProcessState, IActorIniter
     [SerializeField] private Transform _lookAtPoint;
     private AttackInput _attackInput;
     private ActorController _player;
+    private ShootingTargets _shootingTargets;
 
     public void InitActor(ActorController actor)
     {
@@ -17,6 +19,9 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
         if (actor.TryGetInput(out AttackInput attackInput))
             _attackInput = attackInput;
+
+        if (actor.TryGetProperty(out ShootingTargets shootingTargets))
+            _shootingTargets = shootingTargets;
     }
 
     public override void Enter()
@@ -53,7 +58,7 @@ public class PlayerShootingState : ProcessState, IActorIniter
     {
         ITarget playerTarget;
 
-        if (_player.TryGetSystem(out Target target))
+        if (_player.TryGetSystem(out Actor.Target target))
             playerTarget = target;
         else
             return;
@@ -63,6 +68,19 @@ public class PlayerShootingState : ProcessState, IActorIniter
         foreach (var enemy in _enemies)
             if (enemy.TryGetInput(out PerceptionInput perception))
                 perception.ActivatePerception(targetsForEnemies);
+
+        if(_shootingTargets != null)
+        {
+            List<ITarget> targets = new List<ITarget>();
+
+            foreach (var enemy in _enemies)
+            {
+                if (enemy.TryGetSystem(out Actor.Target targetEnemy))
+                    targets.Add(targetEnemy);
+            }
+
+            _shootingTargets.Init(targets);
+        }
     }
 
     private void TryGetEnemies()

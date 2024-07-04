@@ -14,12 +14,14 @@ namespace Actor
         [Space]
         [SerializeField] private CinemachineVirtualCamera _fpvCamera;
         [SerializeField] private GameObject _fpvModel;
+        [SerializeField] private Transform _fpvProjector;
         private const int _noPriorityIndex = 0;
         private const int _activePriorityIndex = 1;
         private CinemachineVirtualCamera[] _allCameras;
         private GameObject[] _allModels;
         private CinemachineBrain _cinemachineBrain;
-        public CinemachineVirtualCamera FpvCamera => _fpvCamera; 
+        public CinemachineVirtualCamera FpvCamera => _fpvCamera;
+        public Transform FpvProjector => _fpvProjector;
         public UnityEvent OnFPV = new UnityEvent();
         public UnityEvent OnFTV = new UnityEvent();
    

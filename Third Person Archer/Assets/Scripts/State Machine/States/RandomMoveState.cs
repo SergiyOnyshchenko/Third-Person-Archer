@@ -12,6 +12,7 @@ public class RandomMoveState : ProcessState, IActorIniter
     private NavMeshAgent _agent;
     private MoveInput _moverInput;
     private SpawnPoint _spawnPoint;
+    private PerceptionInput _perceptionInput;
 
     public void InitActor(ActorController actor)
     {
@@ -20,6 +21,9 @@ public class RandomMoveState : ProcessState, IActorIniter
 
         if(actor.TryGetProperty(out SpawnPoint spawnPoint))
             _spawnPoint = spawnPoint;
+
+        if(actor.TryGetInput(out PerceptionInput perceptionInput))
+            _perceptionInput = perceptionInput;
 
         _agent = actor.GetComponent<NavMeshAgent>();
     }
@@ -36,7 +40,7 @@ public class RandomMoveState : ProcessState, IActorIniter
 
         while (!TryCalculatePath(out movePosition))
         {
-            yield return null;
+            yield return new WaitForFixedUpdate();
         }
             
         _moverInput.MoveToDestination(movePosition);
@@ -52,6 +56,17 @@ public class RandomMoveState : ProcessState, IActorIniter
         movePosition += _spawnPoint.Value;
 
         if(Vector3.Distance(_agent.transform.position, movePosition) < _rangeMin)
+            return false;
+
+        if (_perceptionInput.Target == null)
+            return false;
+
+        Vector3 startPosition = movePosition + (Vector3.up * 2);
+        Vector3 direction = _perceptionInput.Target.TargetPoint.position - startPosition;
+
+        float distacne = Vector3.Distance(startPosition, _perceptionInput.Target.TargetPoint.position);
+
+        if (Physics.Raycast(startPosition, direction.normalized, distacne - 3f)) 
             return false;
 
         NavMeshPath navMeshPath = new NavMeshPath();

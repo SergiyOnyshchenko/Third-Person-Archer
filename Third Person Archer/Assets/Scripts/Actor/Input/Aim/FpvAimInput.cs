@@ -21,7 +21,7 @@ namespace Actor
         public void InitActor(ActorController actor)
         {
             if (actor.TryGetSystem(out CameraPOV pov))
-                _fpvCameraPoint = pov.FpvCamera.transform;
+                _fpvCameraPoint = pov.FpvProjector.transform;
         }
     }
 }

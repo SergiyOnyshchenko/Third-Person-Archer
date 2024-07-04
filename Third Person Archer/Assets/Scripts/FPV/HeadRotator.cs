@@ -12,7 +12,7 @@ namespace Actor
         [Range(0f, 90f)][SerializeField] float xRotationLimit = 90f;
         [Range(0f, 90f)][SerializeField] float yRotationLimit = 88f;
         private Vector2 _rotation = Vector2.zero;
-        private FpvInput _input;
+        private JoystickFpvInput _input;
         public float Sensitivity { get { return sensitivity; } set { sensitivity = value; } }
 
         private void OnEnable()
@@ -32,8 +32,8 @@ namespace Actor
             if (_input == null)
                 return;
 
-            _rotation.x += _input.Horizontal * sensitivity;
-            _rotation.y += _input.Vertical * sensitivity;
+            _rotation.x += _input.Horizontal * sensitivity * _input.Distance;
+            _rotation.y += _input.Vertical * sensitivity * _input.Distance;
 
             _rotation.x = Mathf.Clamp(_rotation.x, -xRotationLimit, xRotationLimit);
             _rotation.y = Mathf.Clamp(_rotation.y, -yRotationLimit, yRotationLimit);

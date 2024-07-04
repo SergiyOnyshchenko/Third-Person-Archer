@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Actor;
 
 [System.Serializable]
 public class FieldOfView

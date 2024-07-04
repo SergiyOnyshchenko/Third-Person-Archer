@@ -9,7 +9,7 @@ using EventSystem = Actor.EventSystem;
 public class ProjectileShooter : Shooter
 {
     [SerializeField] private Projectile _prefab;
-    public UnityEvent OnShooted = new UnityEvent();
+    public UnityEvent<Projectile> OnShooted = new UnityEvent<Projectile>();
 
     public override void Shoot(Vector3 direction, float multiplier, UnityAction onHited)
     {
@@ -18,7 +18,7 @@ public class ProjectileShooter : Shooter
         Projectile arrow = Instantiate(_prefab, _shootPoint.position, _shootPoint.rotation);
         arrow.Shoot(direction, multiplier, onHited);
 
-        OnShooted?.Invoke();
+        OnShooted?.Invoke(arrow);
     }
 
     public void SetProjectile(Projectile projectile)

@@ -10,6 +10,7 @@ public class JumpState : ProcessState, IActorIniter
 {
     private Transform _target;
     private JumpInput _input;
+    private BodyRotator _rotator;
 
     public void InitActor(ActorController actor)
     {
@@ -17,6 +18,9 @@ public class JumpState : ProcessState, IActorIniter
 
         if (actor.TryGetInput(out JumpInput input))
             _input = input;
+
+        if(actor.TryGetSystem(out BodyRotator rotator))
+            _rotator = rotator;
     }
 
     public override void Enter()
@@ -30,20 +34,23 @@ public class JumpState : ProcessState, IActorIniter
     {
         float value = 0f;
         float duration = 0.75f;
+        //float duration = 1f;
 
-        DOTween.To(() => value, x => value = x, 0.5f, duration/2)
+        _rotator.RotateToInstant(jumpSpline.End);
+
+        DOTween.To(() => value, x => value = x, 0.5f, duration/2f)
         .OnUpdate(() => 
         {
             _target.transform.position = jumpSpline.CalculatePosition(value);
         }).
-        SetEase(Ease.OutSine);
+        SetEase(Ease.Linear);
 
-        DOTween.To(() => value, x => value = x, 1f, duration/2)
+        DOTween.To(() => value, x => value = x, 1f, duration/3f)
         .OnUpdate(() =>
         {
             _target.transform.position = jumpSpline.CalculatePosition(value);
         }).
-        SetEase(Ease.InSine).
+        SetEase(Ease.OutSine).
         SetDelay(duration / 2).
         OnComplete(FinishProcess);
     }

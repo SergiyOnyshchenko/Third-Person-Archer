@@ -93,7 +93,7 @@ namespace Actor
             if (!CanAttack())
                 return;
 
-            SetPullPower(_pullPower + 1.5f * Time.deltaTime);
+            SetPullPower(_pullPower + 1.1f * Time.fixedDeltaTime);
 
             var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
             PlayAnimation(lerpPose);
@@ -104,7 +104,7 @@ namespace Actor
             if (!CanAttack())
                 return;
 
-            Shoot(_pullPower, () => SetTargetHitedEvent());
+            Shoot(1f, () => SetTargetHitedEvent());
 
             _isPulling = false;
             _bowSpring.ResetHandIK();

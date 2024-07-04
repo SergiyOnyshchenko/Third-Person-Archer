@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2237769326508837018}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Feedbacks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3203050620704925794}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -76,7 +76,7 @@ GameObject:
   - component: {fileID: 5164822868169858744}
   - component: {fileID: 9170343367549713101}
   - component: {fileID: 7005673906764284815}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Axe Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 10
-  _speed: 10
+  _speed: 1000
   _hitLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -187,7 +187,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4740139488210629690}
   - component: {fileID: 6176886509342453385}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Throw Feedback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,6 +315,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3203050620704925794}
     m_Modifications:
+    - target: {fileID: 1570125510750810589, guid: ce8a0c544940be045b1f31a7ac42d9b7, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 4092043894706713970, guid: ce8a0c544940be045b1f31a7ac42d9b7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -358,6 +362,10 @@ PrefabInstance:
     - target: {fileID: 8296977558525405379, guid: ce8a0c544940be045b1f31a7ac42d9b7, type: 3}
       propertyPath: m_Name
       value: Axe Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 8296977558525405379, guid: ce8a0c544940be045b1f31a7ac42d9b7, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

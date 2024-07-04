@@ -76,7 +76,7 @@ public class SpearController : WeaponController, IActorIniter, IPull
         if (!CanAttack())
             return;
 
-        SetPullPower(_pullPower + 1.5f * Time.deltaTime);
+        SetPullPower(_pullPower + 1f * Time.fixedDeltaTime);
 
         var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
         PlayAnimation(lerpPose);
@@ -87,7 +87,7 @@ public class SpearController : WeaponController, IActorIniter, IPull
         if (!CanAttack())
             return;
 
-        Shoot(_pullPower, () => SetTargetHitedEvent());
+        Shoot(1f, () => SetTargetHitedEvent());
 
         _isPulling = false;
         SetPullPower(0);

@@ -20,7 +20,7 @@ public class EnemyActivationSubState : SubState, IActorIniter
 
         ITarget playerTarget;
 
-        if (_player.TryGetSystem(out Target target))
+        if (_player.TryGetSystem(out Actor.Target target))
             playerTarget = target;
         else
             return;

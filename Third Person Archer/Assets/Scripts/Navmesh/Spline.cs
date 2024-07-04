@@ -10,6 +10,8 @@ public class Spline : MonoBehaviour
     [SerializeField]
     private bool showGizmos = true;
 
+    public Transform End { get => _end; }
+
     private Vector3 CalculatePosition(float value01, Vector3 startPos,
         Vector3 endPos, Vector3 midPos)
     {

@@ -4,6 +4,7 @@ using Actor;
 using Actor.Properties;
 using UnityEngine;
 using UnityEngine.Events;
+using Target = Actor.Target;
 
 public class Bees : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class Bees : MonoBehaviour
         {
             _targetEnemy = enemy;
 
-            if (enemy.TryGetSystem(out Target target))
+            if (enemy.TryGetSystem(out Actor.Target target))
                 _target = target;
         }
     }
