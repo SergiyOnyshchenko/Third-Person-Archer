@@ -83,7 +83,7 @@ namespace Actor
 
         private IEnumerator DeactivateTimer()
         {
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1.25f);
             Deactivate();
         }
     }
