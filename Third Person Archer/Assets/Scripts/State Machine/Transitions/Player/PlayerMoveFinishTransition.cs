@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Actor;
+using DG.Tweening;
 
 public class PlayerMoveFinishTransition : StateTransition, IActorIniter
 {
@@ -16,6 +17,8 @@ public class PlayerMoveFinishTransition : StateTransition, IActorIniter
     public override void Enter()
     {
         base.Enter();
+
+        //DOVirtual.DelayedCall(0.1f, () => _mover.OnMovingFinished.AddListener(DoTransition));
 
         _mover.OnMovingFinished.AddListener(DoTransition);
     }

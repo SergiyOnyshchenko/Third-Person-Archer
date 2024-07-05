@@ -7,7 +7,6 @@ using UnityEngine;
 public class PlayerMoveToPointState : ProcessState, IActorIniter
 {
     [SerializeField] private Transform _destination;
-    private bool _stop;
     private Transform _target;
     private MoveInput _mover;
 
@@ -23,7 +22,6 @@ public class PlayerMoveToPointState : ProcessState, IActorIniter
     {
         base.Enter();
 
-        _stop = false;
-        _mover.MoveToDestination(_destination);
+        DOVirtual.DelayedCall(0.1f, () => _mover.MoveToDestination(_destination));
     }
 }
