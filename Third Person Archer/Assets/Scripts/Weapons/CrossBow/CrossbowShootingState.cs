@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using CustomAnimation.Body;
-using UnityEngine;
 using DG.Tweening;
+using System.Diagnostics;
 
 namespace Actor
 {
@@ -10,6 +7,8 @@ namespace Actor
     {
         private CrossbowController _crossbowController; 
         private AttackInput _attackInput;
+
+        Tween _tween;
 
         public void InitActor(ActorController actor)
         {
@@ -24,9 +23,18 @@ namespace Actor
         {
             base.Enter();
 
+            _tween?.Kill();
+
             _crossbowController.ShowView();
 
             _attackInput.OnAttackRelease.AddListener(Shoot);
+        }
+
+        public override void Exit()
+        {
+            base.Exit();
+
+            _attackInput.OnAttackRelease.RemoveListener(Shoot);
         }
 
         private void Update()
@@ -42,10 +50,13 @@ namespace Actor
 
         private void Shoot()
         {
+            UnityEngine.Debug.Log("Shoot");
+            _tween?.Kill();
+
             _attackInput.OnAttackRelease.RemoveListener(Shoot);
             _crossbowController.Shoot(null);
 
-            DOVirtual.DelayedCall(0.5f, FinishProcess);
+            _tween = DOVirtual.DelayedCall(0.5f, FinishProcess);
         }
     }
 }
