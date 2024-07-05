@@ -37,14 +37,19 @@ public class RagdollControll : MonoBehaviour
         if (_animator != null)
             _animator.enabled = false;
 
-        foreach (Rigidbody rigidbody in _allRigidbodys)
+        IEnumerator Delay()
         {
-            rigidbody.isKinematic = false;
-            rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            yield return new WaitForSecondsRealtime(0.1f);
+            foreach (Rigidbody rigidbody in _allRigidbodys)
+            {
+                rigidbody.isKinematic = false;
+                rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            }
         }
 
         _isPhysical = true;
 
+        StartCoroutine(Delay());
         StartCoroutine(Freeze());
     }
 
