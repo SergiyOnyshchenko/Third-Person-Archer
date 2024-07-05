@@ -18,6 +18,8 @@ public class LevelManager : MonoBehaviour
             Destroy(this);
 
         _database.Load();
+
+        Application.targetFrameRate = 60;
     }
 
     private void OnEnable()
