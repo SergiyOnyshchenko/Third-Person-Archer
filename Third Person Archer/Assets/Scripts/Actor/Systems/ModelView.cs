@@ -21,7 +21,7 @@ namespace Actor
                 return;
 
             if (value)
-                _outline.OutlineWidth = 1f;
+                _outline.OutlineWidth = 0f;
             else
                 _outline.OutlineWidth = 0;
         }
