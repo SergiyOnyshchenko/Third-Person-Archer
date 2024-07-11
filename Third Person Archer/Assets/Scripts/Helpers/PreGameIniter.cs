@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class PreGameIniter : MonoBehaviour
 {
-    public void Start()
+    private void Awake()
     {
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;
+    }
+
+    public void Start()
+    {
         LevelEventSystem.SendLoadMainMenu();
     }
 }

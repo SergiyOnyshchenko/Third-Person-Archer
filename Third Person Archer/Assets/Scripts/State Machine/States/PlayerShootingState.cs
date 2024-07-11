@@ -10,10 +10,20 @@ public class PlayerShootingState : ProcessState, IActorIniter
     [SerializeField] private ActorController[] _enemies;
     [SerializeField] private Transform _lookAtPoint;
     [SerializeField] private float _delay = 0.1f;
-
+    [SerializeField] private bool _hideEnemiesBeforeShooting = true;
     private AttackInput _attackInput;
     private ActorController _player;
     private ShootingTargets _shootingTargets;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        if (_hideEnemiesBeforeShooting)
+        {
+            HideEnemiesBeforeSgooting();
+        }
+    }
 
     public void InitActor(ActorController actor)
     {
@@ -54,6 +64,8 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
         foreach (var data in shootingData)
             data.InitShootingTargets(_enemies);
+
+
     }
 
     private void ActivateEnemies()
@@ -109,5 +121,32 @@ public class PlayerShootingState : ProcessState, IActorIniter
         }
 
         _enemies = allEnemies.ToArray();
+    }
+
+    private void HideEnemiesBeforeSgooting()
+    {
+        int index = transform.GetSiblingIndex();
+
+        if (index != 0)
+        {
+            Transform previousState = transform.parent.GetChild(index - 1);
+
+            if (previousState.TryGetComponent(out MainState state))
+            {
+                ShowStateNextEnemies showStateNextEnemiesstate = gameObject.AddComponent<ShowStateNextEnemies>();
+                showStateNextEnemiesstate.Init(_enemies, state, true);
+            }
+        }
+
+        if (index != transform.parent.childCount - 1)
+        {
+            Transform nextState = transform.parent.GetChild(index + 1);
+
+            if (nextState.TryGetComponent(out MainState state))
+            {
+                ShowStateNextEnemies showStateNextEnemiesstate = gameObject.AddComponent<ShowStateNextEnemies>();
+                showStateNextEnemiesstate.Init(_enemies, state, false);
+            }
+        }
     }
 }
