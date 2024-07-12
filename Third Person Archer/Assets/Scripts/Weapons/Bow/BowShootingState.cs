@@ -1,11 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using CustomAnimation.FPV;
-using CustomAnimation.Body;
-using DG.Tweening;
 using Actor;
-using Input = UnityEngine.Input;
 
 public class BowShootingState : ProcessState, IActorIniter
 {

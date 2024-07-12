@@ -131,7 +131,7 @@ namespace MoreMountains.Tools
         {
             if (int.TryParse(args[1], out int framerate))
             {
-                Application.targetFrameRate = framerate;
+                /*Application.targetFrameRate = framerate;*/
                 MMDebug.DebugLogTime("Framerate set to " + framerate, "#FFC400", 3, true);
             }
         }

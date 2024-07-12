@@ -44,7 +44,7 @@ namespace MoreMountains.Tools
         protected virtual void UpdateSettings()
         {
             QualitySettings.vSyncCount = VSyncCount;
-            Application.targetFrameRate = TargetFPS;
+            /*Application.targetFrameRate = TargetFPS;*/
             OnDemandRendering.renderFrameInterval = RenderFrameInterval;
         }
 	}

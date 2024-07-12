@@ -19,20 +19,26 @@ namespace Actor.Properties
             if (actor.TryGetSystem(out W controller))
             {
                 _shootEvent = controller;
+                _shootEvent.OnShooted -= Decrease;
                 _shootEvent.OnShooted += Decrease;
-            } 
+            }
         }
 
         private void OnEnable()
         {
-            if(_shootEvent != null)
+            if (_shootEvent != null)
+            {
+                _shootEvent.OnShooted -= Decrease;
                 _shootEvent.OnShooted += Decrease;
+            }
         }
 
         private void OnDisable()
         {
             if (_shootEvent != null)
+            {
                 _shootEvent.OnShooted -= Decrease;
+            }
         }
 
         public void Decrease()
