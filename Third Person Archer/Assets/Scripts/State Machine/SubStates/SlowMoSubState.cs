@@ -37,7 +37,6 @@ public class SlowMoSubState : SubState, IActorIniter
 
     public void ResetSlowMo()
     {
-        UnityEngine.Debug.Log("Reset Slomo");
         OnReset?.Invoke();
     }
 }
