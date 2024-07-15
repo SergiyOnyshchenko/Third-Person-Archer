@@ -12,6 +12,6 @@ public class PreGameIniter : MonoBehaviour
 
     public void Start()
     {
-        LevelEventSystem.SendLoadMainMenu();
+        LevelEventSystem.SendLoadPreloader();
     }
 }

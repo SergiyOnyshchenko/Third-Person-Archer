@@ -6,11 +6,13 @@ using UnityEngine;
 public class LevelDatabase : ScriptableObject
 {
     [SerializeField] private LevelData _mainMenu;
+    [SerializeField] private LevelData _preloadLevel;
     [SerializeField] private LevelData[] _levels;
     private int _currentLevelIndex;
     private string _saveName = "CurrentLevel";
     public LevelData CurrentLevel => _levels[_currentLevelIndex];
     public LevelData MainMenu { get => _mainMenu; }
+    public LevelData PreloadLevel { get => _preloadLevel; }
 
     public void SetNextLevel()
     {
