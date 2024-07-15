@@ -39,11 +39,19 @@ public class RagdollControll : MonoBehaviour
 
         IEnumerator Delay()
         {
-            yield return new WaitForSecondsRealtime(0.1f);
             foreach (Rigidbody rigidbody in _allRigidbodys)
             {
                 rigidbody.isKinematic = false;
-                rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+                rigidbody.velocity = Vector3.zero;
+                /*rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;*/
+            }
+            for (int i = 0; i < 7; i++)
+            {
+                yield return null;
+                foreach (Rigidbody rigidbody in _allRigidbodys)
+                {
+                    rigidbody.velocity = Vector3.zero;
+                }
             }
         }
 
