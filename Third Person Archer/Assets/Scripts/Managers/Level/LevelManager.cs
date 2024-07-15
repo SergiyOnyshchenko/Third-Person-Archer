@@ -28,6 +28,7 @@ public class LevelManager : MonoBehaviour
         LevelEventSystem.OnLoadNextLevel.AddListener(LoadNextLevel);
         LevelEventSystem.OnReloadLevel.AddListener(ReloadLevel);
         LevelEventSystem.OnLoadMainMenu.AddListener(LoadMainMenu);
+        LevelEventSystem.OnLoadPreloader.AddListener(LoadPreloader);
     }
 
     private void OnDisable()
@@ -36,6 +37,7 @@ public class LevelManager : MonoBehaviour
         LevelEventSystem.OnLoadNextLevel.RemoveListener(LoadNextLevel);
         LevelEventSystem.OnReloadLevel.RemoveListener(ReloadLevel);
         LevelEventSystem.OnLoadMainMenu.RemoveListener(LoadMainMenu);
+        LevelEventSystem.OnLoadPreloader.RemoveListener(LoadPreloader);
     }
 
     public void LoadLevel(int index)
@@ -59,6 +61,12 @@ public class LevelManager : MonoBehaviour
     {
         LoadLevel(_database.MainMenu);
     }
+
+    public void LoadPreloader()
+    {
+        LoadLevel(_database.PreloadLevel);
+    }
+
 
     private void LoadLevel(LevelData data)
     {
