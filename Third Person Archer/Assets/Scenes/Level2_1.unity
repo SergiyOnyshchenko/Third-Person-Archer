@@ -15,12 +15,12 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 1
-  m_FogColor: {r: 0.6710573, g: 0.89557177, b: 0.9433962, a: 1}
+  m_FogColor: {r: 0.71827453, g: 0.83835757, b: 0.94509804, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.025
   m_LinearFogStart: 0
   m_LinearFogEnd: 301.19
-  m_AmbientSkyColor: {r: 0.40868637, g: 0.4892035, b: 0.754717, a: 1}
+  m_AmbientSkyColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -32,13 +32,13 @@ RenderSettings:
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
-  m_DefaultReflectionMode: 0
+  m_DefaultReflectionMode: 1
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.4667586, g: 0.56064457, b: 0.6078165, a: 1}
+  m_IndirectSpecularColor: {r: 0.46621823, g: 0.55998576, b: 0.60710865, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -194,6 +194,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 92fec4fdb8924674baffefe54058dd91, type: 3}
       propertyPath: m_Name
       value: Mountain (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 92fec4fdb8924674baffefe54058dd91, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 92fec4fdb8924674baffefe54058dd91, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -1193,6 +1197,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 92fec4fdb8924674baffefe54058dd91, type: 3}
       propertyPath: m_Name
       value: Mountain (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 92fec4fdb8924674baffefe54058dd91, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 92fec4fdb8924674baffefe54058dd91, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -3421,7 +3429,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2460829577384519157, guid: 0f5aee907867e2348ad4afce8b33f4f5, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.082052395
+      value: -0.08205239
       objectReference: {fileID: 0}
     - target: {fileID: 7734500602339420446, guid: 0f5aee907867e2348ad4afce8b33f4f5, type: 3}
       propertyPath: m_Follow
@@ -4274,7 +4282,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.040470302, y: 0.89308304, z: -0.082052395, w: 0.44049102}
+  m_LocalRotation: {x: 0.040470302, y: 0.89308304, z: -0.08205239, w: 0.44049102}
   m_LocalPosition: {x: -14.6, y: 5.63, z: 14.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7124,6 +7132,10 @@ PrefabInstance:
       value: Mountain
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 92fec4fdb8924674baffefe54058dd91, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 92fec4fdb8924674baffefe54058dd91, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -7377,10 +7389,10 @@ Terrain:
   m_TreeMaximumFullLODCount: 50
   m_DetailObjectDistance: 80
   m_DetailObjectDensity: 1
-  m_HeightmapPixelError: 5
-  m_SplatMapDistance: 1000
+  m_HeightmapPixelError: 200
+  m_SplatMapDistance: 20
   m_HeightmapMaximumLOD: 0
-  m_ShadowCastingMode: 2
+  m_ShadowCastingMode: 1
   m_DrawHeightmap: 1
   m_DrawInstanced: 0
   m_DrawTreesAndFoliage: 1
@@ -7397,7 +7409,7 @@ Terrain:
   m_GroupingID: 0
   m_RenderingLayerMask: 1
   m_AllowAutoConnect: 1
-  m_EnableHeightmapRayTracing: 1
+  m_EnableHeightmapRayTracing: 0
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
 --- !u!4 &1896088839
@@ -9138,15 +9150,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1861903661420353567, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.23996422
+      value: 0.2399642
       objectReference: {fileID: 0}
     - target: {fileID: 1861903661420353567, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.025513485
+      value: -0.0255135
       objectReference: {fileID: 0}
     - target: {fileID: 1861903661420353567, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.0063089035
+      value: 0.006308907
       objectReference: {fileID: 0}
     - target: {fileID: 1937046249484685496, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: m_LocalPosition.x

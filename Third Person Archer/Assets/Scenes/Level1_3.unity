@@ -17,10 +17,10 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0.98475015, g: 0.4078431, b: 1, a: 1}
   m_FogMode: 2
-  m_FogDensity: 0.015
+  m_FogDensity: 0.007
   m_LinearFogStart: 0
   m_LinearFogEnd: 301.19
-  m_AmbientSkyColor: {r: 0.61035866, g: 0.43559986, b: 0.7169812, a: 1}
+  m_AmbientSkyColor: {r: 0.7176471, g: 0.7176471, b: 0.7176471, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1.25
@@ -32,7 +32,7 @@ RenderSettings:
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
-  m_DefaultReflectionMode: 0
+  m_DefaultReflectionMode: 1
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
@@ -2732,10 +2732,10 @@ Terrain:
   m_TreeMaximumFullLODCount: 50
   m_DetailObjectDistance: 80
   m_DetailObjectDensity: 1
-  m_HeightmapPixelError: 5
-  m_SplatMapDistance: 1000
+  m_HeightmapPixelError: 200
+  m_SplatMapDistance: 20
   m_HeightmapMaximumLOD: 0
-  m_ShadowCastingMode: 2
+  m_ShadowCastingMode: 1
   m_DrawHeightmap: 1
   m_DrawInstanced: 0
   m_DrawTreesAndFoliage: 1
@@ -2752,7 +2752,7 @@ Terrain:
   m_GroupingID: 0
   m_RenderingLayerMask: 1
   m_AllowAutoConnect: 1
-  m_EnableHeightmapRayTracing: 1
+  m_EnableHeightmapRayTracing: 0
   m_EnableTreesAndDetailsRayTracing: 0
   m_TreeMotionVectorModeOverride: 3
 --- !u!4 &450607284
@@ -2814,7 +2814,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 486700264}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.07712999, y: 0.91990995, z: -0.30757186, w: -0.23068644}
+  m_LocalRotation: {x: -0.07713, y: 0.91990995, z: -0.30757186, w: -0.23068641}
   m_LocalPosition: {x: 20.09, y: 19.22, z: 18.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5305,7 +5305,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5163938449975845879, guid: 0f5aee907867e2348ad4afce8b33f4f5, type: 3}
   m_PrefabInstance: {fileID: 1739619954}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1268402944
+--- !u!114 &1268402940
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5332,7 +5332,7 @@ MonoBehaviour:
   m_BiasX: 0
   m_BiasY: 0
   m_CenterOnActivate: 1
---- !u!114 &1268402945
+--- !u!114 &1268402941
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8217,10 +8217,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5163938449975845879, guid: 0f5aee907867e2348ad4afce8b33f4f5, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1268402945}
+      addedObject: {fileID: 1268402941}
     - targetCorrespondingSourceObject: {fileID: 5163938449975845879, guid: 0f5aee907867e2348ad4afce8b33f4f5, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1268402944}
+      addedObject: {fileID: 1268402940}
   m_SourcePrefab: {fileID: 100100000, guid: 0f5aee907867e2348ad4afce8b33f4f5, type: 3}
 --- !u!1 &1744392441
 GameObject:
@@ -12115,11 +12115,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9183192312429834175, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -6.027819e-19
+      value: -6.028115e-19
       objectReference: {fileID: 0}
     - target: {fileID: 9183192312429834175, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 5.9235205e-19
+      value: 5.923811e-19
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
