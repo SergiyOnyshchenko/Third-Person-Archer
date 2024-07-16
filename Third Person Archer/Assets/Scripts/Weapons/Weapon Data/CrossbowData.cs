@@ -30,7 +30,7 @@ public class CrossbowData : ProjectileWeaponData
                     }
                     else
                     {
-                        MeshRenderer[] renderers = holder.Pivot.GetComponentsInChildren<MeshRenderer>();
+                        SkinnedMeshRenderer[] renderers = holder.Pivot.GetComponentsInChildren<SkinnedMeshRenderer>(true);
 
                         foreach (var renderer in renderers)
                             renderer.material = crossbowSkinData.FpvMaterial.Value;

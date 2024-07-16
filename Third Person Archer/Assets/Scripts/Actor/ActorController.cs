@@ -91,7 +91,7 @@ namespace Actor
 
         public void InitSystems()
         {
-            _systems = GetComponentsInChildren<System>(true);
+            _systems = GetComponentsInChildren<System>();
         }
 
         private void InitChilds()
