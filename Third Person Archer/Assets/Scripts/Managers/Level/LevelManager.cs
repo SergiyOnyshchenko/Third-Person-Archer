@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     [SerializeField] private LevelDatabase _database;
+    [SerializeField] private bool _delayedLoading = false;
     public LevelData CurrentLevel => _database.CurrentLevel;
     public static LevelManager Instance;
 
@@ -17,9 +18,18 @@ public class LevelManager : MonoBehaviour
         else
             Destroy(this);
 
-        _database.Load();
+        if(!_delayedLoading) _database.Load();
 
         Application.targetFrameRate = 60;
+    }
+
+    private IEnumerator Start()
+    {
+        if (_delayedLoading)
+        {
+            yield return new WaitForSeconds(0.5f);
+            _database.Load();
+        }
     }
 
     private void OnEnable()
