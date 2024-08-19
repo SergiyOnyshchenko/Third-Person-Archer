@@ -24,6 +24,11 @@ namespace Actor
                 _aniamtionEventReciever.OnAnimationEvent.RemoveListener(TryInvokeAnimationEvent);
         }
 
+        public void Enable(bool value)
+        {
+            _animator.enabled = value;
+        }
+
         public void SetAnimator(UnityEngine.Animator animator)
         {
             _animator = animator;

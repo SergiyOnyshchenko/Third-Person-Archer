@@ -17,7 +17,7 @@ namespace Actor
         {
             _transform = actor.transform;
 
-            if(actor.TryGetProperty(out RotateSpeed speed))
+            if (actor.TryGetProperty(out RotateSpeed speed))
                 _speed = speed;
 
             if (actor.TryGetProperty(out RotateDuration duration))
@@ -42,6 +42,12 @@ namespace Actor
         public void RotateToInstant(Quaternion targetRotation)
         {
             _transform.DORotateQuaternion(targetRotation, _duration.Value).SetEase(_ease.Value);
+        }
+
+        public void StopRotation()
+        {
+            DOTween.Kill(_transform);
+            DOTween.Kill(this);
         }
     }
 }

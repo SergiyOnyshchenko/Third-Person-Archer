@@ -95,9 +95,14 @@ public class Projectile : MonoBehaviour
         transform.position = collision.contacts[0].point;
         //transform.position -= transform.forward * 0.6f;
 
+        if (collision.collider.TryGetComponent(out ITriggerReciever trigger))
+        {
+            trigger.ReciveTrigger("Burn", gameObject);
+        }
+
         if (collision.collider.TryGetComponent(out IDamageable damager))
         {
-            damager.DoDamage(Mathf.RoundToInt(_damage * _power));
+            //damager.DoDamage(Mathf.RoundToInt(_damage * _power));
             OnTargetHited?.Invoke();
         }
 

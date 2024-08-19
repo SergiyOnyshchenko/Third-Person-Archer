@@ -29,5 +29,6 @@ namespace Actor
             _currentBowView = _bowView[index];
             _currentBowView.Model.SetActive(true);
         }
+
     }
 }
