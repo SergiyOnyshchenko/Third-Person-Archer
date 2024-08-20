@@ -97,12 +97,12 @@ public class Projectile : MonoBehaviour
 
         if (collision.collider.TryGetComponent(out ITriggerReciever trigger))
         {
-            trigger.ReciveTrigger("Burn", gameObject);
+            //trigger.ReciveTrigger("Burn", gameObject);
         }
 
         if (collision.collider.TryGetComponent(out IDamageable damager))
         {
-            //damager.DoDamage(Mathf.RoundToInt(_damage * _power));
+            damager.DoDamage(Mathf.RoundToInt(_damage * _power));
             OnTargetHited?.Invoke();
         }
 
