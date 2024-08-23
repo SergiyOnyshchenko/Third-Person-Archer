@@ -8,6 +8,7 @@ using DG.Tweening;
 public class PlayerShootingState : ProcessState, IActorIniter
 {
     [SerializeField] private ActorController[] _enemies;
+    [SerializeField] private ActorController[] _hostages;
     [SerializeField] private Transform _lookAtPoint;
     [SerializeField] private float _delay = 0.1f;
     [SerializeField] private bool _hideEnemiesBeforeShooting = true;
@@ -55,6 +56,7 @@ public class PlayerShootingState : ProcessState, IActorIniter
     public override void Exit()
     {
         _attackInput.AllowAttack(false);
+
         base.Exit();
     }
 
@@ -63,9 +65,7 @@ public class PlayerShootingState : ProcessState, IActorIniter
         IShootingTargetsData[] shootingData = GetComponentsInChildren<IShootingTargetsData>();
 
         foreach (var data in shootingData)
-            data.InitShootingTargets(_enemies);
-
-
+            data.InitShootingTargets(_enemies, _hostages);
     }
 
     private void ActivateEnemies()
@@ -83,7 +83,11 @@ public class PlayerShootingState : ProcessState, IActorIniter
             if (enemy.TryGetInput(out PerceptionInput perception))
                 perception.ActivatePerception(targetsForEnemies);
 
-        if(_shootingTargets != null)
+        foreach (var hostage in _hostages)
+            if (hostage.TryGetInput(out PerceptionInput perception))
+                perception.ActivatePerception(targetsForEnemies);
+
+        if (_shootingTargets != null)
         {
             List<ITarget> targets = new List<ITarget>();
 

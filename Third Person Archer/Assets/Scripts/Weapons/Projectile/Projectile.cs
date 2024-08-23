@@ -70,6 +70,7 @@ public class Projectile : MonoBehaviour
         if (_state == ProjectileState.Flying)
         {
             _rigidbody.velocity = _direction * _speed * Time.fixedDeltaTime;
+            transform.rotation = Quaternion.LookRotation(_direction, Vector3.up);
         }
     }
 
