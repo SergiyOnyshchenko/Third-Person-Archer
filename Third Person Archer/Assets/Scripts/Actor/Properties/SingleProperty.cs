@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace Actor.Properties
         [SerializeField] protected T _value;
         private T _baseValue;
         public T Value { get => _value; }
+        public event Action OnPropertyChanged;
 
         private void Awake()
         {
@@ -18,11 +20,13 @@ namespace Actor.Properties
         public void SetValue(T value)
         {
             _value = value;
+            OnPropertyChanged?.Invoke();
         }
 
         public void ResetValue()
         {
             _value = _baseValue;
+            OnPropertyChanged?.Invoke();
         }
     }
 }

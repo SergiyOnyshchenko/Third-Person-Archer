@@ -4,7 +4,6 @@ using Actor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using EventSystem = Actor.EventSystem;
 
 public class ProjectileShooter : Shooter
 {
@@ -16,6 +15,10 @@ public class ProjectileShooter : Shooter
         onHited += SetTargetHitedEvent;
 
         Projectile arrow = Instantiate(_prefab, _shootPoint.position, _shootPoint.rotation);
+
+        if(_elementalAttackType != null)
+            arrow.SetElementalType(_elementalAttackType.Value);
+
         arrow.Shoot(direction, multiplier, onHited);
 
         OnShooted?.Invoke(arrow);

@@ -7,13 +7,10 @@ public class FrozenState : MainState, IActorIniter
 {
     public void InitActor(ActorController actor)
     {
-        
     }
 
     public override void Enter()
     {
         base.Enter();
-
-        Debug.Log("FROZEN");
     }
 }

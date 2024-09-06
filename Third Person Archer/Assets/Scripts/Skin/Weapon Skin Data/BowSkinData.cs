@@ -12,9 +12,5 @@ public class BowSkinData : WeaponSkinData
     {
         if (actor.TryGetSystem(out BowViewController bowSkinController))
             bowSkinController.SetView(FpvIndex.Value);
-
-        //if (actor.TryGetSystem(out PlayerSkinController playerSkinConroller))
-        //    if (playerSkinConroller.CurrentSkin.ThirdPerson.TryGetComponent(out BowHolder bowHolder))
-        //        bowHolder.SetWeapon(WeaponModel.Value);
     }
 }

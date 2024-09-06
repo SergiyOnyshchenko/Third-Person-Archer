@@ -15,7 +15,9 @@ public class Projectile : MonoBehaviour
     [Space]
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private Collider _collider;
+    [SerializeField] ElementalView _elementalView;
     private ProjectileState _state = ProjectileState.Loaded;
+    private ElementalType _elementalType = ElementalType.NULL;
     private Vector3 _direction;
     private float _power;
     public UnityEvent OnShooted = new UnityEvent();
@@ -41,6 +43,14 @@ public class Projectile : MonoBehaviour
         OnTargetHited.AddListener(onHited);
 
         PreCheckTargetDeath();
+    }
+
+    public void SetElementalType(ElementalType type)
+    {
+        _elementalType = type;
+
+        if(_elementalView != null)
+            _elementalView.SetCurrentView(type);
     }
 
     public bool PreCheckTargetDeath()
@@ -94,23 +104,52 @@ public class Projectile : MonoBehaviour
 
         transform.parent = collision.transform;
         transform.position = collision.contacts[0].point;
-        //transform.position -= transform.forward * 0.6f;
 
-        if (collision.collider.TryGetComponent(out ITriggerReciever trigger))
+        switch (_elementalType)
         {
-            //trigger.ReciveTrigger("Burn", gameObject);
-        }
+            case ElementalType.FIRE:
 
-        if (collision.collider.TryGetComponent(out IDamageable damager))
-        {
-            damager.DoDamage(Mathf.RoundToInt(_damage * _power));
-            OnTargetHited?.Invoke();
-        }
+                if (collision.collider.TryGetComponent(out ITriggerReciever fireTrigger))
+                {
+                    fireTrigger.ReciveTrigger("Burn", gameObject);
+                }
 
-        if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
-        {
-            Vector3 pushDirection = _direction + (Vector3.up * 0.25f);
-            StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
+                if (collision.collider.TryGetComponent(out IDamageable damager1))
+                {
+                    damager1.DoDamage(1);
+                    OnTargetHited?.Invoke();
+                }
+
+                break;
+            case ElementalType.FROST:
+
+                if (collision.collider.TryGetComponent(out ITriggerReciever frostTrigger))
+                {
+                    frostTrigger.ReciveTrigger("Freeze", gameObject);
+                }
+
+                if (collision.collider.TryGetComponent(out IDamageable damager2))
+                {
+                    damager2.DoDamage(1);
+                    OnTargetHited?.Invoke();
+                }
+
+                break;
+            default:
+
+                if (collision.collider.TryGetComponent(out IDamageable damager3))
+                {
+                    damager3.DoDamage(Mathf.RoundToInt(_damage * _power));
+                    OnTargetHited?.Invoke();
+                }
+
+                if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
+                {
+                    Vector3 pushDirection = _direction + (Vector3.up * 0.25f);
+                    StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
+                }
+
+                break;
         }
 
         OnHited?.Invoke();
