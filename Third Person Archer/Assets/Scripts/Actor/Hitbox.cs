@@ -7,15 +7,13 @@ using UnityEngine.UI;
 
 namespace Actor
 {
-    public class Hitbox : MonoBehaviour, IDamageReciever, IDamageable, ITriggerReciever, IDamageChecker, IMotionFreezeReceiver
+    public class Hitbox : MonoBehaviour, IDamageReciever, IDamageable, ITriggerReciever, IDamageChecker
     {
         [SerializeField, Range(0, 100)] private float _demageMultiplier = 1f;
         [SerializeField] private LayerMask _collisionMask;
         public event Action<int> OnDamaged;
         public event Action<string, GameObject> OnTriggered;
         public IDamageReciever.OnTryDamaged TryDamagedCallback { get; set; }
-
-        public IMotionFreezeReceiver.FreezeStateChange FreezeAction { get; set; }
 
         public UnityEvent<int> OnDamagedEvent = new UnityEvent<int>();
         public UnityEvent<Collision> OnCollided = new UnityEvent<Collision>();

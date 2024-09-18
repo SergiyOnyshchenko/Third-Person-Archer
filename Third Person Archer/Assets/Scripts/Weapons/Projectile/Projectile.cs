@@ -49,8 +49,17 @@ public class Projectile : MonoBehaviour
     {
         _elementalType = type;
 
-        if(_elementalView != null)
+        if (_elementalView != null)
             _elementalView.SetCurrentView(type);
+    }
+
+    public RaycastHit GetPredictiveHit()
+    {
+        RaycastHit hit;
+
+        Physics.Raycast(transform.position + _direction * 2, _direction, out hit, _hitLayers);
+
+        return hit;
     }
 
     public bool PreCheckTargetDeath()
