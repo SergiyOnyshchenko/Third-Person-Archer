@@ -57,8 +57,11 @@ public class RagdollControll : MonoBehaviour
 
         _isPhysical = true;
 
-        StartCoroutine(Delay());
-        StartCoroutine(Freeze());
+        if (gameObject.active)
+        {
+            StartCoroutine(Delay());
+            StartCoroutine(Freeze());
+        }
     }
 
     private IEnumerator Freeze()

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Actor;
+using DG.Tweening;
 
 public class OnHitTransition : StateTransition, IActorIniter
 {
@@ -28,6 +29,6 @@ public class OnHitTransition : StateTransition, IActorIniter
         if (health <= 0)
             return;
 
-        DoTransition();
+        DOVirtual.DelayedCall(0.1f, DoTransition);
     }
 }

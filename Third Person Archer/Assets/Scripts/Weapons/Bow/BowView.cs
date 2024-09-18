@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BowView : MonoBehaviour, IBowView
 {
     [SerializeField] private GameObject _model;
     [SerializeField] private BowSpring _bowSpring;
     [SerializeField] private GameObject _arrow;
+    public UnityEvent OnShooted = new UnityEvent();
 
     public GameObject Model => _model;
     public BowSpring BowSpring => _bowSpring;

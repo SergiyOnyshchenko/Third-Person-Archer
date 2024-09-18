@@ -5,5 +5,5 @@ using UnityEngine;
 
 public interface IShootingTargetsData 
 {
-    public void InitShootingTargets(ActorController[] targets);
+    public void InitShootingTargets(ActorController[] targets, ActorController[] hostages);
 }

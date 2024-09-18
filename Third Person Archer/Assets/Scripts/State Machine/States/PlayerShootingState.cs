@@ -8,8 +8,10 @@ using DG.Tweening;
 public class PlayerShootingState : ProcessState, IActorIniter
 {
     [SerializeField] private ActorController[] _enemies;
+    [SerializeField] private ActorController[] _hostages;
     [SerializeField] private Transform _lookAtPoint;
     [SerializeField] private float _delay = 0.1f;
+    [SerializeField] private bool _triggerEnemiesOnEnter;
     [SerializeField] private bool _hideEnemiesBeforeShooting = true;
     private AttackInput _attackInput;
     private ActorController _player;
@@ -50,11 +52,27 @@ public class PlayerShootingState : ProcessState, IActorIniter
             if (_lookAtPoint != null && _player.TryGetSystem(out BodyRotator rotator))
                 rotator.RotateToInstant(_lookAtPoint);
         });
+
+        ITarget playerTarget = null;
+
+        if (_player.TryGetSystem(out Actor.Target target))
+            playerTarget = target;
+
+        if (_triggerEnemiesOnEnter)
+        {
+            for (int i = 0; i < _enemies.Length; i++)
+            {
+                PerceptionInput input = _enemies[i].GetComponentInChildren<PerceptionInput>();
+                input.ActivatePerception(new ITarget[] { playerTarget });
+                input.ReciveSound("", 1f, _player.gameObject);
+            }
+        }
     }
 
     public override void Exit()
     {
         _attackInput.AllowAttack(false);
+
         base.Exit();
     }
 
@@ -63,9 +81,7 @@ public class PlayerShootingState : ProcessState, IActorIniter
         IShootingTargetsData[] shootingData = GetComponentsInChildren<IShootingTargetsData>();
 
         foreach (var data in shootingData)
-            data.InitShootingTargets(_enemies);
-
-
+            data.InitShootingTargets(_enemies, _hostages);
     }
 
     private void ActivateEnemies()
@@ -83,7 +99,11 @@ public class PlayerShootingState : ProcessState, IActorIniter
             if (enemy.TryGetInput(out PerceptionInput perception))
                 perception.ActivatePerception(targetsForEnemies);
 
-        if(_shootingTargets != null)
+        foreach (var hostage in _hostages)
+            if (hostage.TryGetInput(out PerceptionInput perception))
+                perception.ActivatePerception(targetsForEnemies);
+
+        if (_shootingTargets != null)
         {
             List<ITarget> targets = new List<ITarget>();
 

@@ -23,10 +23,16 @@ namespace Actor
         }
     }
 
-    public class ActionInput : Input
+    public class ActionInput : Input, IActorIniter
     {
         [SerializeField] private ActorAction[] _actorActions;
+        private ITriggerReciever[] _triggerRecievers;
         public UnityEvent<string> OnAction = new UnityEvent<string>();
+
+        private void OnDisable()
+        {
+            //Unsubscribe();
+        }
 
         public bool TryDoAction(string actionName)
         {
@@ -56,6 +62,29 @@ namespace Actor
             }
 
             return false;
+        }
+
+        public void InitActor(ActorController actor)
+        {
+            _triggerRecievers = actor.GetComponentsInChildren<ITriggerReciever>(true);
+            Subscribe();
+        }
+
+        private void Subscribe()
+        {
+            foreach (var reciever in _triggerRecievers)
+                reciever.OnTriggered += TryDoAction;
+        }
+
+        private void Unsubscribe()
+        {
+            foreach (var reciever in _triggerRecievers)
+                reciever.OnTriggered -= TryDoAction;
+        }
+
+        private void TryDoAction(string name, GameObject owner)
+        {
+            TryDoAction(name);
         }
     }
 }

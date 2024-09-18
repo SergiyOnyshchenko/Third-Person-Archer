@@ -14,7 +14,7 @@ namespace Actor
 
         private void OnEnable()
         {
-            if(_aniamtionEventReciever != null)
+            if (_aniamtionEventReciever != null)
                 _aniamtionEventReciever.OnAnimationEvent.AddListener(TryInvokeAnimationEvent);
         }
 
@@ -22,6 +22,11 @@ namespace Actor
         {
             if (_aniamtionEventReciever != null)
                 _aniamtionEventReciever.OnAnimationEvent.RemoveListener(TryInvokeAnimationEvent);
+        }
+
+        public void Enable(bool value)
+        {
+            _animator.enabled = value;
         }
 
         public void SetAnimator(UnityEngine.Animator animator)
@@ -32,6 +37,11 @@ namespace Actor
         public void SwapAnimatorController(RuntimeAnimatorController animatorController)
         {
             _animator.runtimeAnimatorController = animatorController;
+        }
+
+        public void SetSpeed(float speed)
+        {
+            _animator.speed = speed;
         }
 
         public void SetBool(string name, bool value)
@@ -57,9 +67,9 @@ namespace Actor
         {
             foreach (var myEvent in _events)
             {
-                if(myEvent.Name == name)
+                if (myEvent.Name == name)
                 {
-                    animEvent = myEvent; 
+                    animEvent = myEvent;
                     return true;
                 }
             }

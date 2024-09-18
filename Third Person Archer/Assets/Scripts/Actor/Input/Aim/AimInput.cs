@@ -6,6 +6,7 @@ namespace Actor
 {
     public abstract class AimInput : Input
     {
+        public abstract Vector3 GetAimRoot();
         public abstract Vector3 GetAimDirection();
         public abstract Transform GetAimTarget();
     }

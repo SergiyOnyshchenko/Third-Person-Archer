@@ -12,14 +12,22 @@ public class EnemiesDiedTransition : StateTransition, IShootingTargetsData
     [SerializeField] private float _delayAfter = 1;
     private IEnumerator _checkProcess;
     [SerializeField] private List<Health> _currentTargets = new List<Health>();
+    [SerializeField] private List<HostageController> _currentHostages = new List<HostageController>();
     public int TargetDeadCount => _allDead ? _currentTargets.Count : _minDeadCount;
 
-    public void InitShootingTargets(ActorController[] targets)
+    public void InitShootingTargets(ActorController[] targets, ActorController[] hostages)
     {
         foreach (var target in targets)
         {
             if (target.TryGetSystem(out Health health))
                 _currentTargets.Add(health);
+        }
+
+        foreach (var hostage in hostages)
+        {
+            if(hostage.TryGetSystem(out HostageController controller))
+                //if(controller.IsJailed)
+                    _currentHostages.Add(controller);
         }
     }
 
@@ -51,6 +59,16 @@ public class EnemiesDiedTransition : StateTransition, IShootingTargetsData
         {
             yield return null;
         }
+        
+        while (!AllHostagesSavedOrDead())
+        {
+            yield return null;
+        }
+
+        foreach (var hostage in _currentHostages)
+        {
+            hostage.Save();
+        }
 
         yield return new WaitForSeconds(_delayAfter);
 
@@ -70,4 +88,14 @@ public class EnemiesDiedTransition : StateTransition, IShootingTargetsData
         return count;
     }
 
+    private bool AllHostagesSavedOrDead()
+    {
+        foreach (var hostage in _currentHostages)
+        {
+            if (hostage.IsJailed && !hostage.IsDead)
+                return false;
+        }
+
+        return true;
+    }
 }

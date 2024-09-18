@@ -10,13 +10,21 @@ public abstract class Shooter : MonoBehaviour, IActorIniter
 {
     [SerializeField] protected Transform _shootPoint;
     private EventSystem _eventSystem;
+    protected ElementalAttackType _elementalAttackType;
+    protected AimInput _aimInput;
 
     public abstract void Shoot(Vector3 direction, float multiplier, UnityAction onHited);
 
     public void InitActor(ActorController actor)
     {
+        if(actor.TryGetInput(out AimInput aimInput))
+            _aimInput = aimInput;
+
         if (actor.TryGetSystem(out EventSystem eventSystem))
             _eventSystem = eventSystem;
+
+        if(actor.TryGetProperty(out ElementalAttackType elementalAttackType))
+            _elementalAttackType = elementalAttackType;
     }
 
     protected void SetTargetHitedEvent()

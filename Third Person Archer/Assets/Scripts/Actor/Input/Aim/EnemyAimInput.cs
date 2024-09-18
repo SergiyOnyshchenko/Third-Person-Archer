@@ -19,6 +19,11 @@ namespace Actor
                 return (aimTarget.position - _aimPoint.position).normalized;
         }
 
+        public override Vector3 GetAimRoot()
+        {
+            return _aimPoint.position;
+        }
+
         public override Transform GetAimTarget()
         {
             if (_perception == null)

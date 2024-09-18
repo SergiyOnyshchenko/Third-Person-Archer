@@ -10,7 +10,7 @@ namespace Actor
         private System[] _systems;
         private Property[] _properties;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             InitInputs();
             InitProperties();

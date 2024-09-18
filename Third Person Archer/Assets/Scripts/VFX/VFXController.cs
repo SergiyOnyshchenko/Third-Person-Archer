@@ -21,7 +21,7 @@ public class VFXController : MonoBehaviour
     {
         if (_visualEffect == null) return;
 
-        Debug.Log("Play VFX");
+        //Debug.Log("Play VFX");
         _visualEffect.gameObject.SetActive(true);
         _visualEffect.Play(true);
     }
@@ -35,7 +35,7 @@ public class VFXController : MonoBehaviour
     {
         if (_visualEffect == null) return;
 
-        Debug.Log("Stop VFX");
+        //Debug.Log("Stop VFX");
         
         _visualEffect.Stop(true);
         _visualEffect.gameObject.SetActive(false);

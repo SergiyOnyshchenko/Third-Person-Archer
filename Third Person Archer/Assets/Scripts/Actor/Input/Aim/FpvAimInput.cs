@@ -13,6 +13,11 @@ namespace Actor
             return _fpvCameraPoint.forward;
         }
 
+        public override Vector3 GetAimRoot()
+        {
+            return _fpvCameraPoint.position;
+        }
+
         public override Transform GetAimTarget()
         {
             return null;
@@ -21,7 +26,8 @@ namespace Actor
         public void InitActor(ActorController actor)
         {
             if (actor.TryGetSystem(out CameraPOV pov))
-                _fpvCameraPoint = pov.FpvProjector.transform;
+                //_fpvCameraPoint = pov.FpvProjector.transform;
+                _fpvCameraPoint = Camera.main.transform;
         }
     }
 }

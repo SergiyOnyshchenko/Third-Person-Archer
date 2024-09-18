@@ -17,7 +17,7 @@ namespace Actor
         private IEnumerator _timer;
         public UnityEvent OnActivated = new UnityEvent();
         public UnityEvent OnDeactivated = new UnityEvent();
-        
+
         public void InitActor(ActorController actor)
         {
             _actor = actor;
@@ -49,6 +49,12 @@ namespace Actor
 
         private void Activate(Projectile projectile)
         {
+            RaycastHit projectilePredictiveHit = projectile.GetPredictiveHit();
+            if (projectilePredictiveHit.collider != null && projectilePredictiveHit.collider.TryGetComponent(out ITriggerReciever triggerReciever))
+            {
+                triggerReciever.ReciveTrigger("TimeFreeze", projectile.gameObject);
+            }
+
             _camera.transform.SetParent(null);
 
             projectile.ChangeSpeed(3000);
