@@ -25,6 +25,7 @@ public class Projectile : MonoBehaviour
     public UnityEvent OnTargetHited = new UnityEvent();
 
     public float Speed => _speed;
+    public LayerMask HitLayers { get => _hitLayers;}
 
     private void Awake()
     {

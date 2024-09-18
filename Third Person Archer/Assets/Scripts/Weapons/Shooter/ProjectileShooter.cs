@@ -4,6 +4,8 @@ using Actor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+using static UnityEngine.UI.Image;
 
 public class ProjectileShooter : Shooter
 {
@@ -19,10 +21,26 @@ public class ProjectileShooter : Shooter
         if(_elementalAttackType != null)
             arrow.SetElementalType(_elementalAttackType.Value);
 
+        RaycastHit hit;
+
+        if (Physics.Raycast(_aimInput.GetAimRoot(), direction, out hit, Mathf.Infinity, arrow.HitLayers))
+        {
+            direction = (hit.point - _shootPoint.position).normalized;
+        }
+        else
+        {
+            direction = (PointAlongDirection(_aimInput.GetAimRoot(), direction, 100f) - _shootPoint.position).normalized;
+        }
+
         arrow.Shoot(direction, multiplier, onHited);
 
         OnShooted?.Invoke(arrow);
     }
+
+   private Vector3 PointAlongDirection(Vector3 origin, Vector3 direction, float distance)
+   {
+        return origin + direction.normalized * distance;
+   }
 
     public void SetProjectile(Projectile projectile)
     {

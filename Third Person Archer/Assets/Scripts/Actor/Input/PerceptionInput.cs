@@ -52,7 +52,6 @@ namespace Actor
 
         public void ReciveSound(string name, float power, GameObject owner)
         {
-            Debug.Log(IsActive);
             if (!IsActive)
                 return;
 
