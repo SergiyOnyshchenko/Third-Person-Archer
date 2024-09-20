@@ -50,7 +50,6 @@ namespace Actor
 
         private void Shoot()
         {
-            UnityEngine.Debug.Log("Shoot");
             _tween?.Kill();
 
             _attackInput.OnAttackRelease.RemoveListener(Shoot);
