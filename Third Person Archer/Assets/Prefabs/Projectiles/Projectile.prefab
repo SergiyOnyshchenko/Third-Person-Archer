@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 501056795912534197}
   - component: {fileID: 3244016391885278285}
   - component: {fileID: 7014120761498455768}
+  - component: {fileID: 4399033226051372090}
   m_Layer: 0
   m_Name: Projectile
   m_TagString: Untagged
@@ -172,9 +173,13 @@ MonoBehaviour:
   _hitLayers:
     serializedVersion: 2
     m_Bits: 4294967295
+  _enemyLayers:
+    serializedVersion: 2
+    m_Bits: 0
   _destroyAfterHit: 0
   _rigidbody: {fileID: 3244016391885278285}
   _collider: {fileID: 7014120761498455768}
+  _elementalTrigger: {fileID: 0}
   _elementalView: {fileID: 2298258161005715019}
   OnShooted:
     m_PersistentCalls:
@@ -451,6 +456,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.10898137, y: 0.09793571, z: 0.73955274}
   m_Center: {x: 0, y: 0, z: 0.37419593}
+--- !u!114 &4399033226051372090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753321294188073216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b012687bf22165a44944c0704f37536a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _lifetime: 8
+  _onStart: 1
 --- !u!1 &2569755039943301844
 GameObject:
   m_ObjectHideFlags: 0

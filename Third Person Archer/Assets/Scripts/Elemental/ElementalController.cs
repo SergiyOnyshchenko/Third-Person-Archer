@@ -13,6 +13,7 @@ namespace Actor
         private ShootingTargets _shootingTargets;
         private ElementalArrowsCount _elementalArrowsCount;
         private ElementalAttackType _elementalAttackType;
+        private IsShootingState _isShootingState;
         public int ElementalArrowsCount { get => _elementalArrowsCount.Value; }
         public UnityEvent OnElementSelected = new UnityEvent();
         public UnityEvent OnShowView = new UnityEvent();
@@ -25,6 +26,9 @@ namespace Actor
 
             if (actor.TryGetProperty(out ElementalArrowsCount elementalArrowsCount))
                 _elementalArrowsCount = elementalArrowsCount;
+
+            if (actor.TryGetProperty(out IsShootingState isShootingState))
+                _isShootingState = isShootingState;
 
             if (actor.TryGetProperty(out ShootingTargets shootingTargets))
                 _shootingTargets = shootingTargets;
@@ -43,7 +47,7 @@ namespace Actor
             if (_shootingTargets == null)
                 return;
 
-            if (_mana.Ratio == 1 && _shootingTargets.Count > 0 && !_isViewActive)
+            if (_mana.Ratio == 1 && _shootingTargets.Count > 0 && !_isViewActive && _isShootingState.Value)
             {
                 ShowElementalSelectionView();
             }
@@ -57,7 +61,7 @@ namespace Actor
             _mana.Reset();
             _elementalAttackType.SetValue(type);
 
-            _elementalArrowsCount.SetValue(3);
+            _elementalArrowsCount.SetValue(1);
 
             OnElementSelected?.Invoke();
             OnHideView?.Invoke();
