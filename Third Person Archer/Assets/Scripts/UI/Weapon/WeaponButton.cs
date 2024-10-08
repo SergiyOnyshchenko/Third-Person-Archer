@@ -28,7 +28,15 @@ public class WeaponButton : MonoBehaviour, IActorIniter
     public void InitActor(ActorController actor)
     {
         if(actor.TryGetSystem(out WeaponInventory inventory))
+        {
             _weaponEquipper = inventory;
+
+            WeaponData data = inventory.WeaponsData.GetWeaponByType(_weaponType);
+            if(data == null) 
+            { 
+                gameObject.SetActive(false);
+            }
+        }
     }
 
     private void TryEquipWeapon()

@@ -11,12 +11,16 @@ public class BowData : ProjectileWeaponData
 
     public override void Equip(ActorController actor)
     {
+        base.Equip(actor);
+
         BowSkinData bowSkinData = (BowSkinData) SkinData;
 
         if (actor.TryGetSystem(out BowController bowController))
         {
             if (bowController.TryGetComponent(out ProjectileShooter shooter))
                 shooter.SetProjectile(Projectile);
+
+            bowController.SetReloadMult(ReloadSpeedMult);
         }
 
         if (actor.TryGetPropertys(out WeaponHolder[] holders))

@@ -7,6 +7,11 @@ public class LevelData : ScriptableObject
 {
     [SerializeField] private string _name;
     [SerializeField] private SceneReference _scene;
+    [Space]
+    [SerializeField] private LevelSequenceData _sequence;
+    [SerializeField] private bool _isBoss;
     public string Name { get => _name; }
     public SceneReference Scene { get => _scene; }
+    public LevelSequenceData Sequence { get => _sequence; }
+    public bool IsBoss { get => _isBoss; }
 } 

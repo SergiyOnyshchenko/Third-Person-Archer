@@ -24,7 +24,7 @@ public class CrossbowReloadState : ProcessState, IActorIniter
 
     private void Reload()
     {
-        _crossbowController.Reload();
-        DOVirtual.DelayedCall(0.5f, FinishProcess);
+        _crossbowController.Reload(FinishProcess);
+        //DOVirtual.DelayedCall(0.5f, FinishProcess);
     }
 }

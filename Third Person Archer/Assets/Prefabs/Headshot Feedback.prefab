@@ -177,6 +177,7 @@ MonoBehaviour:
   FeedbacksList:
   - rid: 3543289568739459110
   - rid: 3543289568739459111
+  - rid: 3543289575948681216
   - rid: 3543289568739459112
   KeepPlayModeChanges: 0
   PerformanceMode: 0
@@ -259,8 +260,8 @@ MonoBehaviour:
           ButtonText: Debug Stop Sound
         PlayMethod: 1
         PoolSize: 10
-        MinVolume: 1.15
-        MaxVolume: 1.36
+        MinVolume: 2
+        MaxVolume: 2
         MinPitch: 0.85
         MaxPitch: 1.22
         SfxAudioMixerGroup: {fileID: 0}
@@ -303,11 +304,50 @@ MonoBehaviour:
           ButtonText: Debug Stop Sound
         PlayMethod: 1
         PoolSize: 10
-        MinVolume: 1.15
-        MaxVolume: 1.36
+        MinVolume: 3
+        MaxVolume: 3
         MinPitch: 0.85
         MaxPitch: 1.22
         SfxAudioMixerGroup: {fileID: 0}
+    - rid: 3543289575948681216
+      type: {class: MMF_Pause, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
+      data:
+        Active: 1
+        UniqueID: -1612452297
+        Label: Pause
+        Channel: 0
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        Owner: {fileID: 3229669827404991146}
+        DebugActive: 0
+        PauseDuration: 0.2
+        RandomizePauseDuration: 0
+        MinPauseDuration: 1
+        MaxPauseDuration: 3
+        RandomizeOnEachPlay: 1
+        ScriptDriven: 0
+        AutoResume: 0
+        AutoResumeAfter: 0.25
 --- !u!1001 &7780005267477476081
 PrefabInstance:
   m_ObjectHideFlags: 0

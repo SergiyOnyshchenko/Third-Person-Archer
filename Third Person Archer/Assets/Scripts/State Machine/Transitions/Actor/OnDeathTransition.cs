@@ -30,6 +30,9 @@ namespace Actor
 
         private void Update()
         {
+            if (_health == null)
+                return;
+
             if (_health.Value == 0)
                 DoTransition();
         }

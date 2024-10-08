@@ -14,6 +14,8 @@ namespace Actor
         private ActorController _actor;
         private PlayerSkinController _skinController;
         public WeaponType EquippedWeaponType { get => _equipedWeapon.Type; }
+        public WeaponInventoryData WeaponsData { get => _weapons; set => _weapons = value; }
+
         public UnityEvent OnWeaponChanged = new UnityEvent();
 
         private void OnEnable()
@@ -29,9 +31,10 @@ namespace Actor
         public void InitActor(ActorController actor)
         {
             _actor = actor;
-            Equip(_weapons.Weapons[_weaponIndex]);
 
-            if(actor.TryGetSystem(out PlayerSkinController skinController))
+            Equip(_weapons.Weapons[0]);
+
+            if (actor.TryGetSystem(out PlayerSkinController skinController))
             {
                 _skinController = skinController;
                 _skinController.OnSkinChanged.AddListener(Equip);

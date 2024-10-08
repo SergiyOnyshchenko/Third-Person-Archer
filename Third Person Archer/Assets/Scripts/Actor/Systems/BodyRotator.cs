@@ -29,10 +29,15 @@ namespace Actor
 
         public void RotateToInstant(Transform lookTarget)
         {
+            RotateToInstant(lookTarget.position);
+        }
+
+        public void RotateToInstant(Vector3 lookTarget)
+        {
             Vector3 myPosition = _transform.position;
             myPosition.y = 0;
 
-            Vector3 targetPosition = lookTarget.transform.position;
+            Vector3 targetPosition = lookTarget;
             targetPosition.y = 0;
 
             Quaternion targetRotation = Quaternion.LookRotation(targetPosition - myPosition);
@@ -41,6 +46,8 @@ namespace Actor
 
         public void RotateToInstant(Quaternion targetRotation)
         {
+            StopRotation();
+
             _transform.DORotateQuaternion(targetRotation, _duration.Value).SetEase(_ease.Value);
         }
 

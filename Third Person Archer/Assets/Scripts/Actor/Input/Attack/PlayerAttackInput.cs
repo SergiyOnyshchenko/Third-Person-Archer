@@ -7,7 +7,7 @@ namespace Actor
 {
     public class PlayerAttackInput : AttackInput
     {
-        private float _delay = 0.15f;
+        private float _delay = 0.1f;
         private float _timer;
 
         private void Update()
@@ -17,7 +17,7 @@ namespace Actor
 
             if (UnityEngine.Input.GetMouseButton(0))
             {
-                _timer += Time.deltaTime;
+                _timer += Time.unscaledDeltaTime;
 
                 if (!_isHold && _timer >= _delay)
                 {

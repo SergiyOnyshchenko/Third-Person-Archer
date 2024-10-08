@@ -49,6 +49,11 @@ public class Projectile : MonoBehaviour
         PreCheckTargetDeath();
     }
 
+    public void SetDamage(int damage)
+    {
+        _damage = damage;
+    }
+
     public void SetElementalType(ElementalType type)
     {
         _elementalType = type;

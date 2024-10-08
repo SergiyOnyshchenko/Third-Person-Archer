@@ -46,12 +46,12 @@ namespace Actor
             _crossbowAnimator.Shoot(onComplete);
         }
 
-        public void Reload()
+        public void Reload(UnityAction onReloaded)
         {
             if (!CanAttack())
                 return;
 
-            _crossbowAnimator.Reload(ShowArrow);
+            _crossbowAnimator.Reload(ShowArrow + onReloaded);
         }
 
         public void UpdateHands()
@@ -61,6 +61,11 @@ namespace Actor
 
             _fpv.RightHand.transform.position = _crossbowAnimator.RightHand.position;
             _fpv.RightHand.transform.rotation = _crossbowAnimator.RightHand.rotation;
+        }
+
+        public void SetReloadSpeedMult(float mult)
+        {
+            _crossbowAnimator.SetReloadSpeedMult(mult);
         }
 
         private void ShootProjectile()

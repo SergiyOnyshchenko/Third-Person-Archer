@@ -5,54 +5,30 @@ using TMPro;
 using Actor;
 using Actor.Properties;
 
-public class ElementalSkillCounterView : MonoBehaviour, IActorIniter
+public class ElementalSkillCounterView : MonoBehaviour
 {
-    [SerializeField] private ElementalType _type;
+    [SerializeField] private ElementalData _data;
     [SerializeField] private TextMeshProUGUI _countText;
-    [SerializeField] private GameObject _view;
-    private ElementalArrowsCount _elementalArrowsCount;
-    private ElementalAttackType _elementalAttackType;
-
-    public void InitActor(ActorController actor)
-    {
-        if (actor.TryGetProperty(out ElementalAttackType elementalAttackType))
-            _elementalAttackType = elementalAttackType;
-
-        if (actor.TryGetProperty(out ElementalArrowsCount elementalArrowsCount))
-            _elementalArrowsCount = elementalArrowsCount;
-
-        SetCountView();
-        _elementalArrowsCount.OnPropertyChanged += SetCountView;
-    }
+    public ElementalData Data { get => _data; }
 
     private void OnEnable()
     {
-        if (_elementalAttackType == null || _elementalAttackType == null)
-            return;
-
         SetCountView();
-        _elementalArrowsCount.OnPropertyChanged += SetCountView;
+        _data.OnArrowCountModifyed.AddListener(SetCountView);
     }
 
     private void OnDisable()
     {
-        if (_elementalAttackType == null || _elementalAttackType == null)
-            return;
+        _data.OnArrowCountModifyed.RemoveListener(SetCountView);
+    }
 
-        _elementalArrowsCount.OnPropertyChanged -= SetCountView;
+    public void TrySetElementalAttack()
+    {
+        _data.SendActivationEvent();
     }
 
     private void SetCountView()
     {
-        if (_elementalArrowsCount.Value > 0 && _elementalAttackType.Value == _type)
-        {
-            _view.SetActive(true);
-        }
-        else
-        {
-            _view.SetActive(false);
-        }
-
-        _countText.text = _elementalArrowsCount.Value.ToString();
+        _countText.text = _data.ArrowCount.ToString();
     }
 }

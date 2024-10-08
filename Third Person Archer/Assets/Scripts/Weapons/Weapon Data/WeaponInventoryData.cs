@@ -13,7 +13,7 @@ public class WeaponInventoryData : ScriptableObject
 
     public void Init(WeaponData[] weapons)
     {
-        _weapons = weapons;
+        _weapons = weapons; 
     }
 
     public WeaponData GetWeaponByType(WeaponType type)
@@ -27,6 +27,7 @@ public class WeaponInventoryData : ScriptableObject
 
     public void EquipWeapon(WeaponData newWeapon)
     {
+        newWeapon.Equip(true);
         OnEquipped?.Invoke(newWeapon);
     }
 
@@ -36,7 +37,12 @@ public class WeaponInventoryData : ScriptableObject
         {
             if (_weapons[i].Type == newWeapon.Type)
             {
+                _weapons[i].Equip(false);
+
                 _weapons[i] = newWeapon;
+
+                _weapons[i].Equip(true);
+
                 SendEquipEvents(newWeapon);
 
                 return;
@@ -52,35 +58,10 @@ public class WeaponInventoryData : ScriptableObject
         SendEquipEvents(newWeapon);
 
         _weapons = newArray;
-
-        Save();
     }
 
     private void SendEquipEvents(WeaponData newWeapon)
     {
 
-    }
-
-    public void Save()
-    {
-        for (int i = 0; i < _weapons.Length; i++)
-            PlayerPrefs.SetString("WeaponInventory" + _name + i, _weapons[i].ID);
-    }
-
-    public string[] Load()
-    {
-        List<string> weapons = new List<string>();
-
-        for (int i = 0; i < _weapons.Length; i++)
-        {
-            string weaponID = PlayerPrefs.GetString("WeaponInventory" + _name + i, null);
-
-            if (string.IsNullOrEmpty(weaponID))
-                continue;
-
-            weapons.Add(weaponID);
-        }
-
-        return weapons.ToArray();   
     }
 }

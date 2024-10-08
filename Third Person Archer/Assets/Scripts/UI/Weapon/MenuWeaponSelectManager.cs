@@ -34,8 +34,11 @@ public class MenuWeaponSelectManager : MonoBehaviour
 
         _equipButton.onClick.RemoveListener(EquipCurrentSelected);
 
-        Equip(_equippedWeapon);
-        Select(_equippedWeapon);
+        if (_equippedWeapon != null)
+        {
+            Equip(_equippedWeapon);
+            Select(_equippedWeapon);
+        }
     }
 
     public IEnumerator Init()
