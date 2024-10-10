@@ -1972,6 +1972,7 @@ GameObject:
   - component: {fileID: 411970630}
   - component: {fileID: 411970629}
   - component: {fileID: 411970631}
+  - component: {fileID: 411970633}
   - component: {fileID: 411970632}
   m_Layer: 0
   m_Name: Cutscene
@@ -2164,6 +2165,18 @@ MonoBehaviour:
           m_CallState: 2
     - m_PersistentCalls:
         m_Calls:
+        - m_Target: {fileID: 411970633}
+          m_TargetAssemblyTypeName: SetNextLevelSubState, Assembly-CSharp
+          m_MethodName: Enter
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
         - m_Target: {fileID: 411970632}
           m_TargetAssemblyTypeName: LevelEventHandler, Assembly-CSharp
           m_MethodName: SendLoadNextLevel
@@ -2188,6 +2201,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6358079b294031e46ba29d88f4495208, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &411970633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411970628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42d6b280937b1054e832d5aa3bfbda22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &413455764
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2360,7 +2391,7 @@ AudioSource:
   m_GameObject: {fileID: 440595630}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3165942800488051908, guid: 7e984f512e89b60468e829489e8883e3, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -7081,7 +7112,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &963194227
 Camera:
   m_ObjectHideFlags: 0
@@ -9789,7 +9820,7 @@ AudioSource:
   m_GameObject: {fileID: 1378704573}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3165942800488051908, guid: 7e984f512e89b60468e829489e8883e3, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -9926,7 +9957,7 @@ AudioSource:
   m_GameObject: {fileID: 1416079056}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3165942800488051908, guid: 7e984f512e89b60468e829489e8883e3, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -11335,7 +11366,7 @@ AudioSource:
   m_GameObject: {fileID: 1631955894}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3165942800488051908, guid: 7e984f512e89b60468e829489e8883e3, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1

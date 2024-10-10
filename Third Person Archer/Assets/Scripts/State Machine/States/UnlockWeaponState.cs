@@ -1,26 +1,61 @@
 using System.Collections;
 using System.Collections.Generic;
 using Actor;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class UnlockWeaponState : MainState, IActorIniter
 {
     [Space]
-    [SerializeField] private WeaponData _weaponData;
+    [SerializeField] private WeaponProgressionData _progressionData;
+    [Header("View")]
+    [SerializeField] private WeaponUnlockView _view;
+    [Space]
+    [SerializeField] private GameObject _nextLevelButton;
+    [SerializeField] private GameObject _menuButton;
     private ActorController _actor;
-
-    public UnityEvent<WeaponData> OnUnlocked = new UnityEvent<WeaponData>();
-    public UnityEvent OnAlreadyUnlocked = new UnityEvent();
-
+    
     public override void Enter()
     {
         base.Enter();
-        TryUnlockWeapon();
+
+        _progressionData.Load();
+
+        DOVirtual.DelayedCall(1f, () =>
+        {
+            if (_progressionData.TryGetCurrentInstance(out WeaponProgressionInstance instance))
+            {
+                _view.Init(instance.WeaponData, _progressionData.CurrentProgress);
+                _progressionData.IncreaseProgression(TryUnlockWeapon);
+            }
+            else
+            {
+                LevelEventSystem.SendLoadNextLevel();
+            }
+        });
     }
 
-    private void TryUnlockWeapon()
+    private void TryUnlockWeapon(WeaponData weaponData, float ratio)
     {
+        _view.Play(ratio);
+
+        if (ratio >= 1)
+        {
+            if (_actor.TryGetSystem(out WeaponInventory inventory))
+            {
+                inventory.WeaponsData.AddNewWeapon(weaponData);
+                inventory.WeaponsData.EquipWeapon(weaponData);
+            }
+
+            _menuButton.SetActive(true);
+        }
+        else
+        {
+            _nextLevelButton.SetActive(true);
+        }
+
+        /*
         if (_weaponData.State != WeaponState.Locked)
         {
             OnAlreadyUnlocked?.Invoke();
@@ -37,6 +72,7 @@ public class UnlockWeaponState : MainState, IActorIniter
 
             OnUnlocked?.Invoke(_weaponData);
         }
+        */
     }
 
     public void InitActor(ActorController actor)

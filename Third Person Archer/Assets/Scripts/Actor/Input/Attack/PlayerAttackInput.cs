@@ -15,6 +15,9 @@ namespace Actor
             if (!IsActive)
                 return;
 
+            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
+                return;
+
             if (UnityEngine.Input.GetMouseButton(0))
             {
                 _timer += Time.unscaledDeltaTime;

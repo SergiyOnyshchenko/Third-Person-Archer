@@ -16,8 +16,13 @@ public class LevelFlowTransitionSetter : MonoBehaviour
     {
         for (int i = 0; i < _states.Length - 1; i++)
         {
+            if (_states[i] == null)
+                continue;
+
             StateTransition transition = _states[i].GetComponentInChildren<StateTransition>();
-            transition.SetNextStateManualy(_states[i + 1]);
+
+            if(transition != null)
+                transition.SetNextStateManualy(_states[i + 1]);
         }
     }
 }
