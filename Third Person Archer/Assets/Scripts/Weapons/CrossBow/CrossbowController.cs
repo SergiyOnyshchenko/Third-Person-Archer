@@ -29,6 +29,12 @@ namespace Actor
                 _ammoCount = ammo;
         }
 
+        public void SetSettings()
+        {
+            if (_fpv.FpvAnimator.Properties.TryGetProperty(out SpringPower power))
+                power.SetValue(24f);
+        }
+
         public void ShowView()
         {
             _crossbow.SetActive(true);
@@ -39,11 +45,15 @@ namespace Actor
             if (!CanAttack())
                 return;
 
-            onComplete += HideArrow;
-            onComplete += ShootProjectile;
-            onComplete += InvokeShootEvent;
+            //onComplete += HideArrow;
+            //onComplete += ShootProjectile;
+            //onComplete += InvokeShootEvent;
 
-            _crossbowAnimator.Shoot(onComplete);
+            //_crossbowAnimator.Shoot(onComplete);
+
+            HideArrow();
+            ShootProjectile();
+            InvokeShootEvent();
         }
 
         public void Reload(UnityAction onReloaded)

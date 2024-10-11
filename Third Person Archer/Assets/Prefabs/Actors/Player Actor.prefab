@@ -1566,6 +1566,61 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.0040072203, y: 0.5865354, z: -0.15947783}
     m_Extent: {x: 0.9316672, y: 0.338816, z: 0.4649405}
   m_DirtyAABB: 0
+--- !u!1 &847914177966086071
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8357144624100178312}
+  - component: {fileID: 6361744625689314198}
+  m_Layer: 6
+  m_Name: OnDeath [Transition] (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8357144624100178312
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847914177966086071}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1999872763513616564}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6361744625689314198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847914177966086071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67f2b4cf5cf8e9b4ab5353d5cce485df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nextState: {fileID: 6069439577786494453}
+  _isTransit: 0
+  OnTransotion:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &895653301403036709
 GameObject:
   m_ObjectHideFlags: 0
@@ -1692,7 +1747,7 @@ GameObject:
   - component: {fileID: 2054417398251800358}
   - component: {fileID: 1214013792448426989}
   m_Layer: 6
-  m_Name: Sho Skill Counters
+  m_Name: Show Skill Counters
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3384,6 +3439,37 @@ MonoBehaviour:
         MoveToPosition: 0
         ActivateOnPlay: 0
         StopSystemOnInit: 1
+--- !u!1 &1697812157450323504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 617073356256478874}
+  m_Layer: 6
+  m_Name: Cross Bow Aim Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &617073356256478874
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1697812157450323504}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.07546773, y: 0.03244814, z: -0.028707245, w: 0.99620664}
+  m_LocalPosition: {x: -0.058, y: 0.024, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6718214412179371896}
+  m_LocalEulerAnglesHint: {x: -8.54, y: 4, z: -3.6}
 --- !u!1 &1719639483738900051
 GameObject:
   m_ObjectHideFlags: 0
@@ -3494,6 +3580,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3560576981751355898}
+  - {fileID: 617073356256478874}
   m_Father: {fileID: 3655386560634385862}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4999248213258259170
@@ -3510,7 +3597,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UpdateMode: 0
   PositionActive: 1
-  RotationActive: 0
+  RotationActive: 1
   ScaleActive: 0
   PositionWiggleProperties:
     WigglePermitted: 0
@@ -3545,8 +3632,8 @@ MonoBehaviour:
       m_RotationOrder: 4
     FrequencyMin: 0
     FrequencyMax: 1
-    AmplitudeMin: {x: 0, y: 0, z: 0}
-    AmplitudeMax: {x: 0.2, y: 0.2, z: 0.2}
+    AmplitudeMin: {x: 0.25, y: 0.25, z: 0.25}
+    AmplitudeMax: {x: 0.5, y: 0.5, z: 0.5}
     RelativeAmplitude: 1
     UniformValues: 0
     Curve:
@@ -3614,8 +3701,8 @@ MonoBehaviour:
     NoiseShiftMin: {x: 0, y: 0, z: 0}
     NoiseShiftMax: {x: 0, y: 0, z: 0}
   RotationWiggleProperties:
-    WigglePermitted: 1
-    WiggleType: 1
+    WigglePermitted: 0
+    WiggleType: 3
     UseUnscaledTime: 0
     StartWigglingAutomatically: 1
     SmoothPingPong: 1
@@ -3646,8 +3733,8 @@ MonoBehaviour:
       m_RotationOrder: 4
     FrequencyMin: 0
     FrequencyMax: 1
-    AmplitudeMin: {x: 0, y: 0, z: 0}
-    AmplitudeMax: {x: 1, y: 1, z: 1}
+    AmplitudeMin: {x: 30, y: 30, z: 30}
+    AmplitudeMax: {x: 45, y: 45, z: 45}
     RelativeAmplitude: 1
     UniformValues: 0
     Curve:
@@ -3711,7 +3798,7 @@ MonoBehaviour:
     LimitedTimeResetValue: 1
     LimitedTimeLeft: 0
     NoiseFrequencyMin: {x: 0, y: 0, z: 0}
-    NoiseFrequencyMax: {x: 1, y: 1, z: 1}
+    NoiseFrequencyMax: {x: 8, y: 8, z: 8}
     NoiseShiftMin: {x: 0, y: 0, z: 0}
     NoiseShiftMax: {x: 0, y: 0, z: 0}
   ScaleWiggleProperties:
@@ -9428,7 +9515,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2633029334901639576}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7009081, y: 0.0012814859, z: -0.0012593125, w: 0.7132494}
+  m_LocalRotation: {x: 0.70090926, y: -0.000014811522, z: 0.000014555242, w: 0.7132505}
   m_LocalPosition: {x: 0, y: 2.1499996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -11498,6 +11585,90 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3863883581329153488}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3799609707381934961
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1999872763513616564}
+  - component: {fileID: 5365345303401708991}
+  - component: {fileID: 5861778155546230577}
+  m_Layer: 6
+  m_Name: Crossbow Aim [State]
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1999872763513616564
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3799609707381934961}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8618086605009363566}
+  - {fileID: 8357144624100178312}
+  m_Father: {fileID: 5569575965143358535}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5365345303401708991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3799609707381934961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fe8994262d8dfd43aa7d9cd154d1a31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _transitions: []
+  _subStates: []
+  OnProcessFinished:
+    m_PersistentCalls:
+      m_Calls: []
+  _camera: {fileID: 7161573868179568432}
+  _crossbowPivot: {fileID: 3560576981751355898}
+  _crossbowAimPoint: {fileID: 617073356256478874}
+--- !u!114 &5861778155546230577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3799609707381934961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74cf8a776b89f1d45accea65ca1e7835, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nextState: {fileID: 5239088786863602401}
+  _isTransit: 0
+  OnTransotion:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3813963423901510069
 GameObject:
   m_ObjectHideFlags: 0
@@ -12936,9 +13107,9 @@ MonoBehaviour:
         DebugActive: 0
         TargetWiggle: {fileID: 4999248213258259170}
         WigglePosition: 1
-        WigglePositionDuration: 0.5
-        WiggleRotation: 0
-        WiggleRotationDuration: 0
+        WigglePositionDuration: 0.25
+        WiggleRotation: 1
+        WiggleRotationDuration: 0.25
         WiggleScale: 0
         WiggleScaleDuration: 0
 --- !u!1 &4686165930623743244
@@ -14135,7 +14306,7 @@ MonoBehaviour:
         MaxVolume: 1
         MinPitch: 1
         MaxPitch: 1
-        SfxAudioMixerGroup: {fileID: 0}
+        SfxAudioMixerGroup: {fileID: -3165942800488051908, guid: 7e984f512e89b60468e829489e8883e3, type: 2}
 --- !u!1 &5376100699391262289
 GameObject:
   m_ObjectHideFlags: 0
@@ -16407,6 +16578,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1999872763513616564}
   - {fileID: 8628690099590405728}
   - {fileID: 5560991716864999529}
   m_Father: {fileID: 6350664782758070400}
@@ -17360,7 +17532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ff3dd5e0bf8af048b31a6b219895443, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nextState: {fileID: 7569234556147224964}
+  _nextState: {fileID: 5365345303401708991}
   _isTransit: 0
   OnTransotion:
     m_PersistentCalls:
@@ -18201,6 +18373,61 @@ Transform:
   - {fileID: 193322645052346620}
   m_Father: {fileID: 3655386560634385862}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7180757834091025804
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8618086605009363566}
+  - component: {fileID: 1528664430087666220}
+  m_Layer: 6
+  m_Name: Finish Shooting [Transition] (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8618086605009363566
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7180757834091025804}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1999872763513616564}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1528664430087666220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7180757834091025804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67ddababc7ffa094b8b59b7bfc8bcaf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _nextState: {fileID: 9101082457429426817}
+  _isTransit: 0
+  OnTransotion:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7268363109977186061
 GameObject:
   m_ObjectHideFlags: 0
@@ -18271,7 +18498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74cf8a776b89f1d45accea65ca1e7835, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nextState: {fileID: 7569234556147224964}
+  _nextState: {fileID: 5365345303401708991}
   _isTransit: 0
   OnTransotion:
     m_PersistentCalls:
@@ -18507,7 +18734,7 @@ GameObject:
   - component: {fileID: 7569234556147224964}
   - component: {fileID: 5813465712524001638}
   m_Layer: 6
-  m_Name: Crossbow Shooting [State]
+  m_Name: Crossbow Shoot [State]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19227,7 +19454,7 @@ MonoBehaviour:
         MaxVolume: 1
         MinPitch: 1
         MaxPitch: 1
-        SfxAudioMixerGroup: {fileID: 0}
+        SfxAudioMixerGroup: {fileID: -3165942800488051908, guid: 7e984f512e89b60468e829489e8883e3, type: 2}
 --- !u!1 &7821363093112043811
 GameObject:
   m_ObjectHideFlags: 0
@@ -21461,7 +21688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 7898405755383545413}
-  _springFrequency: 8.5
+  _springFrequency: 8.25
   _springDamping: 0.25
   _rotator: {fileID: 0}
 --- !u!1001 &26277647549468200
@@ -25523,6 +25750,10 @@ PrefabInstance:
     - target: {fileID: 5421697740095127295, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       propertyPath: _value
       value: 5.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5428889446259118240, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
+      propertyPath: m_Acceleration
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 5428889446259118240, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       propertyPath: m_AngularSpeed

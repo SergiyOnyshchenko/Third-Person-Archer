@@ -14,6 +14,7 @@ public class MoveAnimationSubstate : SubState, IActorIniter
     private IAnimator _animator;
     private Mover _mover;
     private NavMeshAgent _agent;
+    private float _currentSpeed;
 
     public void InitActor(ActorController actor)
     {
@@ -31,6 +32,7 @@ public class MoveAnimationSubstate : SubState, IActorIniter
     public override void Enter()
     {
         base.Enter();
+        _currentSpeed = 0;
     }
 
     public override void Exit() 
@@ -52,8 +54,8 @@ public class MoveAnimationSubstate : SubState, IActorIniter
 
         float speed = Mathf.InverseLerp(0, _maxSpeed, _mover.Velocity.magnitude);
 
-        _animator.SetFloat("Speed", speed);
+        //_currentSpeed = Mathf.MoveTowards(_currentSpeed, speed, 1f * Time.deltaTime);
 
-        
+        _animator.SetFloat("Speed", speed);
     }
 }

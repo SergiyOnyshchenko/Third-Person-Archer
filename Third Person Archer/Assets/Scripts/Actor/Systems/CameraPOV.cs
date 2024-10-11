@@ -53,7 +53,7 @@ namespace Actor
 
             SetCamera(_fpvCamera);
 
-            DOVirtual.DelayedCall(0.8f, () => 
+            DOVirtual.DelayedCall(0.9f, () => 
             {
                 SetModel(_fpvModel);
                 OnFPV?.Invoke();

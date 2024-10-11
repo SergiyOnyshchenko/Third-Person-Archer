@@ -12,13 +12,13 @@ public class SetActiveGameobjectSubState : SubState
     {
         base.Enter();
 
-        if (_placement == StatePlacement.OnEnter)
+        if (_target != null && _placement == StatePlacement.OnEnter)
             _target.SetActive(_value);
     }
 
     public override void Exit()
     {
-        if (_placement == StatePlacement.OnExit)
+        if (_target != null && _placement == StatePlacement.OnExit)
             _target.SetActive(_value);
 
         base.Exit();

@@ -232,7 +232,9 @@ public class Projectile : MonoBehaviour
                 if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
                 {
                     Vector3 pushDirection = _direction + (Vector3.up * 0.25f);
-                    StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
+
+                    if(gameObject.activeInHierarchy)
+                        StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
                 }
 
                 break;

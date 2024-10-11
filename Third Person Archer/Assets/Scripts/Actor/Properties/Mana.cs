@@ -9,6 +9,7 @@ namespace Actor.Properties
     {
         [SerializeField] private int _maxValue;
         private int _value;
+        private float _multiplier = 1f;
         public int Value { get => _value; }
         public float Ratio { get => (float)_value / (float)_maxValue; }
         public UnityEvent<float> OnManaModified = new UnityEvent<float>();
@@ -17,6 +18,7 @@ namespace Actor.Properties
         private void OnEnable()
         {
             _value = PlayerPrefs.GetInt("Mana", 0);
+            _value = Mathf.Clamp(_value, 0, _maxValue);
         }
 
         private void OnDisable()
@@ -24,9 +26,17 @@ namespace Actor.Properties
             PlayerPrefs.SetInt("Mana", _value);
         }
 
+        private void Start()
+        {
+            if (LevelManager.Instance != null)
+            {
+                _multiplier = LevelManager.Instance.CurrentLevel.ManaMultiplier;
+            }
+        }
+
         public void Add(int value)
         {
-            _value += value;
+            _value += Mathf.RoundToInt( value * _multiplier );
             _value = Mathf.Clamp(_value, 0, _maxValue);
             OnManaModified?.Invoke(Ratio);
         }
