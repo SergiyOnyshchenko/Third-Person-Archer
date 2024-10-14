@@ -57,6 +57,7 @@ namespace Actor
 
             _camera.transform.SetParent(null);
 
+            projectile.SetDamage(100);
             projectile.ChangeSpeed(3000);
             projectile.GetComponentInChildren<VFXController>()?.Enable();
 

@@ -9,6 +9,7 @@ namespace Actor
     public class WeaponInventory : System, IActorIniter, IWeaponEquipper
     {
         [SerializeField] private WeaponInventoryData _weapons;
+        private IAmmoCount[] _ammoCounts;
         private WeaponData _equipedWeapon;
         private int _weaponIndex = 0;
         private ActorController _actor;
@@ -39,6 +40,19 @@ namespace Actor
                 _skinController = skinController;
                 _skinController.OnSkinChanged.AddListener(Equip);
             }
+
+            List<IAmmoCount> ammo = new List<IAmmoCount>();
+
+            if (actor.TryGetProperty(out BowAmmo bowAmmo))
+                ammo.Add(bowAmmo);
+
+            if (actor.TryGetProperty(out CrossbowAmmo crossbowAmmo))
+                ammo.Add(crossbowAmmo);
+
+            if (actor.TryGetProperty(out SpearAmmo spearAmmo))
+                ammo.Add(spearAmmo);
+
+            _ammoCounts = ammo.ToArray(); 
         }
 
         public void Equip()
@@ -57,6 +71,23 @@ namespace Actor
             weapon.Equip(_actor);
             _equipedWeapon = weapon;
             OnWeaponChanged?.Invoke();
+        }
+
+        public bool TryEquipNext()
+        {
+            foreach (var weaponData in _weapons.Weapons)
+            {
+                foreach (var ammoCount in _ammoCounts)
+                {
+                    if (weaponData.Type == ammoCount.WeaponType && ammoCount.AmmoCount > 0)
+                    {
+                        Equip(weaponData);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public void EquipNext()

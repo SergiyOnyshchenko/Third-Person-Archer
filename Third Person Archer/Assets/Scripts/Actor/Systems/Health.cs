@@ -43,6 +43,11 @@ namespace Actor
                 OnHealthZero?.Invoke();
         }
 
+        public void Die()
+        {
+            ApplyDamage(_health);
+        }
+
         private int TryApplyDamage(int damage)
         {
             int health = _health;

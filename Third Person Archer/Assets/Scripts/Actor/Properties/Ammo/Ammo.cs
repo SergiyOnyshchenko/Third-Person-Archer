@@ -7,7 +7,7 @@ using static UnityEngine.Rendering.DebugUI;
 namespace Actor.Properties
 {
     public abstract class Ammo<W> : SingleProperty<int>, IActorIniter, IAmmoCount where W : WeaponController
-    {
+    { 
         private IShootEvent _shootEvent;
         public int AmmoCount => _value;
         public abstract WeaponType WeaponType { get; }

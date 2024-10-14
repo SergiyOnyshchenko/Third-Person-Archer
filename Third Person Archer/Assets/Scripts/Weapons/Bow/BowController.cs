@@ -151,7 +151,6 @@ namespace Actor
         {
             float duration = _reloadDuration / _reloadMultiplier;
             
-
             DOVirtual.DelayedCall(0.5f / _reloadMultiplier, () =>
             {
                 _reloadAnimation.Play(duration);
@@ -176,6 +175,12 @@ namespace Actor
 
                 onComplete?.Invoke();
             });
+        }
+
+        public void ResetReloadSettings()
+        {
+            _handArrow.SetActive(false);
+            _transitArrow.gameObject.SetActive(false);
         }
 
         #endregion

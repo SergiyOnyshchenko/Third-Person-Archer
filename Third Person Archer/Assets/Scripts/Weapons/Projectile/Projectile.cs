@@ -29,6 +29,7 @@ public class Projectile : MonoBehaviour
 
     public float Speed => _speed;
     public LayerMask HitLayers { get => _hitLayers;}
+    public int Damage { get => _damage; }
 
     private void Awake()
     {

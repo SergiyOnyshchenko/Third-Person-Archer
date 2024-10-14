@@ -5,4 +5,5 @@ using UnityEngine;
 public interface IAmmoCount
 {
     int AmmoCount { get; }
+    WeaponType WeaponType { get; }
 }

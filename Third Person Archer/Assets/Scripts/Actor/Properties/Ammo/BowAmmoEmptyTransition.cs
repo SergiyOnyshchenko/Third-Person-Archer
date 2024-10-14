@@ -1,0 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
+using Actor;
+using UnityEngine;
+
+public class BowAmmoEmptyTransition : AmmoEmptyTransition<BowController>
+{
+
+}
