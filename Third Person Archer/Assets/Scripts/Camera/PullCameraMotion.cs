@@ -10,6 +10,8 @@ public class PullCameraMotion : SubState
     [SerializeField] private Transform _pullHolder;
     private const float _springPower = 8f;
     private const float _springDumping = 0.5f;
+    private float _normalFov = 90;
+    private float _zoomFov = 60;
     private SpringFloat _spring;
     private IPull _pull;
 
@@ -26,8 +28,13 @@ public class PullCameraMotion : SubState
 
     private void UpdateCameraZoom(float value)
     {
-        float fov = Mathf.Lerp(90, 60, value);
+        float fov = Mathf.Lerp(_normalFov, _zoomFov, value);
         _spring.UpdateValue(fov);
         _camera.m_Lens.FieldOfView = _spring.Value;
+    }
+
+    public void Reset()
+    {
+        _camera.m_Lens.FieldOfView = _normalFov;
     }
 }

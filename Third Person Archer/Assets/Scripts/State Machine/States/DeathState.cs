@@ -6,7 +6,7 @@ namespace Actor
 {
     public class DeathState : MainState, IActorIniter
     {
-        private RagdollControll _ragdoll;
+        [SerializeField] private RagdollControll _ragdoll;
 
         public void InitActor(ActorController actor)
         {

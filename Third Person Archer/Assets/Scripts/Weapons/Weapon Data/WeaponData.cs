@@ -22,6 +22,7 @@ public abstract class WeaponData : ScriptableObject
     [SerializeField] private float _reloadSpeedMult = 1f;
     [Space]
     [SerializeField] private WeaponSkinData _skinData;
+    private string _saveStateName = "weapon_data_state";
     public string ID { get => _id; }
     public string Name { get => _name; }
     public int Damage { get => _damage; }
@@ -29,18 +30,17 @@ public abstract class WeaponData : ScriptableObject
     public WeaponSkinData SkinData { get => _skinData;}
     public abstract WeaponType Type { get; }
     public WeaponState State { get => _state; }
-
     public abstract void Equip(ActorController actor);
     public abstract void Unequip(ActorController actor);
 
     public void Save()
     {
-        PlayerPrefs.SetInt("weapon_data_state" + _id, (int)_state);
+        PlayerPrefs.SetInt(_saveStateName + _id, (int)_state);
     }
 
     public void Load()
     {
-        _state = (WeaponState) PlayerPrefs.GetInt("weapon_data_state" + _id, (int)_state);
+        _state = (WeaponState) PlayerPrefs.GetInt(_saveStateName + _id, (int)_state);
     }
 
     public void Unlock()

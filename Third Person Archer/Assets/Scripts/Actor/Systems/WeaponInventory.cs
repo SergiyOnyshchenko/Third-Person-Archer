@@ -33,7 +33,8 @@ namespace Actor
         {
             _actor = actor;
 
-            Equip(_weapons.Weapons[0]);
+            if(_weapons.Weapons.Length > 0)
+                Equip(_weapons.Weapons[0]);
 
             if (actor.TryGetSystem(out PlayerSkinController skinController))
             {

@@ -15,6 +15,7 @@ namespace Actor
         private ProjectileShooter[] _shooters;
         private Projectile _projectile;
         private IEnumerator _timer;
+        private ITriggerReciever _currentFreezeEnemy;
         public UnityEvent OnActivated = new UnityEvent();
         public UnityEvent OnDeactivated = new UnityEvent();
 
@@ -50,9 +51,11 @@ namespace Actor
         private void Activate(Projectile projectile)
         {
             RaycastHit projectilePredictiveHit = projectile.GetPredictiveHit();
+
             if (projectilePredictiveHit.collider != null && projectilePredictiveHit.collider.TryGetComponent(out ITriggerReciever triggerReciever))
             {
-                triggerReciever.ReciveTrigger("TimeFreeze", projectile.gameObject);
+                _currentFreezeEnemy = triggerReciever;
+                _currentFreezeEnemy.ReciveTrigger("TimeFreeze", projectile.gameObject);
             }
 
             _camera.transform.SetParent(null);
@@ -80,6 +83,12 @@ namespace Actor
         {
             if (_timer != null)
                 StopCoroutine(_timer);
+
+            if (_currentFreezeEnemy != null)
+            {
+                _currentFreezeEnemy.ReciveTrigger("TimeUnfreeze", gameObject);
+                _currentFreezeEnemy = null;
+            }
 
             _projectile.OnHited.RemoveListener(Deactivate);
             OnDeactivated?.Invoke();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,12 +12,42 @@ public class WeaponDatabase : ScriptableObject
     {
         List<WeaponData> weapons = new List<WeaponData>();
 
-        foreach (var weapon in _weapons)
+        foreach (WeaponType type in Enum.GetValues(typeof(WeaponType)))
         {
-            if (weapon.State == WeaponState.Equipped)
+            WeaponData[] weaponsByType = GetWeaponsByType(type);
+
+            WeaponData equippedWeaponByType = null;
+
+            foreach (var weapon in weaponsByType)
             {
-                weapons.Add(weapon);
+                if (weapon.State == WeaponState.Equipped)
+                {
+                    if (equippedWeaponByType == null)
+                    {
+                        equippedWeaponByType = weapon;
+                    }
+                    else
+                    {
+                        weapon.Equip(false);
+                    }
+                }
             }
+
+            if(equippedWeaponByType == null)
+            {
+                foreach (var weapon in weaponsByType)
+                {
+                    if (weapon.State == WeaponState.Unlocked)
+                    {
+                        equippedWeaponByType = weapon;
+                        weapon.Equip(true);
+                        break;
+                    }
+                }
+            }
+
+            if (equippedWeaponByType != null)
+                weapons.Add(equippedWeaponByType);
         }
 
         return weapons.ToArray();
@@ -38,24 +69,18 @@ public class WeaponDatabase : ScriptableObject
         }
     }
 
-    /*
-public WeaponData[] GetWeaponsByID(string[] weaponIDs) 
-{
-    List<WeaponData> weapons = new List<WeaponData>();
-
-    foreach (var weaponID in weaponIDs)
+    public WeaponData[] GetWeaponsByType(WeaponType type)
     {
-        foreach (var weaponData in _weapons)
-        {
-            if (weaponData.ID == weaponID)
-            {
-                weapons.Add(weaponData);
-                break;
-            }
-        }
-    }
+        List<WeaponData> weapons = new List<WeaponData>();
 
-    return weapons.ToArray();
-}
-*/
+        foreach (var weapon in _weapons)
+        {
+            if (weapon.Type == type)
+            {
+                weapons.Add(weapon);
+            } 
+        }
+
+        return weapons.ToArray();
+    }
 }
