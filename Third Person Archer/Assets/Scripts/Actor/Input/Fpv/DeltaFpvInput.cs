@@ -13,6 +13,9 @@ namespace Actor
 
         void Update()
         {
+            if (IsFrozen)
+                return;
+
          /*   Debug.Log(Time.timeScale);*/
             if (UnityEngine.Input.GetMouseButtonDown(0))
             {

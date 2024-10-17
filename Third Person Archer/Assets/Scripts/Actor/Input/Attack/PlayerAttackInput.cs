@@ -9,9 +9,25 @@ namespace Actor
     {
         private float _delay = 0.1f;
         private float _timer;
+        private bool _isFrozen;
+
+        public void FreezeAttack()
+        {
+            _isHold = false;
+            _isFrozen = true;
+            _timer = 0;
+        }
+
+        public void UnfreezeAttack()
+        {
+            _isFrozen = false;
+        }
 
         private void Update()
         {
+            if (_isFrozen)
+                return;
+
             if (!IsActive)
                 return;
 

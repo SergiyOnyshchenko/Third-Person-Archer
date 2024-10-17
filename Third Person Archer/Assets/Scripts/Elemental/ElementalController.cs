@@ -65,7 +65,7 @@ namespace Actor
             if (_shootingTargets == null)
                 return;
 
-            if (_mana.Ratio == 1 && _shootingTargets.Count > 0 && !_isViewActive && _isShootingState.Value)
+            if (_mana.Ratio == 1 && !_isViewActive)
             {
                 ShowElementalSelectionView();
             }
