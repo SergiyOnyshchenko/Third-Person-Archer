@@ -37,12 +37,6 @@ namespace Actor
             _attackInput.OnAttackRelease.RemoveListener(Shoot);
         }
 
-        private void Update()
-        {
-            //if (UnityEngine.Input.GetMouseButtonUp(0))
-            //    Shoot();
-        }
-
         private void LateUpdate()
         {
             _crossbowController.UpdateHands();
@@ -50,7 +44,6 @@ namespace Actor
 
         private void Shoot()
         {
-            UnityEngine.Debug.Log("Shoot");
             _tween?.Kill();
 
             _attackInput.OnAttackRelease.RemoveListener(Shoot);

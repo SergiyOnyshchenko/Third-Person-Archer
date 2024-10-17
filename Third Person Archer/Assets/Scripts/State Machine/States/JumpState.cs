@@ -34,9 +34,10 @@ public class JumpState : ProcessState, IActorIniter
     {
         float value = 0f;
         float duration = 0.75f;
-        //float duration = 1f;
 
-        _rotator.RotateToInstant(jumpSpline.End);
+        var endPosition = jumpSpline.CalculatePosition(0.5f);
+
+        _rotator.RotateToInstant(endPosition);
 
         DOTween.To(() => value, x => value = x, 0.5f, duration/2f)
         .OnUpdate(() => 

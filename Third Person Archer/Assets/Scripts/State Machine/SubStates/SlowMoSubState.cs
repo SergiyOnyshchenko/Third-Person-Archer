@@ -26,6 +26,7 @@ public class SlowMoSubState : SubState, IActorIniter
     {
         _attackInput.OnAttackStart.RemoveListener(DoSlowMo);
         _attackInput.OnAttackRelease.RemoveListener(ResetSlowMo);
+        ResetSlowMo();
         /*ResetSlowMo();*/
         base.Exit();
     }

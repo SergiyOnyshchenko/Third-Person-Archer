@@ -14,11 +14,7 @@ public class WeaponIniter : MonoBehaviour
 
     public void Init()
     {
-        WeaponData[] weapons = _database.GetWeaponsByID(_inventory.Load());
-
-        if (weapons == null || weapons.Length == 0)
-            return;
-
-        _inventory.Init(weapons);
+        _database.Load();
+        _inventory.Init(_database.GetEquippedWeapons());
     }
 }

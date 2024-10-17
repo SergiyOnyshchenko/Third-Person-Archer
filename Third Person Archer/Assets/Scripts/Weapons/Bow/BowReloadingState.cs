@@ -25,4 +25,11 @@ public class BowReloadingState : ProcessState, IActorIniter
         _bowController.SetReloadSettings();
         _bowController.Reload(FinishProcess);
     }
+
+    public override void Exit()
+    {
+        _bowController.ResetReloadSettings();
+
+        base.Exit();
+    }
 }

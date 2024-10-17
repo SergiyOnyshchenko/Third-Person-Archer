@@ -14,7 +14,7 @@ public class SpringMotion : ISpringMotion
     public void SetTargetPosition(Vector3 position) => _targetPosition = position;
     public void SetTargetRotation(Quaternion rotation) => _targetRotation = rotation;
     public void UpdateMotionParams() => 
-        SpringCalculator.CalcDampedSpringMotionParams(ref _springParams, Time.fixedDeltaTime, _power, _dumping);
+        SpringCalculator.CalcDampedSpringMotionParams(ref _springParams, Time.fixedUnscaledDeltaTime, _power, _dumping);
 
     public SpringMotion(){}
 

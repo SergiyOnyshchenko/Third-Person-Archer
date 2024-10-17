@@ -10,6 +10,8 @@ public class SpearData : ProjectileWeaponData
     public override WeaponType Type => WeaponType.Spear;
     public override void Equip(ActorController actor)
     {
+        base.Equip(actor);
+
         SpearSkinData bowSkinData = (SpearSkinData)SkinData;
 
         if (actor.TryGetSystem(out SpearController bowController))

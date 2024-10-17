@@ -13,6 +13,7 @@ namespace Actor
         private IDamageReciever[] _damageRecievers;
         public int Value { get => _health; }
         public bool IsDead { get => _health <= 0; }
+        public UnityEvent<int> OnDamaged = new UnityEvent<int>();
         public UnityEvent<int, int> OnHealthModified = new UnityEvent<int, int>();
         public UnityEvent OnHealthZero = new UnityEvent();
 
@@ -36,9 +37,15 @@ namespace Actor
             _health = Mathf.Clamp(_health, 0, _maxHealth.Value);
 
             OnHealthModified?.Invoke(_health, _maxHealth.Value);
+            OnDamaged?.Invoke(damage);
 
             if (_health == 0)
                 OnHealthZero?.Invoke();
+        }
+
+        public void Die()
+        {
+            ApplyDamage(_health);
         }
 
         private int TryApplyDamage(int damage)

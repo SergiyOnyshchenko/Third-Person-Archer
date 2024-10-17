@@ -11,10 +11,13 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float _speed = 50f;
     [Space]
     [SerializeField] private LayerMask _hitLayers;
+    [SerializeField] private LayerMask _enemyLayers;
+    [Space]
     [SerializeField] private bool _destroyAfterHit;
     [Space]
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private Collider _collider;
+    [SerializeField] private Collider _elementalTrigger;
     [SerializeField] ElementalView _elementalView;
     private ProjectileState _state = ProjectileState.Loaded;
     private ElementalType _elementalType = ElementalType.NULL;
@@ -26,6 +29,7 @@ public class Projectile : MonoBehaviour
 
     public float Speed => _speed;
     public LayerMask HitLayers { get => _hitLayers;}
+    public int Damage { get => _damage; }
 
     private void Awake()
     {
@@ -46,12 +50,22 @@ public class Projectile : MonoBehaviour
         PreCheckTargetDeath();
     }
 
+    public void SetDamage(int damage)
+    {
+        _damage = damage;
+    }
+
     public void SetElementalType(ElementalType type)
     {
         _elementalType = type;
 
         if (_elementalView != null)
             _elementalView.SetCurrentView(type);
+
+        if (type != ElementalType.NULL && _elementalTrigger != null)
+        {
+            _elementalTrigger.enabled = true;
+        }
     }
 
     public RaycastHit GetPredictiveHit()
@@ -105,6 +119,65 @@ public class Projectile : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (_elementalType == ElementalType.NULL)
+            return;
+
+        OnTargetHited?.Invoke();
+        OnHited?.Invoke();
+
+        if ((_enemyLayers.value & (1 << other.transform.gameObject.layer)) > 0)
+        {
+            _collider.enabled = false;
+            _elementalTrigger.enabled = false;
+
+            _state = ProjectileState.Hited;
+            _rigidbody.isKinematic = true;
+
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, 4f, _enemyLayers);
+
+            foreach (var hitCollider in hitColliders)
+            {
+                switch (_elementalType)
+                {
+                    case ElementalType.FIRE:
+
+                        if (hitCollider.TryGetComponent(out ITriggerReciever fireTrigger))
+                        {
+                            fireTrigger.ReciveTrigger("Burn", gameObject);
+                        }
+
+                        /*
+                        if (hitCollider.TryGetComponent(out IDamageable damager1))
+                        {
+                            damager1.DoDamage(1);
+                            OnTargetHited?.Invoke();
+                        }
+                        */
+
+                        break;
+                    case ElementalType.FROST:
+
+                        if (hitCollider.TryGetComponent(out ITriggerReciever frostTrigger))
+                        {
+                            frostTrigger.ReciveTrigger("Freeze", gameObject);
+                        }
+
+                        /*
+                        if (hitCollider.TryGetComponent(out IDamageable damager2))
+                        {
+                            damager2.DoDamage(1);
+                            OnTargetHited?.Invoke();
+                        }
+                        */
+
+                        break;
+                }
+            }
+        }
+    }
+
     private void Hit(Collision collision)
     {
         _collider.enabled = false;
@@ -119,6 +192,7 @@ public class Projectile : MonoBehaviour
         {
             case ElementalType.FIRE:
 
+                /*
                 if (collision.collider.TryGetComponent(out ITriggerReciever fireTrigger))
                 {
                     fireTrigger.ReciveTrigger("Burn", gameObject);
@@ -129,10 +203,12 @@ public class Projectile : MonoBehaviour
                     damager1.DoDamage(1);
                     OnTargetHited?.Invoke();
                 }
+                */
 
                 break;
             case ElementalType.FROST:
 
+                /*
                 if (collision.collider.TryGetComponent(out ITriggerReciever frostTrigger))
                 {
                     frostTrigger.ReciveTrigger("Freeze", gameObject);
@@ -143,6 +219,7 @@ public class Projectile : MonoBehaviour
                     damager2.DoDamage(1);
                     OnTargetHited?.Invoke();
                 }
+                */
 
                 break;
             default:
@@ -156,7 +233,9 @@ public class Projectile : MonoBehaviour
                 if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
                 {
                     Vector3 pushDirection = _direction + (Vector3.up * 0.25f);
-                    StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
+
+                    if(gameObject.activeInHierarchy)
+                        StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f * _power, 0.1f));
                 }
 
                 break;

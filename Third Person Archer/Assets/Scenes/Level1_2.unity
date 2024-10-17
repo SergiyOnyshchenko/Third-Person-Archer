@@ -3086,6 +3086,7 @@ MonoBehaviour:
   _hostages: []
   _lookAtPoint: {fileID: 835294061}
   _delay: 0.1
+  _triggerEnemiesOnEnter: 0
   _hideEnemiesBeforeShooting: 1
 --- !u!1001 &489512929
 PrefabInstance:
@@ -3514,6 +3515,14 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.019568434
       objectReference: {fileID: 0}
+    - target: {fileID: 2814474892064996434, guid: 0f5aee907867e2348ad4afce8b33f4f5, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2814474892064996434, guid: 0f5aee907867e2348ad4afce8b33f4f5, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7734500602339420446, guid: 0f5aee907867e2348ad4afce8b33f4f5, type: 3}
       propertyPath: m_Follow
       value: 
@@ -3782,6 +3791,7 @@ MonoBehaviour:
   _hostages: []
   _lookAtPoint: {fileID: 1798319697}
   _delay: 0.1
+  _triggerEnemiesOnEnter: 0
   _hideEnemiesBeforeShooting: 1
 --- !u!1 &705507993
 GameObject:
@@ -12211,6 +12221,79 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1368611101}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1697538580
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1744392443}
+    m_Modifications:
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 545581096727106075, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+      propertyPath: m_Name
+      value: Unlock New Weapon [State]
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+--- !u!114 &1697538581 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5175831245671776312, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+  m_PrefabInstance: {fileID: 1697538580}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948952c01fb4fad4bb98a54d3819af7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1697538582 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 235702609228934040, guid: f230d71125cbd8b42b15630e2192a62a, type: 3}
+  m_PrefabInstance: {fileID: 1697538580}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1701073160
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12826,6 +12909,7 @@ Transform:
   - {fileID: 1935259274}
   - {fileID: 685593064}
   - {fileID: 1799907094}
+  - {fileID: 1697538582}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1744392444
@@ -12904,6 +12988,7 @@ MonoBehaviour:
   _hostages: []
   _lookAtPoint: {fileID: 1924129762}
   _delay: 0.1
+  _triggerEnemiesOnEnter: 0
   _hideEnemiesBeforeShooting: 1
 --- !u!1 &1798319696
 GameObject:
@@ -12988,6 +13073,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level Win State
       objectReference: {fileID: 0}
+    - target: {fileID: 7171894797314612351, guid: b0652f61d29a40f4e82111509641b64c, type: 3}
+      propertyPath: _nextState
+      value: 
+      objectReference: {fileID: 1697538581}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13658,6 +13747,7 @@ MonoBehaviour:
   _hostages: []
   _lookAtPoint: {fileID: 2037777878}
   _delay: 0.1
+  _triggerEnemiesOnEnter: 0
   _hideEnemiesBeforeShooting: 1
 --- !u!4 &2119703938 stripped
 Transform:
@@ -13729,6 +13819,7 @@ MonoBehaviour:
   _hostages: []
   _lookAtPoint: {fileID: 531101616}
   _delay: 0.1
+  _triggerEnemiesOnEnter: 0
   _hideEnemiesBeforeShooting: 1
 --- !u!4 &2121550969
 Transform:
@@ -16810,11 +16901,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1861903661420353567, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.1663289
+      value: 0.16632888
       objectReference: {fileID: 0}
     - target: {fileID: 1861903661420353567, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.097151466
+      value: -0.09715149
       objectReference: {fileID: 0}
     - target: {fileID: 1861903661420353567, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: m_LocalRotation.z

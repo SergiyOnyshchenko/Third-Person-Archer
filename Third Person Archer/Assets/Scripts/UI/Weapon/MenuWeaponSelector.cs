@@ -5,11 +5,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MenuWeaponSelector : MonoBehaviour, IWeaponSelector, ISelectable, ISelector, IEquipable, IEquipper
+public class MenuWeaponSelector : MonoBehaviour, IWeaponSelector, ISelectable, ISelector, IEquipable, IEquipper, ILockable
 {
     [field: SerializeField] public WeaponData WeaponData { get; private set; }
     [Header("View")]
     [SerializeField] private TextMeshProUGUI _nameField;
+    [SerializeField] private Image _icon;
     private Button _button;
     public ISelector Selector => this;
     public IEquipper Equipper => this;
@@ -19,6 +20,8 @@ public class MenuWeaponSelector : MonoBehaviour, IWeaponSelector, ISelectable, I
     public event Action OnDeselected;
     public event Action OnEquipped;
     public event Action OnUnequipped;
+    public event Action OnLocked;
+    public event Action OnUnlocked;
 
     private void Awake()
     {
@@ -43,6 +46,16 @@ public class MenuWeaponSelector : MonoBehaviour, IWeaponSelector, ISelectable, I
     public void Init(WeaponData weaponData)
     {
         _nameField.text = weaponData.Name;
+        _icon.sprite = weaponData.SkinData.Icon;
+
+        if (weaponData.State == WeaponState.Locked)
+        {
+            OnLocked?.Invoke();
+        }
+        else
+        {
+            OnUnlocked?.Invoke();
+        }
     }
 
     public void Select()
@@ -70,6 +83,9 @@ public class MenuWeaponSelector : MonoBehaviour, IWeaponSelector, ISelectable, I
 
     private void TrySelect()
     {
+        if (WeaponData.State == WeaponState.Locked)
+            return;
+
         OnWeaponSelected?.Invoke(this);
     }
 }

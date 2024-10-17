@@ -10,12 +10,16 @@ public class CrossbowData : ProjectileWeaponData
     public override WeaponType Type => WeaponType.Crossbow;
     public override void Equip(ActorController actor)
     {
+        base.Equip(actor);
+
         CrossbowSkinData crossbowSkinData = (CrossbowSkinData) SkinData;
 
         if (actor.TryGetSystem(out CrossbowController bowController))
         {
             if (bowController.TryGetComponent(out ProjectileShooter shooter))
                 shooter.SetProjectile(Projectile);
+
+            bowController.SetReloadSpeedMult(ReloadSpeedMult);
         }
 
         if (actor.TryGetPropertys(out WeaponHolder[] holders))

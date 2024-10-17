@@ -5,8 +5,8 @@ using UnityEngine;
 public class RagdollControll : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
-    private Rigidbody[] _allRigidbodys;
-    private bool _isPhysical;
+    [SerializeField] private Rigidbody[] _allRigidbodys;
+    [SerializeField] private bool _isPhysical;
 
     private void Awake()
     {
@@ -37,30 +37,44 @@ public class RagdollControll : MonoBehaviour
         if (_animator != null)
             _animator.enabled = false;
 
-        IEnumerator Delay()
+        _isPhysical = true;
+
+        if (gameObject.activeInHierarchy)
+        {
+            StartCoroutine(Delay());
+            StartCoroutine(Freeze());
+        }
+        else
         {
             foreach (Rigidbody rigidbody in _allRigidbodys)
             {
                 rigidbody.isKinematic = false;
                 rigidbody.velocity = Vector3.zero;
-                /*rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;*/
             }
             for (int i = 0; i < 7; i++)
             {
-                yield return null;
                 foreach (Rigidbody rigidbody in _allRigidbodys)
                 {
                     rigidbody.velocity = Vector3.zero;
                 }
             }
         }
+    }
 
-        _isPhysical = true;
-
-        if (gameObject.active)
+    private IEnumerator Delay()
+    {
+        foreach (Rigidbody rigidbody in _allRigidbodys)
         {
-            StartCoroutine(Delay());
-            StartCoroutine(Freeze());
+            rigidbody.isKinematic = false;
+            rigidbody.velocity = Vector3.zero;
+        }
+        for (int i = 0; i < 7; i++)
+        {
+            yield return null;
+            foreach (Rigidbody rigidbody in _allRigidbodys)
+            {
+                rigidbody.velocity = Vector3.zero;
+            }
         }
     }
 

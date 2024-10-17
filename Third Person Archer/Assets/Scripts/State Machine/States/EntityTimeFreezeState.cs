@@ -22,6 +22,8 @@ public class EntityTimeFreezeState : MainState, IActorIniter
 
     public override void Exit()
     {
+        _animator.SetSpeed(1);
+
         base.Exit();
     }
 

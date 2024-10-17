@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Actor;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Actor
 {
@@ -41,7 +42,15 @@ namespace Actor
             var xQuat = Quaternion.AngleAxis(_rotation.x, Vector3.up);
             var yQuat = Quaternion.AngleAxis(_rotation.y, Vector3.left);
 
+            if (IsNaN(xQuat) || IsNaN(yQuat))
+                return;
+
             transform.localRotation = Quaternion.Lerp(transform.localRotation, xQuat * yQuat, Time.deltaTime* 15);
+        }
+
+        private bool IsNaN(Quaternion q)
+        {
+            return float.IsNaN(q.x) || float.IsNaN(q.y) || float.IsNaN(q.z) || float.IsNaN(q.w);
         }
     }
 }

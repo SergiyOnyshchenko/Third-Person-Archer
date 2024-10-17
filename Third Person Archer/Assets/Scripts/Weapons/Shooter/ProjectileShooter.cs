@@ -1,5 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
+using Actor;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 public class ProjectileShooter : Shooter
 {

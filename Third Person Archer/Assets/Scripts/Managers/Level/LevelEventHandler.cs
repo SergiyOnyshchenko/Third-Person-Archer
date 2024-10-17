@@ -13,4 +13,9 @@ public class LevelEventHandler : MonoBehaviour
     {
         LevelEventSystem.SendReloadLevel();
     }
+
+    public void SendLoadMainMenu()
+    {
+        LevelEventSystem.SendLoadMainMenu();
+    }
 }

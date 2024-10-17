@@ -9,7 +9,7 @@ namespace Actor
 {
     public class Hitbox : MonoBehaviour, IDamageReciever, IDamageable, ITriggerReciever, IDamageChecker
     {
-        [SerializeField, Range(0, 100)] private float _demageMultiplier = 1f;
+        [SerializeField, Range(0, 1)] private float _demageMultiplier = 1f;
         [SerializeField] private LayerMask _collisionMask;
         public event Action<int> OnDamaged;
         public event Action<string, GameObject> OnTriggered;

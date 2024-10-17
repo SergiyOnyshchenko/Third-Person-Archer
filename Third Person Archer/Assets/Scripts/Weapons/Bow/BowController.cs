@@ -29,6 +29,8 @@ namespace Actor
         private IBowView _bowView;
         private float _pullPower;
         private bool _isPulling;
+        private float _reloadDuration = 1f;
+        private float _reloadMultiplier = 1f;
         private GameObject _bowModel => _bowView.Model;
         private BowSpring _bowSpring => _bowView.BowSpring;
         private GameObject _bowArrow => _bowView.Arrow;
@@ -65,7 +67,7 @@ namespace Actor
         public void SetStartSettings()
         {
             if (_fpv.FpvAnimator.Properties.TryGetProperty(out SpringPower power))
-                power.SetValue(12f);//power.SetValue(50f);
+                power.SetValue(12f);
 
             _fpv.FpvAnimator.TrySetAnimator(AnimatorType.Spring);
 
@@ -93,7 +95,7 @@ namespace Actor
             if (!CanAttack())
                 return;
 
-            SetPullPower(_pullPower + 1.1f * Time.fixedDeltaTime);
+            SetPullPower(_pullPower + (1.1f * Time.fixedDeltaTime * _reloadMultiplier));
 
             var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
             PlayAnimation(lerpPose);
@@ -130,41 +132,55 @@ namespace Actor
         public void SetReloadSettings()
         {
             if (_fpv.FpvAnimator.Properties.TryGetProperty(out SpringPower power))
-                power.SetValue(5.5f);
+                power.SetValue(5.5f * _reloadMultiplier);
 
             _handArrow.gameObject.SetActive(false);
+            _transitArrow.gameObject.SetActive(true);
 
             _transitArrow.transform.SetParent(_handArrow.transform.parent);
             _transitArrow.transform.localPosition = _handArrow.transform.localPosition;
             _transitArrow.transform.localRotation = _handArrow.transform.localRotation;
         }
 
+        public void SetReloadMult(float value)
+        {
+            _reloadMultiplier = value;
+        }
+
         public void Reload(UnityAction onComplete)
         {
-            float duration = 0.75f;
-
-            DOVirtual.DelayedCall(0.5f, () =>
+            float duration = _reloadDuration / _reloadMultiplier;
+            
+            DOVirtual.DelayedCall(0.5f / _reloadMultiplier, () =>
             {
                 _reloadAnimation.Play(duration);
+                _bowArrow.SetActive(false);
             });
 
-            duration += 0.5f;
+            duration += 0.5f / _reloadMultiplier;
 
             DOVirtual.DelayedCall(duration / 4, () =>
             {
-                _handArrow.transform.SetParent(_bowArrow.transform.parent);
-                _handArrow.SetActive(true);
-                _handArrow.transform.DOLocalMove(_bowArrow.transform.localPosition, 0.75f).SetUpdate(true);
-                _handArrow.transform.DOLocalRotate(_bowArrow.transform.localEulerAngles, 0.75f).SetUpdate(true);
+                //_handArrow.transform.SetParent(_bowArrow.transform.parent);
+                //_handArrow.SetActive(true);
+                //_handArrow.transform.DOLocalMove(_bowArrow.transform.localPosition, 0.75f).SetUpdate(true);
+                //_handArrow.transform.DOLocalRotate(_bowArrow.transform.localEulerAngles, 0.75f).SetUpdate(true);
             });
 
             DOVirtual.DelayedCall(duration, () =>
             {
                 _handArrow.SetActive(false);
+                _transitArrow.gameObject.SetActive(false);
                 _bowArrow.SetActive(true);
 
                 onComplete?.Invoke();
             });
+        }
+
+        public void ResetReloadSettings()
+        {
+            _handArrow.SetActive(false);
+            _transitArrow.gameObject.SetActive(false);
         }
 
         #endregion

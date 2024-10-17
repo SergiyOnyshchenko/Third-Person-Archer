@@ -9,6 +9,8 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private LevelDatabase _database;
     [SerializeField] private bool _delayedLoading = false;
     public LevelData CurrentLevel => _database.CurrentLevel;
+    public LevelDatabase Database { get => _database;}
+
     public static LevelManager Instance;
 
     private void Awake()
@@ -58,7 +60,7 @@ public class LevelManager : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        _database.SetNextLevel();
+        //_database.SetNextLevel();
         LoadLevel(_database.CurrentLevel);
     }
 

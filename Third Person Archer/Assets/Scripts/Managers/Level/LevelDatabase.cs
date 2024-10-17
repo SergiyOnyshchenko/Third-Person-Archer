@@ -9,17 +9,24 @@ public class LevelDatabase : ScriptableObject
     [SerializeField] private LevelData _preloadLevel;
     [SerializeField] private LevelData[] _levels;
     private int _currentLevelIndex;
-    private string _saveName = "CurrentLevel";
+    private int _loopCount;
+    private string _saveNameCurrentLevel = "CurrentLevel";
+    private string _saveNameLoopCount = "LoopCount";
     public LevelData CurrentLevel => _levels[_currentLevelIndex];
     public LevelData MainMenu { get => _mainMenu; }
     public LevelData PreloadLevel { get => _preloadLevel; }
+    public int LevelNumber => LevelIndex * _loopCount + LevelIndex;
+    public int LevelIndex => _currentLevelIndex;
 
     public void SetNextLevel()
     {
         _currentLevelIndex++;
 
-        if(_currentLevelIndex >= _levels.Length)    
+        if(_currentLevelIndex >= _levels.Length)
+        {
             _currentLevelIndex = 0;
+            _loopCount++;
+        }      
 
         Save();
     }
@@ -34,11 +41,13 @@ public class LevelDatabase : ScriptableObject
 
     public void Save()
     {
-        PlayerPrefs.SetInt(_saveName, _currentLevelIndex);
+        PlayerPrefs.SetInt(_saveNameCurrentLevel, _currentLevelIndex);
+        PlayerPrefs.SetInt(_saveNameLoopCount, _loopCount);
     }
 
     public void Load()
     {
-        _currentLevelIndex = PlayerPrefs.GetInt(_saveName);
+        _currentLevelIndex = PlayerPrefs.GetInt(_saveNameCurrentLevel);
+        _loopCount = PlayerPrefs.GetInt(_saveNameLoopCount);
     }
 }

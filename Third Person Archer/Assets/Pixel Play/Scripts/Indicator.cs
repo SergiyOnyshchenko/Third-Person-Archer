@@ -8,7 +8,7 @@ public class Indicator : MonoBehaviour
 {
     [SerializeField] private IndicatorType indicatorType;
     private Image indicatorImage;
-    private Text distanceText;
+    //private Text distanceText;
 
     /// <summary>
     /// Gets if the game object is active in hierarchy.
@@ -35,7 +35,7 @@ public class Indicator : MonoBehaviour
     void Awake()
     {
         indicatorImage = transform.GetComponent<Image>();
-        distanceText = transform.GetComponentInChildren<Text>();
+        //distanceText = transform.GetComponentInChildren<Text>();
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public class Indicator : MonoBehaviour
     /// <param name="value"></param>
     public void SetDistanceText(float value)
     {
-        distanceText.text = value >= 0 ? Mathf.Floor(value) + " m" : "";
+        //distanceText.text = value >= 0 ? Mathf.Floor(value) + " m" : "";
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public class Indicator : MonoBehaviour
     /// <param name="rotation"></param>
     public void SetTextRotation(Quaternion rotation)
     {
-        distanceText.rectTransform.rotation = rotation;
+        //distanceText.rectTransform.rotation = rotation;
     }
 
     /// <summary>
