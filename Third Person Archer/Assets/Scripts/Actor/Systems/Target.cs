@@ -11,7 +11,7 @@ namespace Actor
         public Transform RootPoint { get; private set; }
         [field: SerializeField] public Transform TargetPoint { get; private set; } 
         public event Action<int> OnDamaged;
-        public bool IsDead { get => _health.IsDead; }
+        public bool IsDead { get => _health != null && _health.IsDead; }
         public IDamageable Damageable => this;
         public IDamageReciever.OnTryDamaged TryDamagedCallback { get; set; }
 

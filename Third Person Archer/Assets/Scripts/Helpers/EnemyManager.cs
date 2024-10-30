@@ -49,6 +49,6 @@ public class EnemyManager : MonoBehaviour
                 deadEnemies++;
         }
 
-        return deadEnemies / _targets.Length;
+        return (float)((int)((float)deadEnemies / _targets.Length * 100) / 100f);
     }
 }
