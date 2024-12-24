@@ -1,4 +1,4 @@
-using Io.AppMetrica;
+
 using UnityEngine;
 
 public static class AppMetricaActivator
@@ -6,10 +6,12 @@ public static class AppMetricaActivator
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Activate()
     {
+        /*
         AppMetrica.Activate(new AppMetricaConfig("a6abc11e-a62a-487b-a969-ac15c5aca7da")
         {
             FirstActivationAsUpdate = !IsFirstLaunch(),
         });
+        */
     }
 
     private static bool IsFirstLaunch()

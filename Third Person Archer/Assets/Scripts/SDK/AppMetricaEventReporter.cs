@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Io.AppMetrica;
 using UnityEngine;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
@@ -193,13 +192,13 @@ public class AppMetricaEventReporter : MonoBehaviour
 
         SendEvent("hostage_die", parameters);
     }
-
+    
     private void SendEvent(string eventName, Dictionary<string, object> parameters)
     {
-        string json = JsonConvert.SerializeObject(parameters, Formatting.Indented);
+        //string json = JsonConvert.SerializeObject(parameters, Formatting.Indented);
         //Debug.Log(eventName + " - " + json);
 
-        AppMetrica.ReportEvent(eventName, json);
+        //AppMetrica.ReportEvent(eventName, json);
     }
 
     private int GetLevelNumber()
