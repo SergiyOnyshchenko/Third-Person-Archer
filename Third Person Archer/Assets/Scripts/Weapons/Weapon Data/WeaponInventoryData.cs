@@ -60,8 +60,24 @@ public class WeaponInventoryData : ScriptableObject
         _weapons = newArray;
     }
 
+    public List<string> GetCurrentWeaponsID()
+    {
+        List<string> weapons = new List<string>();
+
+        foreach (var weapon in _weapons)
+        {
+            if (weapon == null)
+                continue;
+
+            weapons.Add(weapon.ID);
+        }
+
+        return weapons;
+    }
+
     private void SendEquipEvents(WeaponData newWeapon)
     {
+
 
     }
 }

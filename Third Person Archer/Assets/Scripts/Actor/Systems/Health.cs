@@ -12,6 +12,7 @@ namespace Actor
         private int _health;
         private IDamageReciever[] _damageRecievers;
         public int Value { get => _health; }
+        public float Ratio { get => _health / _maxHealth.Value; }
         public bool IsDead { get => _health <= 0; }
         public UnityEvent<int> OnDamaged = new UnityEvent<int>();
         public UnityEvent<int, int> OnHealthModified = new UnityEvent<int, int>();

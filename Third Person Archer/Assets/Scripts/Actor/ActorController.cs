@@ -9,6 +9,7 @@ namespace Actor
         private Input[] _inputs;
         private System[] _systems;
         private Property[] _properties;
+        public bool IsDead { get; private set; }
 
         protected virtual void Awake()
         {
@@ -17,6 +18,11 @@ namespace Actor
             InitSystems();
 
             InitChilds();
+        }
+
+        public void DeathHandler()
+        {
+            IsDead = true;
         }
 
         public bool TryGetInput<T>(out T t) where T : Input => TryGetActorComponent<T, Input>(out t, _inputs);

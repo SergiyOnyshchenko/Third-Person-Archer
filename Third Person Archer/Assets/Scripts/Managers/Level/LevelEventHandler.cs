@@ -18,4 +18,10 @@ public class LevelEventHandler : MonoBehaviour
     {
         LevelEventSystem.SendLoadMainMenu();
     }
+
+    public void SendBackToMainMenuButtonPressedEvent()
+    {
+        if (AppMetricaEventReporter.Instance != null)
+            AppMetricaEventReporter.Instance.SendBackToMainMenuButtonPress();
+    }
 }

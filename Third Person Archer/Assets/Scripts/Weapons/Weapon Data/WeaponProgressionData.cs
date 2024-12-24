@@ -56,6 +56,9 @@ public class WeaponProgressionData : ScriptableObject
 
             _progressionIndex ++;
             _currentProgress = 0f;
+
+            if (AppMetricaEventReporter.Instance != null)
+                AppMetricaEventReporter.Instance.SendWeaponUnlock(unlockedWeapon);
         }
     }
 

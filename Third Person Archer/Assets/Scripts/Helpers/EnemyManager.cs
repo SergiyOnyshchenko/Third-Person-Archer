@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-    private ITarget[] _targets;
+    private ActorController[] _targets;
 
     public static EnemyManager Instance;
 
@@ -24,13 +24,13 @@ public class EnemyManager : MonoBehaviour
 
     private void InitEnemies()
     {
-        List<ITarget> targets = new List<ITarget>();
+        List<ActorController> targets = new List<ActorController>();
 
         Enemy[] enemies = FindObjectsOfType<Enemy>(true);
-
+        
         foreach (var enemy in enemies)
         {
-            Actor.Target target = enemy.GetComponentInChildren<Actor.Target>();
+            ActorController target = enemy.GetComponent<ActorController>();
 
             if (target != null)
                 targets.Add(target);
@@ -49,6 +49,6 @@ public class EnemyManager : MonoBehaviour
                 deadEnemies++;
         }
 
-        return deadEnemies / _targets.Length;
+        return (float) deadEnemies / (float) _targets.Length;
     }
 }

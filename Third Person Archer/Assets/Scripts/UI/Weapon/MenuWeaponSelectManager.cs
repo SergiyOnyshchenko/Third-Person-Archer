@@ -96,6 +96,9 @@ public class MenuWeaponSelectManager : MonoBehaviour
     private void EquipCurrentSelected()
     {
         Equip(_selectedWeapon);
+
+        if (AppMetricaEventReporter.Instance != null)
+            AppMetricaEventReporter.Instance.SendWeaponEquip(_selectedWeapon.WeaponData);
     }
 
     private void UpdateEquipButton()

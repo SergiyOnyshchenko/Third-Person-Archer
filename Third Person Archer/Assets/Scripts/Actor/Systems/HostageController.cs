@@ -53,6 +53,9 @@ namespace Actor
         {
             UnsubscribeDeath();
             HostageEventSystem.SendHostageDied();
+
+            if (AppMetricaEventReporter.Instance != null)
+                AppMetricaEventReporter.Instance.SendHostageDied();
         }
     }
 }

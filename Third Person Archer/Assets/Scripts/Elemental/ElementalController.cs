@@ -11,18 +11,23 @@ namespace Actor
     {
         [SerializeField] private ElementalData[] _database;
         private bool _isViewActive;
+        private ActorController _actor;
         private Mana _mana;
         private ShootingTargets _shootingTargets;
         private ElementalArrowsCount _elementalArrowsCount;
         private ElementalAttackType _elementalAttackType;
         private IsShootingState _isShootingState;
         private ElementalData _activeElementalArrow;
+        public ElementalData[] Database { get => _database; }
         public UnityEvent OnElementSelected = new UnityEvent();
         public UnityEvent OnShowView = new UnityEvent();
         public UnityEvent OnHideView = new UnityEvent();
 
+
         public void InitActor(ActorController actor)
         {
+            _actor = actor;
+
             if (actor.TryGetProperty(out ElementalAttackType elementalAttackType))
                 _elementalAttackType = elementalAttackType;
 
@@ -79,6 +84,9 @@ namespace Actor
             _activeElementalArrow = data;
             _elementalAttackType.SetValue(data.Type);
             data.RemoveArrow();
+
+            if (AppMetricaEventReporter.Instance != null)
+                AppMetricaEventReporter.Instance.SendElementalArrowUsed(_actor, data.Type);
         }
 
         public void TrySelectElementalType(ElementalType type)
@@ -100,6 +108,9 @@ namespace Actor
             OnElementSelected?.Invoke();
             OnHideView?.Invoke();
 
+            if (AppMetricaEventReporter.Instance != null)
+                AppMetricaEventReporter.Instance.SendElementalArrowObtained(_actor, type);
+
             _isViewActive = false;
         }
 
@@ -118,19 +129,6 @@ namespace Actor
                 _activeElementalArrow = null;
                 _elementalAttackType.SetValue(ElementalType.NULL);
             });
-
-            /*
-            if (_elementalArrowsCount.Value <= 0)
-                return;
-
-            _elementalArrowsCount.Decrease();
-
-            DOVirtual.DelayedCall(0.1f, () =>
-            {
-                if (_elementalArrowsCount.Value <= 0)
-                    _elementalAttackType.SetValue(ElementalType.NULL);
-            });
-            */
         }
 
         private void ShowElementalSelectionView()
