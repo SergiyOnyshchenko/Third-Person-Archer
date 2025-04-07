@@ -8,6 +8,8 @@ using Actor.Properties;
 public class ElementalSkillCounterView : MonoBehaviour
 {
     [SerializeField] private ElementalData _data;
+    [SerializeField] private KeyCode _keyboardKey;
+    [Space]
     [SerializeField] private TextMeshProUGUI _countText;
     public ElementalData Data { get => _data; }
 
@@ -20,6 +22,12 @@ public class ElementalSkillCounterView : MonoBehaviour
     private void OnDisable()
     {
         _data.OnArrowCountModifyed.RemoveListener(SetCountView);
+    }
+
+    private void Update()
+    {
+        if (UnityEngine.Input.GetKeyDown(_keyboardKey))
+            TrySetElementalAttack();
     }
 
     public void TrySetElementalAttack()

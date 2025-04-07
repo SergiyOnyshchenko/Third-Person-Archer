@@ -16,7 +16,6 @@ namespace Actor
             if (IsFrozen)
                 return;
 
-         /*   Debug.Log(Time.timeScale);*/
             if (UnityEngine.Input.GetMouseButtonDown(0))
             {
                 _delta = MousePosition;
