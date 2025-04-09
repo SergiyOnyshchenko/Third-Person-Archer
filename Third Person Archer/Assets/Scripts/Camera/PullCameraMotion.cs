@@ -10,15 +10,15 @@ public class PullCameraMotion : SubState
     [SerializeField] private Transform _pullHolder;
     private const float _springPower = 8f;
     private const float _springDumping = 0.5f;
-    private float _normalFov = 90;
-    private float _zoomFov = 60;
+    private float _normalFov = 70;
+    private float _zoomFov = 45;
     private SpringFloat _spring;
     private IPull _pull;
 
     private void Start()
     {
         _pull = _pullHolder.GetComponent<IPull>();
-        _spring = new SpringFloat(_springPower, _springDumping, 90);
+        _spring = new SpringFloat(_springPower, _springDumping, 60);
     }
 
     private void FixedUpdate()

@@ -18,7 +18,7 @@ public class HandsSpringMover : MonoBehaviour
     private void Start() 
     {
         //_target = Camera.main.transform;
-        SpringCalculator.CalcDampedSpringMotionParams(ref _springMotionParams, Time.fixedDeltaTime, _springFrequency, _springDamping);
+        SpringCalculator.CalcDampedSpringMotionParams(ref _springMotionParams, Time.fixedDeltaTime, _springFrequency * 1.5f, _springDamping);
     }
 
     private void FixedUpdate() 

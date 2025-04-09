@@ -50,7 +50,7 @@ public class CrossbowAimState : ProcessState, IActorIniter
             _lerp = Mathf.Clamp(_lerp, 0f, 1f);
         }
 
-        _camera.m_Lens.FieldOfView = Mathf.Lerp(90, 30, _lerp);
+        _camera.m_Lens.FieldOfView = Mathf.Lerp(70, 30, _lerp);
 
         _crossbowPivot.localPosition = Vector3.Lerp(Vector3.zero, _crossbowAimPoint.localPosition, _lerp);
         _crossbowPivot.localRotation = Quaternion.Lerp(Quaternion.identity, _crossbowAimPoint.localRotation, _lerp);
@@ -68,7 +68,7 @@ public class CrossbowAimState : ProcessState, IActorIniter
 
     public override void Exit()
     {
-        _camera.m_Lens.FieldOfView = 90;
+        _camera.m_Lens.FieldOfView = 70;
 
         _attackInput.OnAttackRelease.RemoveListener(Shoot);
 
