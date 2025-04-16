@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Playgama;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -50,11 +51,22 @@ public class ElementalData : ScriptableObject
 
     public void Save()
     {
-        PlayerPrefs.SetInt("elemental_arrow_count_" + Type.ToString(), ArrowCount);
+        Bridge.storage.Set("elemental_arrow_count_" + Type.ToString(), ArrowCount.ToString(), null);
     }
 
     public void Load()
     {
-        ArrowCount = PlayerPrefs.GetInt("elemental_arrow_count_" + Type.ToString());
+        Bridge.storage.Get("elemental_arrow_count_" + Type.ToString(), (success, value) =>
+        {
+            if (success && int.TryParse(value, out var count))
+            {
+                ArrowCount = count;
+            }
+            else
+            {
+                ArrowCount = 0;
+            }
+            OnArrowCountModifyed?.Invoke();
+        });
     }
 }

@@ -20,19 +20,20 @@ public class UnlockWeaponState : MainState, IActorIniter
     {
         base.Enter();
 
-        _progressionData.Load();
-
-        DOVirtual.DelayedCall(1f, () =>
+        _progressionData.Load(() =>
         {
-            if (_progressionData.TryGetCurrentInstance(out WeaponProgressionInstance instance))
+            DOVirtual.DelayedCall(1f, () =>
             {
-                _view.Init(instance.WeaponData, _progressionData.CurrentProgress);
-                _progressionData.IncreaseProgression(TryUnlockWeapon);
-            }
-            else
-            {
-                LevelEventSystem.SendLoadNextLevel();
-            }
+                if (_progressionData.TryGetCurrentInstance(out WeaponProgressionInstance instance))
+                {
+                    _view.Init(instance.WeaponData, _progressionData.CurrentProgress);
+                    _progressionData.IncreaseProgression(TryUnlockWeapon);
+                }
+                else
+                {
+                    LevelEventSystem.SendLoadNextLevel();
+                }
+            });
         });
     }
 

@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Playgama;
 using UnityEngine;
+using UnityEngine.Events;
 
 [CreateAssetMenu(fileName = "EquippedPlayerSkin", menuName = "Data/Skins/EquippedPlayerSkin")]
 public class EquippedPlayerSkinData : ScriptableObject
 {
     [SerializeField] private PlayerSkinData _skinData;
+    private const string SkinKey = "EquippedPlayerSkin";
     public PlayerSkinData SkinData { get => _skinData; }
     public event Action<PlayerSkinData> OnEquipped;
 
@@ -20,11 +23,21 @@ public class EquippedPlayerSkinData : ScriptableObject
 
     public void Save()
     {
-        PlayerPrefs.SetInt("EquippedPlayerSkin", _skinData.Index);
+        Bridge.storage.Set(SkinKey, _skinData.Index.ToString(), null);
     }
 
-    public int Load() 
+    public void Load(UnityAction<int> onLoaded)
     {
-        return PlayerPrefs.GetInt("EquippedPlayerSkin", 0);
+        Bridge.storage.Get(SkinKey, (success, value) =>
+        {
+            if (success && int.TryParse(value, out var index))
+            {
+                onLoaded?.Invoke(index);
+            }
+            else
+            {
+                onLoaded?.Invoke(0);
+            }
+        });
     }
 }

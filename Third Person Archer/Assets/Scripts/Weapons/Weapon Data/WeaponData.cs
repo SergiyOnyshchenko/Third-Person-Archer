@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Actor;
+using Playgama;
 using UnityEngine;
 
 public enum WeaponState
@@ -35,12 +36,18 @@ public abstract class WeaponData : ScriptableObject
 
     public void Save()
     {
-        PlayerPrefs.SetInt(_saveStateName + _id, (int)_state);
+        Bridge.storage.Set(_saveStateName + _id, ((int)_state).ToString(), null);
     }
 
     public void Load()
     {
-        _state = (WeaponState) PlayerPrefs.GetInt(_saveStateName + _id, (int)_state);
+        Bridge.storage.Get(_saveStateName + _id, (success, value) =>
+        {
+            if (success && int.TryParse(value, out int result))
+            {
+                _state = (WeaponState)result;
+            }
+        });
     }
 
     public void Unlock()

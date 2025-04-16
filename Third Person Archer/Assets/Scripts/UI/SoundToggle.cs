@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using MoreMountains.Tools;
+using Playgama;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
 
 public class SoundToggle : MonoBehaviour
 {
@@ -14,6 +14,7 @@ public class SoundToggle : MonoBehaviour
     [SerializeField] private Toggle _toggle;
     [SerializeField] private Image _icon;
     private MMSoundManager _soundManager;
+    private const string SoundKey = "sound";
 
     private void OnEnable()
     {
@@ -23,6 +24,7 @@ public class SoundToggle : MonoBehaviour
     private void OnDisable()
     {
         _toggle.onValueChanged.RemoveListener(UpdateSettings);
+        Save();
     }
 
     private void Start()
@@ -32,32 +34,29 @@ public class SoundToggle : MonoBehaviour
         DOVirtual.DelayedCall(0.02f, () =>
         {
             Load();
-            UpdateSettings(_toggle.isOn);
         });
     }
 
     private void Load()
     {
-        if (PlayerPrefs.GetFloat("sound", 0) == 0)
+        Bridge.storage.Get(SoundKey, (success, value) =>
         {
-            _toggle.isOn = false;
-        }
-        else
-        {
-            _toggle.isOn = true;
-        }
+            if (success && float.TryParse(value, out float result))
+            {
+                _toggle.isOn = result != 0;
+            }
+            else
+            {
+                _toggle.isOn = false;
+            }
+
+            UpdateSettings(_toggle.isOn);
+        });
     }
 
     private void Save()
     {
-        if (_toggle.isOn)
-        {
-            PlayerPrefs.SetFloat("sound", 1);
-        }
-        else
-        {
-            PlayerPrefs.SetFloat("sound", 0);
-        }
+        Bridge.storage.Set(SoundKey, _toggle.isOn ? "1" : "0", null);
     }
 
     private void UpdateSettings(bool value)
@@ -66,14 +65,12 @@ public class SoundToggle : MonoBehaviour
         {
             _soundManager.UnmuteMaster();
             _soundManager.SetVolumeMaster(1f);
-
             _icon.sprite = _activeToggleView;
         }
         else
         {
             _soundManager.MuteMaster();
             _soundManager.SetVolumeMaster(0f);
-
             _icon.sprite = _unactiveToggleView;
         }
 

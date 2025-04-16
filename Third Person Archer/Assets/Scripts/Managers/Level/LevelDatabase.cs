@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using Playgama;
 
 [CreateAssetMenu(fileName = "LevelDatabase", menuName = "Data/Level/LevelDatabase")]
 public class LevelDatabase : ScriptableObject
@@ -17,6 +19,8 @@ public class LevelDatabase : ScriptableObject
     public LevelData PreloadLevel { get => _preloadLevel; }
     public int LevelNumber => LevelIndex * _loopCount + LevelIndex;
     public int LevelIndex => _currentLevelIndex;
+
+    public UnityEvent OnLoaded = new UnityEvent();
 
     public void SetNextLevel()
     {
@@ -41,6 +45,42 @@ public class LevelDatabase : ScriptableObject
 
     public void Save()
     {
+        Bridge.storage.Set(_saveNameCurrentLevel, _currentLevelIndex.ToString(), null);
+        Bridge.storage.Set(_saveNameLoopCount, _loopCount.ToString(), null);
+    }
+
+    public void Load()
+    {
+        Bridge.storage.Get(_saveNameCurrentLevel, (success, value) =>
+        {
+            if (success && int.TryParse(value, out var index))
+            {
+                _currentLevelIndex = index;
+            }
+            else
+            {
+                _currentLevelIndex = 0;
+            }
+
+            Bridge.storage.Get(_saveNameLoopCount, (success2, value2) =>
+            {
+                if (success2 && int.TryParse(value2, out var loop))
+                {
+                    _loopCount = loop;
+                }
+                else
+                {
+                    _loopCount = 0;
+                }
+
+                OnLoaded?.Invoke();
+            });
+        });
+    }
+
+    /*
+    public void Save()
+    {
         PlayerPrefs.SetInt(_saveNameCurrentLevel, _currentLevelIndex);
         PlayerPrefs.SetInt(_saveNameLoopCount, _loopCount);
     }
@@ -50,4 +90,5 @@ public class LevelDatabase : ScriptableObject
         _currentLevelIndex = PlayerPrefs.GetInt(_saveNameCurrentLevel);
         _loopCount = PlayerPrefs.GetInt(_saveNameLoopCount);
     }
+    */
 }

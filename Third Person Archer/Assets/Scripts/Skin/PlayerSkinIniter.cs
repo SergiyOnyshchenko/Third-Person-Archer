@@ -14,8 +14,10 @@ public class PlayerSkinIniter : MonoBehaviour
 
     public void Init()
     {
-        int playerSkinDataIndex = _equippedData.Load();
-        PlayerSkinData skinData = _database.GetSkinByIndex(playerSkinDataIndex);
-        _equippedData.Equip(skinData);
+        _equippedData.Load((int playerSkinDataIndex) =>
+        {
+            PlayerSkinData skinData = _database.GetSkinByIndex(playerSkinDataIndex);
+            _equippedData.Equip(skinData);
+        });
     }
 }

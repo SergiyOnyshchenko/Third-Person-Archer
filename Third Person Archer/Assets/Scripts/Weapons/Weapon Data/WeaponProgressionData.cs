@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Playgama;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -26,7 +27,7 @@ public class WeaponProgressionData : ScriptableObject
 
     private void Awake()
     {
-        Load();
+        Load(null);
     }
 
     public void IncreaseProgression(UnityAction<WeaponData, float> onWeaponUnlocked)
@@ -73,15 +74,38 @@ public class WeaponProgressionData : ScriptableObject
         return true;
     }
 
-    public void Load()
+    public void Load(UnityAction onLoaded)
     {
-        _progressionIndex = PlayerPrefs.GetInt(_saveWeaponsProgressName, 0);
-        _currentProgress = PlayerPrefs.GetFloat(_saveLocalProgressName, 0);
+        Bridge.storage.Get(_saveWeaponsProgressName, (success1, value1) =>
+        {
+            if (success1 && int.TryParse(value1, out var progressIndex))
+            {
+                _progressionIndex = progressIndex;
+            }
+            else
+            {
+                _progressionIndex = 0;
+            }
+
+            Bridge.storage.Get(_saveLocalProgressName, (success2, value2) =>
+            {
+                if (success2 && float.TryParse(value2, out var localProgress))
+                {
+                    _currentProgress = localProgress;
+                }
+                else
+                {
+                    _currentProgress = 0f;
+                }
+
+                onLoaded?.Invoke();
+            });
+        });
     }
 
     public void Save()
     {
-        PlayerPrefs.SetInt(_saveWeaponsProgressName, _progressionIndex);
-        PlayerPrefs.SetFloat(_saveLocalProgressName, _currentProgress);
+        Bridge.storage.Set(_saveWeaponsProgressName, _progressionIndex.ToString(), null);
+        Bridge.storage.Set(_saveLocalProgressName, _currentProgress.ToString(), null);
     }
 }

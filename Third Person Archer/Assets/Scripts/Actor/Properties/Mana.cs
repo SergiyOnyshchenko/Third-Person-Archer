@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Playgama;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -17,13 +18,24 @@ namespace Actor.Properties
 
         private void OnEnable()
         {
-            _value = PlayerPrefs.GetInt("Mana", 0);
-            _value = Mathf.Clamp(_value, 0, _maxValue);
+            Bridge.storage.Get("Mana", (success, value) =>
+            {
+                if (success && int.TryParse(value, out var result))
+                {
+                    _value = Mathf.Clamp(result, 0, _maxValue);
+                }
+                else
+                {
+                    _value = 0;
+                }
+
+                OnManaModified?.Invoke(Ratio);
+            });
         }
 
         private void OnDisable()
         {
-            PlayerPrefs.SetInt("Mana", _value);
+            Bridge.storage.Set("Mana", _value.ToString(), null);
         }
 
         private void Start()
