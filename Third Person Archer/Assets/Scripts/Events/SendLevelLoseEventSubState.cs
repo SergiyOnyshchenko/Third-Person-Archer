@@ -21,6 +21,7 @@ public class SendLevelLoseEventSubState : SubState, IActorIniter
         float timer = GameplayTimer.Instance.Timer;
         float progress = EnemyManager.Instance.GetDeadEnemiesRatio();
 
+        /*
         LevelEventSystem.SendLevelFinish();
 
         SDK_EventSystem.SendLevelLose(
@@ -31,5 +32,8 @@ public class SendLevelLoseEventSubState : SubState, IActorIniter
 
         if (AppMetricaEventReporter.Instance != null)
             AppMetricaEventReporter.Instance.SendLevelLostEvent(_actor);
+        */
+
+        YsoCorp.GameUtils.YCManager.instance.OnGameFinished(false);
     }
 }

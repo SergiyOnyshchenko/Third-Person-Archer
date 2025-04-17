@@ -199,7 +199,7 @@ public class AppMetricaEventReporter : MonoBehaviour
         string json = JsonConvert.SerializeObject(parameters, Formatting.Indented);
         //Debug.Log(eventName + " - " + json);
 
-        AppMetrica.ReportEvent(eventName, json);
+        //AppMetrica.ReportEvent(eventName, json);
     }
 
     private int GetLevelNumber()

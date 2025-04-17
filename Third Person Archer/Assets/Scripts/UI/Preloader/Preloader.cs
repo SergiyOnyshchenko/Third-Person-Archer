@@ -31,7 +31,14 @@ public class Preloader : MonoBehaviour
 
         Color fadeColor = _fade.color;
         fadeColor.a = 1;
-        _fade.DOColor(fadeColor, _duration).OnComplete(() => onFinish?.Invoke());
+
+        _fade.DOColor(fadeColor, _duration).OnComplete(() => 
+        {
+            YsoCorp.GameUtils.YCManager.instance.adsManager.ShowInterstitial(() =>
+            {
+                onFinish?.Invoke();
+            });
+        });
     }
 
     public void FadeOut()

@@ -21,6 +21,7 @@ public class SendLevelWinEventSubState : SubState, IActorIniter
         int level_index = LevelManager.Instance.Database.LevelIndex;
         float timer = GameplayTimer.Instance.Timer;
 
+        /*
         LevelEventSystem.SendLevelFinish();
 
         SDK_EventSystem.SendLevelWin(
@@ -31,5 +32,8 @@ public class SendLevelWinEventSubState : SubState, IActorIniter
 
         if (AppMetricaEventReporter.Instance != null)
             AppMetricaEventReporter.Instance.SendLevelWinEvent(_actor);
+        */
+
+        YsoCorp.GameUtils.YCManager.instance.OnGameFinished(true);
     }  
 }

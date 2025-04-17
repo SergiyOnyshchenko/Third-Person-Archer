@@ -214,9 +214,9 @@ var FBUnityLib = {
     },
 
     init: function(connectFacebookUrl, locale, debug, initParams, status) {
-        var connectFacebookUrlString = UTF8ToString(connectFacebookUrl);
-        var localeString = UTF8ToString(locale);
-        var initParamsString = UTF8ToString(initParams);
+        var connectFacebookUrlString = Pointer_stringify(connectFacebookUrl);
+        var localeString = Pointer_stringify(locale);
+        var initParamsString = Pointer_stringify(initParams);
 
         FBUnity.init(connectFacebookUrlString, localeString, debug, initParamsString, status);
     },
@@ -226,10 +226,10 @@ var FBUnityLib = {
     },
 
     login: function(scope, callback_id) {
-        var scopeString = UTF8ToString(scope);
+        var scopeString = Pointer_stringify(scope);
         var scopeArray = JSON.parse(scopeString);
 
-        var callback_idString = UTF8ToString(callback_id);
+        var callback_idString = Pointer_stringify(callback_id);
 
         FBUnity.login(scopeArray, callback_idString);
     },
@@ -243,30 +243,30 @@ var FBUnityLib = {
     },
 
     logAppEvent: function(eventName, valueToSum, parameters) {
-        var eventNameString = UTF8ToString(eventName);
-        var parametersString = UTF8ToString(parameters);
+        var eventNameString = Pointer_stringify(eventName);
+        var parametersString = Pointer_stringify(parameters);
 
         FBUnity.logAppEvent(eventNameString, valueToSum, parametersString);
     },
 
     logAppEventWithoutValue: function(eventName, parameters) {
-        var eventNameString = UTF8ToString(eventName);
-        var parametersString = UTF8ToString(parameters);
+        var eventNameString = Pointer_stringify(eventName);
+        var parametersString = Pointer_stringify(parameters);
 
         FBUnity.logAppEvent(eventNameString, null, parametersString);
     },
 
     logPurchase: function(purchaseAmount, currency, parameters) {
-        var currencyString = UTF8ToString(currency);
-        var parametersString = UTF8ToString(parameters);
+        var currencyString = Pointer_stringify(currency);
+        var parametersString = Pointer_stringify(parameters);
 
         FBUnity.logPurchase(purchaseAmount, currencyString, parametersString);
     },
 
     ui: function(x, uid, callbackMethodName) {
-        var xString = UTF8ToString(x);
-        var uidString = UTF8ToString(uid);
-        var callbackMethodNameString = UTF8ToString(callbackMethodName);
+        var xString = Pointer_stringify(x);
+        var uidString = Pointer_stringify(uid);
+        var callbackMethodNameString = Pointer_stringify(callbackMethodName);
 
         FBUnity.ui(xString, uidString, callbackMethodNameString);
     }

@@ -20,12 +20,14 @@ public class EntitiesAlert : MonoBehaviour
         _state ??= GetComponent<State>();
     }
 
+    /*
     private void OnValidate()
     {
         _player = FindAnyObjectByType<Player>();
         _initers = _entitiesContainer.GetComponentsInChildren<PerceptionInput>();
         _state = GetComponent<State>();
     }
+    */
 
     private void OnEnable()
     {
