@@ -20,6 +20,11 @@ namespace Actor
             InitChilds();
         }
 
+        public void ReviveHandler()
+        {
+            IsDead = false ;
+        }
+
         public void DeathHandler()
         {
             IsDead = true;

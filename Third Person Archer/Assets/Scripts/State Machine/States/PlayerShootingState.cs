@@ -13,8 +13,9 @@ public class PlayerShootingState : ProcessState, IActorIniter
     [SerializeField] private float _delay = 0.1f;
     [SerializeField] private bool _triggerEnemiesOnEnter;
     [SerializeField] private bool _hideEnemiesBeforeShooting = true;
-    private AttackInput _attackInput;
     private ActorController _player;
+    private AttackInput _attackInput;
+    private Health _health;
     private ShootingTargets _shootingTargets;
 
     protected override void Awake()
@@ -36,6 +37,9 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
         if (actor.TryGetProperty(out ShootingTargets shootingTargets))
             _shootingTargets = shootingTargets;
+
+        if (actor.TryGetSystem(out Health health))
+            _health = health;
     }
 
     public override void Enter()

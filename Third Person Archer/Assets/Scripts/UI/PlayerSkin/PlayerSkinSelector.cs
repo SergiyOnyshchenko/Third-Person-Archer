@@ -42,5 +42,9 @@ public class PlayerSkinSelector : MonoBehaviour, IPlayerSkinSelector, ISelector,
         OnDeselected?.Invoke();
     }
 
-    private void SendSkinSelectedEvent() => OnSkinSelected?.Invoke(this);
+
+    private void SendSkinSelectedEvent()
+    {
+        OnSkinSelected?.Invoke(this);
+    }
 }

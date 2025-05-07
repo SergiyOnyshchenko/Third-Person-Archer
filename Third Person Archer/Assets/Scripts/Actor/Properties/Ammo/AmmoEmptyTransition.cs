@@ -33,7 +33,7 @@ public class AmmoEmptyTransition<T> : StateTransition, IActorIniter  where T : W
 
     private void AmmoCheck()
     {
-        if(_ammoCount.Value <= 0)
+        if(_ammoCount.AmmoCount <= 0)
             DoTransition();
     }
 }

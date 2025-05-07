@@ -7,6 +7,6 @@ public class Frostbite : BooleanProperty
 {
     public void Freeze()
     {
-        _value = true;
+        _currentValue = true;
     }
 }

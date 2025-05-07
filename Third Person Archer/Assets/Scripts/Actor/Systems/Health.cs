@@ -21,12 +21,21 @@ namespace Actor
         public void InitActor(ActorController actor)
         {
             if (actor.TryGetProperty(out MaxHealth maxHealth))
+            {
                 _maxHealth = maxHealth;
-
+                _maxHealth.OnPropertyChanged += UpdateMaxHealth;
+            }
+                
             InitCurrentHealth(_maxHealth);
 
             _damageRecievers = actor.GetComponentsInChildren<IDamageReciever>();
             SubscribeDamageRecievers();
+        }
+
+        private void OnDestroy()
+        {
+            if(_maxHealth != null)
+                _maxHealth.OnPropertyChanged -= UpdateMaxHealth;
         }
 
         public void ApplyDamage(int damage)
@@ -49,11 +58,22 @@ namespace Actor
             ApplyDamage(_health);
         }
 
+        public void Revive()
+        {
+            InitCurrentHealth(_maxHealth);
+            ApplyDamage(0);
+        }
+
         private int TryApplyDamage(int damage)
         {
             int health = _health;
             health -= damage;
             return health;
+        }
+
+        private void UpdateMaxHealth()
+        {
+            InitCurrentHealth(_maxHealth);
         }
 
         private void InitCurrentHealth(MaxHealth maxHealth)

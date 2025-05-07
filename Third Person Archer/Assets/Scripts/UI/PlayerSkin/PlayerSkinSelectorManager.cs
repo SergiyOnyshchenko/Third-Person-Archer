@@ -46,8 +46,8 @@ public class PlayerSkinSelectorManager : MonoBehaviour
                 selector.Selector.Select();
                 _equippedData.Equip(target.SkinData);
 
-                if (AppMetricaEventReporter.Instance != null) ;
-                    AppMetricaEventReporter.Instance.SendSkinEquip(target.SkinData);
+                //if (AppMetricaEventReporter.Instance != null) ;
+                //    AppMetricaEventReporter.Instance.SendSkinEquip(target.SkinData);
             }
             else
             {

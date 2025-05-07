@@ -8,7 +8,7 @@ namespace Actor.Properties
     {
         public void Decrease()
         {
-            SetValue(_value - 1);
+            SetValue(Value - 1);
         }
     }
 }

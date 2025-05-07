@@ -8,7 +8,7 @@ namespace Actor.Properties
     {
         public void InitActor(ActorController actor)
         {
-            _value = actor.transform.position;
+            _currentValue = actor.transform.position;
         }
     }
 }

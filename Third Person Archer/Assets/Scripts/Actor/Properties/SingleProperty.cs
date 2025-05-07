@@ -8,24 +8,25 @@ namespace Actor.Properties
     public class SingleProperty<T> : Property
     {
         [SerializeField] protected T _value;
-        private T _baseValue;
-        public T Value { get => _value; }
+        protected T _currentValue;
+        public T Value { get => _currentValue; }
+        public T BaseValue { get => _value; }
         public event Action OnPropertyChanged;
 
         private void Awake()
         {
-            _baseValue = _value;
+            _currentValue = _value;
         }
 
         public void SetValue(T value)
         {
-            _value = value;
+            _currentValue = value;
             OnPropertyChanged?.Invoke();
         }
 
         public void ResetValue()
         {
-            _value = _baseValue;
+            _currentValue = _value;
             OnPropertyChanged?.Invoke();
         }
     }

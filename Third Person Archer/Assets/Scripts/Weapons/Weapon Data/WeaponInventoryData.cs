@@ -25,6 +25,15 @@ public class WeaponInventoryData : ScriptableObject
         return null;
     }
 
+    public bool HasWeapon(WeaponType type)
+    {
+        foreach (var weapon in _weapons)
+            if (weapon.Type == type)
+                return true;
+
+        return false;
+    }
+
     public void EquipWeapon(WeaponData newWeapon)
     {
         newWeapon.Equip(true);

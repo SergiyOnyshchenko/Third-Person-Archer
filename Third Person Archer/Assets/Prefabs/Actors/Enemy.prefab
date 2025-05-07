@@ -235,6 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e12e3cdd1e71e874ea2f0d8925ec587d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _baseValue: {x: 0, y: 0, z: 0}
   _value: {x: 0, y: 0, z: 0}
 --- !u!1 &537361750769876895
 GameObject:
@@ -1112,6 +1113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60d62a554803b3d43ad0757a55db7782, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _baseValue: 0
   _value: 0
 --- !u!1 &1774266555733164805
 GameObject:
@@ -2608,7 +2610,6 @@ MonoBehaviour:
       m_Calls: []
   _transitions: []
   _subStates: []
-  _animator: {fileID: 1850587764097667518}
 --- !u!1 &3151734812399155952
 GameObject:
   m_ObjectHideFlags: 0
@@ -4855,6 +4856,52 @@ Transform:
   - {fileID: 1279814620535136444}
   m_Father: {fileID: 265161552527229980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7045989258636215947
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2181497320371895822}
+  - component: {fileID: 8451754610873923306}
+  m_Layer: 7
+  m_Name: Death Cost
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2181497320371895822
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7045989258636215947}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7292970375520031337}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8451754610873923306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7045989258636215947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 285d43868cb32314c8fb0865d7117956, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseValue: {fileID: 0}
+  _value: {fileID: 11400000, guid: 7e96d34af3b1152408728d2cec89b210, type: 2}
 --- !u!1 &7093611376259362527
 GameObject:
   m_ObjectHideFlags: 0
@@ -7630,13 +7677,15 @@ ParticleSystemRenderer:
   m_RenderAlignment: 2
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
-  m_UseCustomVertexStreams: 1
   m_EnableGPUInstancing: 0
   m_ApplyActiveColorSpace: 0
   m_AllowRoll: 1
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
+  m_UseCustomVertexStreams: 1
   m_VertexStreams: 0001030422
+  m_UseCustomTrailVertexStreams: 0
+  m_TrailVertexStreams: 00010304
   m_Mesh: {fileID: 8811360494054411816, guid: 8e8e47fd7435108459906ec2e7e9ccf4, type: 3}
   m_Mesh1: {fileID: 6841737707575416205, guid: 8e8e47fd7435108459906ec2e7e9ccf4, type: 3}
   m_Mesh2: {fileID: 6841737707575416205, guid: 8e8e47fd7435108459906ec2e7e9ccf4, type: 3}
@@ -10146,6 +10195,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 3892639790566293458, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
+      propertyPath: _baseValue
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 4312728854044751539, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -10477,6 +10530,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 775419275912247823, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7761270769807010119}
+    - targetCorrespondingSourceObject: {fileID: 775419275912247823, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2181497320371895822}
     - targetCorrespondingSourceObject: {fileID: 557883306131764195, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4188314247454451280}

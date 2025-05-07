@@ -9,6 +9,11 @@ public class LevelEventHandler : MonoBehaviour
         LevelEventSystem.SendLoadNextLevel();
     }
 
+    public void SendContinueLevel()
+    {
+        LevelEventSystem.SendContinueLevel();
+    }
+
     public void SendReloadLevel()
     {
         LevelEventSystem.SendReloadLevel();

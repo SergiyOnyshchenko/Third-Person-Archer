@@ -13,7 +13,8 @@ public class SendLevelStartEventSubState : SubState, IActorIniter
 
     public override void Exit()
     {
-        
+        LevelEventSystem.SendLevelStart();
+
         int level_number = LevelManager.Instance.Database.LevelNumber;
         int level_index = LevelManager.Instance.Database.LevelIndex;
         /*

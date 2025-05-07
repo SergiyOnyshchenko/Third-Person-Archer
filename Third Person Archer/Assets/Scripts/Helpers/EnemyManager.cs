@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Actor;
+using Actor.Properties;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
@@ -50,5 +51,22 @@ public class EnemyManager : MonoBehaviour
         }
 
         return (float) deadEnemies / (float) _targets.Length;
+    }
+
+
+    public int GetDeadEnemiesCoins()
+    {
+        int coins = 0;
+
+        foreach (var target in _targets)
+        {
+            if (target.TryGetProperty(out DeathCost cost))
+            {
+                if(cost.Value.Currency == CurrencyType.Coin)
+                    coins += cost.Value.Value;
+            }
+        }
+
+        return coins;
     }
 }

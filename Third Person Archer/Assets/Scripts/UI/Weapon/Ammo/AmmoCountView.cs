@@ -23,7 +23,7 @@ public class AmmoCountView<W> : MonoBehaviour, IActorIniter where W : WeaponCont
 
     private void ModifyView()
     {
-        _countField.text = _ammo.Value.ToString(); 
+        _countField.text = _ammo.AmmoCount.ToString(); 
     }
 }
 
