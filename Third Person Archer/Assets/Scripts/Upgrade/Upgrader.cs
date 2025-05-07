@@ -8,13 +8,17 @@ public abstract class Upgrader : MonoBehaviour
 
     private void OnEnable()
     {
-        _upgradeData.OnUpgraded.AddListener(Upgrade);
-        Upgrade();
+        _upgradeData.OnUpgraded.AddListener(Upgrade);   
     }
 
     private void OnDisable()
     {
         _upgradeData.OnUpgraded.RemoveListener(Upgrade);
+    }
+
+    private void Start()
+    {
+        Upgrade();
     }
 
     protected abstract void Upgrade();

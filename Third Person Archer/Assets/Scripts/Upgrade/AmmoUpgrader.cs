@@ -15,5 +15,6 @@ public class AmmoUpgrader : Upgrader
     protected override void Upgrade()
     {
         _ammo.SetMaxCount(_upgradeData.UpgradeValue);
+        Debug.Log("Ammo Upgrade " + _upgradeData.UpgradeValue);
     }
 }

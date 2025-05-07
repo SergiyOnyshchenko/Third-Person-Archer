@@ -58,6 +58,7 @@ namespace Actor.Properties
         public void ResetAmmoCount()
         {
             _currentCount = _maxCount;
+            OnAmmoModified?.Invoke();
         }
 
         public void Decrease()

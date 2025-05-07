@@ -1770,6 +1770,7 @@ GameObject:
   - component: {fileID: 7393280479748889653}
   - component: {fileID: 1928862125495507459}
   - component: {fileID: 421992982803197531}
+  - component: {fileID: 8287899701959843776}
   m_Layer: 5
   m_Name: Button_Continue
   m_TagString: Untagged
@@ -1893,6 +1894,33 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 8287899701959843776}
+        m_TargetAssemblyTypeName: RewardedAdCallback, Assembly-CSharp
+        m_MethodName: ShowRewarded
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &8287899701959843776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5270234457606314660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa58f39105cfc004d8f5909de3e6679a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnRewardSuccess:
+    m_PersistentCalls:
+      m_Calls:
       - m_Target: {fileID: 2935607770062430108}
         m_TargetAssemblyTypeName: LevelEventHandler, Assembly-CSharp
         m_MethodName: SendContinueLevel
@@ -1905,6 +1933,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  OnRewardFail:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &8062750861917442876
 GameObject:
   m_ObjectHideFlags: 0
