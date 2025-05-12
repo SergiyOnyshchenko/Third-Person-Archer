@@ -49,9 +49,9 @@ namespace Actor.Properties
             }
         }
 
-        public void SetMaxCount(int add)
+        public void SetMaxCount(int count)
         {
-            _maxCount = _baseCount + add;
+            _maxCount = count;
             ResetAmmoCount();
         }
 

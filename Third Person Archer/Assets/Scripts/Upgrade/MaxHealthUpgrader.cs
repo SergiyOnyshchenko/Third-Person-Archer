@@ -6,7 +6,6 @@ using Actor.Properties;
 public class MaxHealthUpgrader : Upgrader
 {
     [SerializeField] private MaxHealth _maxHealth;
-    [SerializeField] private int _upgradeStep = 25;
 
     private void Awake()
     {
@@ -16,6 +15,6 @@ public class MaxHealthUpgrader : Upgrader
 
     protected override void Upgrade()
     {
-        _maxHealth.SetValue(_maxHealth.BaseValue + (_upgradeStep * _upgradeData.UpgradeValue));
+        _maxHealth.SetValue(_upgradeData.FullValue);
     }
 }

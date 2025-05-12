@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Actor.Properties
 {
@@ -15,7 +16,7 @@ namespace Actor.Properties
 
         private void Awake()
         {
-            _currentValue = _value;
+            SetValue(_value);
         }
 
         public void SetValue(T value)

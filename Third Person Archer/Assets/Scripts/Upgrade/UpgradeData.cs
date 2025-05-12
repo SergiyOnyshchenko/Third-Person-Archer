@@ -6,9 +6,14 @@ using UnityEngine.Events;
 [CreateAssetMenu(fileName = "UpgradeData", menuName = "Data/Upgrade/Data")]
 public class UpgradeData : ScriptableObject
 {
+    [Header("Title")]
+    [SerializeField] private string _title;
     [Header("Count")]
     [SerializeField] private int _upgradeCount;
     [SerializeField] private int _maxUpgradeCount;
+    [Header("Value")]
+    [SerializeField] private int _startValue;
+    [SerializeField] private int _upgradeStep;
     [Header("Cost")]
     [SerializeField] private int _costStart;
     [SerializeField] private int _costStep;
@@ -16,10 +21,12 @@ public class UpgradeData : ScriptableObject
     [SerializeField] private string _saveKey;
     [SerializeField] private bool _useSaves = true;
 
-    public int UpgradeValue => _upgradeCount;
     public bool CanBeUpgraded => _upgradeCount < _maxUpgradeCount;
     public int UpgradeCost => GetUpgradeCost();
     public float UpgradeRatio => (float)_upgradeCount / (float)_maxUpgradeCount;
+    public int CurrentStepValue => _upgradeStep;
+    public int FullValue => _startValue + (_upgradeCount * _upgradeStep);
+    public string Title => _title + ": " + FullValue + (CanBeUpgraded? " (+" + _upgradeStep + ")" : "");
 
     [HideInInspector] public UnityEvent OnUpgraded;
 

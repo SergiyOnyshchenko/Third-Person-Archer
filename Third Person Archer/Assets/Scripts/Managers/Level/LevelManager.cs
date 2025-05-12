@@ -8,6 +8,7 @@ public class LevelManager : MonoBehaviour
 {
     [SerializeField] private LevelDatabase _database;
     [SerializeField] private bool _delayedLoading = false;
+    [SerializeField] private bool _enableAd = true;
     public LevelData CurrentLevel => _database.CurrentLevel;
     public LevelDatabase Database { get => _database;}
 
@@ -55,40 +56,51 @@ public class LevelManager : MonoBehaviour
     public void LoadLevel(int index)
     {
         _database.TrySetLevel(index);
-        LoadLevel(_database.CurrentLevel);
+        LoadLevel(_database.CurrentLevel, true);
     }
 
     public void LoadNextLevel()
     {
-        //_database.SetNextLevel();
-        LoadLevel(_database.CurrentLevel);
+        LoadLevel(_database.CurrentLevel, true);
     }
 
     public void ReloadLevel()
     {
-        LoadLevel(_database.CurrentLevel);
+        LoadLevel(_database.CurrentLevel, true);
     }
 
     public void LoadMainMenu()
     {
-        LoadLevel(_database.MainMenu);
+        LoadLevel(_database.MainMenu, false);
     }
 
     public void LoadPreloader()
     {
-        LoadLevel(_database.PreloadLevel);
+        LoadLevel(_database.PreloadLevel, false);
     }
 
-
-    private void LoadLevel(LevelData data)
+    private void LoadLevel(LevelData data, bool useAd)
     {
-        if (Preloader.Instance == null)
+        if (Preloader.Instance != null)
         {
-            SceneManager.LoadScene(data.Scene);
+            if (useAd && _enableAd)
+            {
+                Preloader.Instance.FadeIn(() =>
+                {
+                    YsoCorp.GameUtils.YCManager.instance.adsManager.ShowInterstitial(() =>
+                    {
+                        SceneManager.LoadScene(data.Scene);
+                    });
+                });
+            }
+            else
+            {
+                Preloader.Instance.FadeIn(() => SceneManager.LoadScene(data.Scene));
+            }
         }
         else
         {
-            Preloader.Instance.FadeIn(() => SceneManager.LoadScene(data.Scene));
+            SceneManager.LoadScene(data.Scene);
         }
     }
 }

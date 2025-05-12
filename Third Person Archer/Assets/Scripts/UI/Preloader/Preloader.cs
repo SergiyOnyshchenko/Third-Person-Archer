@@ -34,10 +34,9 @@ public class Preloader : MonoBehaviour
 
         _fade.DOColor(fadeColor, _duration).OnComplete(() => 
         {
-            YsoCorp.GameUtils.YCManager.instance.adsManager.ShowInterstitial(() =>
-            {
-                onFinish?.Invoke();
-            });
+            onFinish?.Invoke();
+
+
         });
     }
 
