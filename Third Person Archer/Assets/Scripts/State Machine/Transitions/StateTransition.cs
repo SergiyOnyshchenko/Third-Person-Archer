@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,6 +10,7 @@ public class StateTransition : MonoBehaviour
     [SerializeField] protected bool _isTransit;
     public MainState NextState { get => _nextState; }
     public bool IsTransit { get => _isTransit; }
+
     public UnityEvent OnTransotion;
     public UnityEvent OnEnter;
     public UnityEvent OnExit;

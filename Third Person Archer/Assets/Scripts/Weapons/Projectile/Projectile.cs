@@ -18,7 +18,8 @@ public class Projectile : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private Collider _collider;
     [SerializeField] private Collider _elementalTrigger;
-    [SerializeField] ElementalView _elementalView;
+    [SerializeField] private ElementalView _elementalView;
+    [SerializeField] private GameObject _feedbacks;
     private ProjectileState _state = ProjectileState.Loaded;
     private ElementalType _elementalType = ElementalType.NULL;
     private Vector3 _direction;
@@ -256,5 +257,13 @@ public class Projectile : MonoBehaviour
     public void ChangeSpeed(float newSpeed)
     {
         _speed = newSpeed;
+    }
+
+    public void EnableFeedbacks(bool value)
+    {
+        if (_feedbacks == null)
+            return;
+
+        _feedbacks.SetActive(value);
     }
 }

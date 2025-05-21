@@ -4,12 +4,14 @@ using Actor.Properties;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.Events;
+using DG.Tweening;
 
 namespace Actor
 {
     public class LastProjectileView : System, IActorIniter
     {
         [SerializeField] private CinemachineVirtualCamera _camera;
+        [SerializeField] private Camera _xRayOverlayCamera;
         private ActorController _actor;
         private ShootingTargets _shootingTargets;
         private ProjectileShooter[] _shooters;
@@ -76,7 +78,11 @@ namespace Actor
 
             _timer = DeactivateTimer();
 
+            projectile.EnableFeedbacks(false);
+
             StartCoroutine(_timer);
+
+            _xRayOverlayCamera.gameObject.SetActive(true);
         }
 
         private void Deactivate()
@@ -93,11 +99,16 @@ namespace Actor
             _projectile.OnHited.RemoveListener(Deactivate);
             OnDeactivated?.Invoke();
 
-            _camera.Follow = null;
-            _camera.LookAt = null;
+            //_camera.Follow = null;
+            //_camera.LookAt = null;
             _camera.transform.SetParent(_actor.transform);
 
             transform.localPosition = Vector3.zero;
+        }
+
+        public void ResetXRayCamera()
+        {
+            _xRayOverlayCamera.gameObject.SetActive(false);
         }
 
         private IEnumerator DeactivateTimer()
