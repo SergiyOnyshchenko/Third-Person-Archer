@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Actor;
 using UnityEngine;
 using Cinemachine;
+using Actor.Properties;
 
 public class CrossbowAimState : ProcessState, IActorIniter
 {
@@ -12,8 +13,18 @@ public class CrossbowAimState : ProcessState, IActorIniter
     [SerializeField] private Transform _crossbowAimPoint;
     private CrossbowController _crossbowController;
     private AttackInput _attackInput;
+
+    private NormalFov _normalFov;
+    private ZoomFovMultiplier _zoomFovMult;
+    private WeaponPull _pull;
+
     private float _lerp;
     private bool _isShooted = false;
+
+    private float _lerpInSpeed = 2f;
+    private float _lerpOutSpeed = 8f;
+
+    private float _zoomFov = 45;
 
     public void InitActor(ActorController actor)
     {
@@ -22,6 +33,10 @@ public class CrossbowAimState : ProcessState, IActorIniter
 
         if (actor.TryGetInput(out AttackInput attackInput))
             _attackInput = attackInput;
+
+        if (actor.TryGetProperty(out _normalFov)) { }
+        if (actor.TryGetProperty(out _zoomFovMult)) { }
+        if (actor.TryGetProperty(out _pull)) { }
     }
 
     public override void Enter()
@@ -35,22 +50,26 @@ public class CrossbowAimState : ProcessState, IActorIniter
 
         _lerp = 0;
         _isShooted = false;
+
+        _pull.SetValue(_lerp);
     }
 
     private void Update()
     {
         if (_attackInput.IsHold)
         {
-            _lerp += 2 * Time.deltaTime;
+            _lerp += _lerpInSpeed * Time.deltaTime;
             _lerp = Mathf.Clamp(_lerp, 0f, 1f);
         }
         else
         {
-            _lerp -= 8 * Time.deltaTime;
+            _lerp -= _lerpOutSpeed * Time.deltaTime;
             _lerp = Mathf.Clamp(_lerp, 0f, 1f);
         }
 
-        _camera.m_Lens.FieldOfView = Mathf.Lerp(90, 30, _lerp);
+        _pull.SetValue(_lerp);
+
+        _camera.m_Lens.FieldOfView = Mathf.Lerp(_normalFov.Value, _zoomFov * _zoomFovMult.Value, _lerp);
 
         _crossbowPivot.localPosition = Vector3.Lerp(Vector3.zero, _crossbowAimPoint.localPosition, _lerp);
         _crossbowPivot.localRotation = Quaternion.Lerp(Quaternion.identity, _crossbowAimPoint.localRotation, _lerp);
@@ -68,7 +87,7 @@ public class CrossbowAimState : ProcessState, IActorIniter
 
     public override void Exit()
     {
-        _camera.m_Lens.FieldOfView = 90;
+        _camera.m_Lens.FieldOfView = _normalFov.Value;
 
         _attackInput.OnAttackRelease.RemoveListener(Shoot);
 

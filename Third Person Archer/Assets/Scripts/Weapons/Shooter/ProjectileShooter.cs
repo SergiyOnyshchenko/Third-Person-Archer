@@ -15,10 +15,11 @@ public class ProjectileShooter : Shooter
         onHited += SetTargetHitedEvent;
 
         Projectile arrow = Instantiate(_prefab, _shootPoint.position, _shootPoint.rotation);
+        StartCoroutine(Shooting(arrow, direction, multiplier, onHited));
+    }
 
-        if(_elementalAttackType != null)
-            arrow.SetElementalType(_elementalAttackType.Value);
-
+    private IEnumerator Shooting(Projectile arrow, Vector3 direction, float multiplier, UnityAction onHited)
+    {
         RaycastHit hit;
 
         if (Physics.Raycast(_aimInput.GetAimRoot(), direction, out hit, Mathf.Infinity, arrow.HitLayers))
@@ -29,6 +30,13 @@ public class ProjectileShooter : Shooter
         {
             direction = (PointAlongDirection(_aimInput.GetAimRoot(), direction, 100f) - _shootPoint.position).normalized;
         }
+
+        arrow.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+
+        yield return null;
+
+        if (_elementalAttackType != null)
+            arrow.SetElementalType(_elementalAttackType.Value);
 
         arrow.Shoot(direction, multiplier, onHited);
 

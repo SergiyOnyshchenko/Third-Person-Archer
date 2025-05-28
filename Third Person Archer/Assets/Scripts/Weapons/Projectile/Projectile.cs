@@ -3,10 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
-using Unity.Burst.CompilerServices;
+using Actor;
+using Actor.Properties;
 
-public class Projectile : MonoBehaviour
+public class Projectile : MonoBehaviour, IActorIniter
 {
+    [field: SerializeField] public ActorController Actor {  get; private set; }
+
+    //Properties
+    [SerializeField] private ProjectileHitLayermask _hitLayermask;
+    private ProjectileDirection __direction;
+    private ElementalProperty _elemental;
+    private Speed __speed;
+
+    //Systems
+    private FeedbackManager _feedbackManager;
+    private ProjectileHitHandler _hitHandler;
+    private ProjectileHitPredictor _hitPredictor;
+
+
     [SerializeField] private int _damage = 100;
     [SerializeField] private float _speed = 50f;
     [Space]
@@ -27,28 +42,52 @@ public class Projectile : MonoBehaviour
     public UnityEvent OnShooted = new UnityEvent();
     public UnityEvent OnHited = new UnityEvent();
     public UnityEvent OnTargetHited = new UnityEvent();
-
     public float Speed => _speed;
-    public LayerMask HitLayers { get => _hitLayers;}
+    public LayerMask HitLayers { get => _hitLayermask.Value; }
     public int Damage { get => _damage; }
+
 
     private void Awake()
     {
+        Actor = GetComponent<ActorController>();
+
         if (_rigidbody == null)
             _rigidbody = GetComponent<Rigidbody>();
     }
 
+    public void InitActor(ActorController actor)
+    {
+        if (actor.TryGetProperty(out __direction)) { }
+        if (actor.TryGetProperty(out _elemental)) { }
+        if (actor.TryGetProperty(out __speed)) { }
+
+        if (actor.TryGetSystem(out _feedbackManager)) { }
+        if (actor.TryGetSystem(out _hitHandler)) { }
+        if (actor.TryGetSystem(out _hitPredictor)) { }
+    }
+
     public void Shoot(Vector3 direction, float power, UnityAction onHited)
     {
+        __direction.SetValue(direction);
+
+        OnShooted?.Invoke();
+        _hitHandler.OnTargetHited.AddListener(onHited);
+
+        _hitHandler.OnHited = OnHited;
+
+        PreCheckTargetDeath();
+
+        /*
         _direction = direction.normalized;
         _power = power;
         _state = ProjectileState.Flying;
-        transform.rotation = Quaternion.LookRotation(_direction, Vector3.up);
+
 
         OnShooted?.Invoke();
         OnTargetHited.AddListener(onHited);
 
         PreCheckTargetDeath();
+        */
     }
 
     public void SetDamage(int damage)
@@ -58,48 +97,36 @@ public class Projectile : MonoBehaviour
 
     public void SetElementalType(ElementalType type)
     {
-        _elementalType = type;
+        _elemental.SetValue(type);
+    }
 
-        if (_elementalView != null)
-            _elementalView.SetCurrentView(type);
+    public void SetSpeed(float newSpeed)
+    {
+        if (__speed == null)
+            return;
 
-        if (type != ElementalType.NULL && _elementalTrigger != null)
-        {
-            _elementalTrigger.enabled = true;
-        }
+        __speed.SetValue(newSpeed);
+    }
+
+    public void EnableFeedbacks(bool value)
+    {
+        if (_feedbackManager == null)
+            return;
+
+        _feedbackManager.SetAllFeedbacksEnabled(value);
     }
 
     public RaycastHit GetPredictiveHit()
     {
-        RaycastHit hit;
-
-        Physics.Raycast(transform.position + _direction * 2, _direction, out hit, _hitLayers);
-
-        return hit;
+        return _hitPredictor.GetPredictiveHit();
     }
 
     public bool PreCheckTargetDeath()
     {
-        RaycastHit hit;
-
-        if (Physics.Raycast(transform.position + _direction * 2, _direction, out hit, _hitLayers))
-        {
-            if (hit.collider.TryGetComponent(out IDamageChecker damageChecker))
-            {
-                if (damageChecker.GetHealthAfterDamage(_damage) > 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return _hitPredictor.PreCheckTargetDeath();
     }
 
+    /*
     public void FixedUpdate()
     {
         if (_state == ProjectileState.Flying)
@@ -108,7 +135,9 @@ public class Projectile : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(_direction, Vector3.up);
         }
     }
+    */
 
+    /*
     private void OnCollisionEnter(Collision collision)
     {
         if (_state == ProjectileState.Flying)
@@ -119,7 +148,9 @@ public class Projectile : MonoBehaviour
             }
         }
     }
+    */
 
+    /*
     private void OnTriggerEnter(Collider other)
     {
         if (_elementalType == ElementalType.NULL)
@@ -149,14 +180,6 @@ public class Projectile : MonoBehaviour
                             fireTrigger.ReciveTrigger("Burn", gameObject);
                         }
 
-                        /*
-                        if (hitCollider.TryGetComponent(out IDamageable damager1))
-                        {
-                            damager1.DoDamage(1);
-                            OnTargetHited?.Invoke();
-                        }
-                        */
-
                         break;
                     case ElementalType.FROST:
 
@@ -165,20 +188,14 @@ public class Projectile : MonoBehaviour
                             frostTrigger.ReciveTrigger("Freeze", gameObject);
                         }
 
-                        /*
-                        if (hitCollider.TryGetComponent(out IDamageable damager2))
-                        {
-                            damager2.DoDamage(1);
-                            OnTargetHited?.Invoke();
-                        }
-                        */
-
                         break;
                 }
             }
         }
     }
+    */
 
+    /*
     private void Hit(Collision collision)
     {
         _collider.enabled = false;
@@ -193,34 +210,8 @@ public class Projectile : MonoBehaviour
         {
             case ElementalType.FIRE:
 
-                /*
-                if (collision.collider.TryGetComponent(out ITriggerReciever fireTrigger))
-                {
-                    fireTrigger.ReciveTrigger("Burn", gameObject);
-                }
-
-                if (collision.collider.TryGetComponent(out IDamageable damager1))
-                {
-                    damager1.DoDamage(1);
-                    OnTargetHited?.Invoke();
-                }
-                */
-
                 break;
             case ElementalType.FROST:
-
-                /*
-                if (collision.collider.TryGetComponent(out ITriggerReciever frostTrigger))
-                {
-                    frostTrigger.ReciveTrigger("Freeze", gameObject);
-                }
-
-                if (collision.collider.TryGetComponent(out IDamageable damager2))
-                {
-                    damager2.DoDamage(1);
-                    OnTargetHited?.Invoke();
-                }
-                */
 
                 break;
             default:
@@ -248,22 +239,13 @@ public class Projectile : MonoBehaviour
             Destroy(gameObject);
     }
 
+
     private IEnumerator PushWithDelay(Rigidbody rigidbody, Vector3 direction, float power, float delay)
     {
         yield return new WaitForSeconds(delay);
         rigidbody.AddForce(direction * power, ForceMode.VelocityChange);
     }
+    */
 
-    public void ChangeSpeed(float newSpeed)
-    {
-        _speed = newSpeed;
-    }
 
-    public void EnableFeedbacks(bool value)
-    {
-        if (_feedbacks == null)
-            return;
-
-        _feedbacks.SetActive(value);
-    }
 }

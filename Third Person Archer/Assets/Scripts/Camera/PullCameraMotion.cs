@@ -1,24 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using Actor;
+using Actor.Properties;
 using Cinemachine;
 using UnityEngine;
 
-public class PullCameraMotion : SubState
+public class PullCameraMotion : SubState, IActorIniter
 {
     [SerializeField] private CinemachineVirtualCamera _camera;
     [SerializeField] private Transform _pullHolder;
+    private NormalFov _normalFov;
+    private ZoomFovMultiplier _zoomFovMult;
+    private float _zoomFov = 60;
+
     private const float _springPower = 8f;
     private const float _springDumping = 0.5f;
-    private float _normalFov = 90;
-    private float _zoomFov = 60;
+
     private SpringFloat _spring;
     private IPull _pull;
 
-    private void Start()
+
+    public void InitActor(ActorController actor)
     {
-        _pull = _pullHolder.GetComponent<IPull>();
-        _spring = new SpringFloat(_springPower, _springDumping, 90);
+        if(actor.TryGetProperty(out _normalFov)) 
+        {
+            _pull = _pullHolder.GetComponent<IPull>();
+            _spring = new SpringFloat(_springPower, _springDumping, _normalFov.Value);
+        }
+
+        if (actor.TryGetProperty(out _zoomFovMult)) { }
     }
 
     private void FixedUpdate()
@@ -28,13 +38,13 @@ public class PullCameraMotion : SubState
 
     private void UpdateCameraZoom(float value)
     {
-        float fov = Mathf.Lerp(_normalFov, _zoomFov, value);
+        float fov = Mathf.Lerp(_normalFov.Value, _zoomFov * _zoomFovMult.Value, value);
         _spring.UpdateValue(fov);
         _camera.m_Lens.FieldOfView = _spring.Value;
     }
 
     public void Reset()
     {
-        _camera.m_Lens.FieldOfView = _normalFov;
+        _camera.m_Lens.FieldOfView = _normalFov.Value;
     }
 }

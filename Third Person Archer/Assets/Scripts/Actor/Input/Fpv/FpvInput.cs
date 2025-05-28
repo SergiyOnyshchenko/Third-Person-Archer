@@ -10,6 +10,11 @@ namespace Actor
         public float Vertical { get; protected set; }
         public bool IsFrozen { get; protected set; }
 
+        public void Activate (bool value)
+        {
+            IsActive = value;
+        }
+
         public void Freeze(bool value)
         {
             IsFrozen = value;

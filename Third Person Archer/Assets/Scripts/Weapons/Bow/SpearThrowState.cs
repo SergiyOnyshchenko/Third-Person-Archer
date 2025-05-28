@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Actor;
 using DG.Tweening;
 using UnityEngine;
-using Input = UnityEngine.Input;
 
 public class SpearThrowState : ProcessState, IActorIniter
 {
