@@ -4,6 +4,7 @@ using Actor;
 using Actor.Properties;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.AI;
 
 public class PlayerShootingState : ProcessState, IActorIniter
 {
@@ -26,6 +27,11 @@ public class PlayerShootingState : ProcessState, IActorIniter
         {
             HideEnemiesBeforeSgooting();
         }
+    }
+
+    private void Start()
+    {
+
     }
 
     public void InitActor(ActorController actor)
@@ -53,6 +59,9 @@ public class PlayerShootingState : ProcessState, IActorIniter
             ActivateEnemies();
             _attackInput.AllowAttack(true);
 
+            //if (_player.TryGetComponent(out NavMeshAgent agent))
+            //    agent.enabled = false;
+
             if (_lookAtPoint != null && _player.TryGetSystem(out BodyRotator rotator))
                 rotator.RotateToInstant(_lookAtPoint);
         });
@@ -75,6 +84,9 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
     public override void Exit()
     {
+        if (_lookAtPoint != null && _player.TryGetSystem(out BodyRotator rotator))
+            rotator.ResetYRotation();
+
         _attackInput.AllowAttack(false);
 
         base.Exit();

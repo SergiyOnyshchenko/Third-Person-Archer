@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Actor.Properties;
 using UnityEngine;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 namespace Actor
 {

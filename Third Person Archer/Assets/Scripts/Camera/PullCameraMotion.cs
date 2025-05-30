@@ -7,11 +7,12 @@ using UnityEngine;
 
 public class PullCameraMotion : SubState, IActorIniter
 {
+    [SerializeField] private float _zoomFov = 30;
+    [Space]
     [SerializeField] private CinemachineVirtualCamera _camera;
     [SerializeField] private Transform _pullHolder;
     private NormalFov _normalFov;
     private ZoomFovMultiplier _zoomFovMult;
-    private float _zoomFov = 60;
 
     private const float _springPower = 8f;
     private const float _springDumping = 0.5f;

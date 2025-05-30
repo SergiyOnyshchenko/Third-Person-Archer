@@ -52,6 +52,9 @@ public class EntitiesAlert : MonoBehaviour
 
             for (int i = 0; i < _initers.Length; i++)
             {
+                if (_initers[i] == null)
+                    continue;
+
                 _initers[i].ActivatePerception(new ITarget[] { playerTarget });
                 _initers[i].ReciveSound("", 1f, _player.gameObject);
             }

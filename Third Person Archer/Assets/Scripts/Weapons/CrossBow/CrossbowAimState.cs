@@ -10,6 +10,7 @@ public class CrossbowAimState : ProcessState, IActorIniter
     [SerializeField] private CinemachineVirtualCamera _camera;
     [SerializeField] private Transform _crossbowPivot;
     [Space]
+    [SerializeField] private Transform _crossbowIdlePoint;
     [SerializeField] private Transform _crossbowAimPoint;
     private CrossbowController _crossbowController;
     private AttackInput _attackInput;
@@ -71,8 +72,8 @@ public class CrossbowAimState : ProcessState, IActorIniter
 
         _camera.m_Lens.FieldOfView = Mathf.Lerp(_normalFov.Value, _zoomFov * _zoomFovMult.Value, _lerp);
 
-        _crossbowPivot.localPosition = Vector3.Lerp(Vector3.zero, _crossbowAimPoint.localPosition, _lerp);
-        _crossbowPivot.localRotation = Quaternion.Lerp(Quaternion.identity, _crossbowAimPoint.localRotation, _lerp);
+        _crossbowPivot.localPosition = Vector3.Lerp(_crossbowIdlePoint.localPosition, _crossbowAimPoint.localPosition, _lerp);
+        _crossbowPivot.localRotation = Quaternion.Lerp(_crossbowIdlePoint.localRotation, _crossbowAimPoint.localRotation, _lerp);
 
         if (_isShooted && _lerp <= 0)
         {

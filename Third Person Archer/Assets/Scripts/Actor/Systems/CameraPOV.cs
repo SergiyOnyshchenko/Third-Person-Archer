@@ -4,10 +4,11 @@ using UnityEngine;
 using UnityEngine.Events;
 using Cinemachine;
 using DG.Tweening;
+using Actor.Properties;
 
 namespace Actor
 {
-    public class CameraPOV : System
+    public class CameraPOV : System, IActorIniter
     {
         [SerializeField] private CinemachineVirtualCamera _tpvCamera;
         [SerializeField] private GameObject _tpvModel;
@@ -20,6 +21,7 @@ namespace Actor
         private CinemachineVirtualCamera[] _allCameras;
         private GameObject[] _allModels;
         private CinemachineBrain _cinemachineBrain;
+        private NormalFov _normalFov;
         public CinemachineVirtualCamera FpvCamera => _fpvCamera;
         public Transform FpvProjector => _fpvProjector;
         public UnityEvent OnFPV = new UnityEvent();
@@ -33,6 +35,11 @@ namespace Actor
             _allModels = new GameObject[] { _tpvModel, _fpvModel };
 
             SetThirdPerson();
+        }
+
+        public void InitActor(ActorController actor)
+        {
+            if(actor.TryGetProperty(out _normalFov)) { }
         }
 
         public void SetThirdPerson()
@@ -50,6 +57,8 @@ namespace Actor
         {
             _fpvCamera.gameObject.SetActive(false);
             _fpvCamera.gameObject.SetActive(true);
+
+            _fpvCamera.m_Lens.FieldOfView = _normalFov.Value;
 
             SetCamera(_fpvCamera);
 
