@@ -14,7 +14,9 @@ namespace Actor
         [SerializeField] private bool _isActive;
         [Space]
         [SerializeField] private CinemachineVirtualCamera _camera;
+        [Space]
         [SerializeField] private GameObject _crosshairUI;
+        [SerializeField] private GameObject _attackUI;
 
         private Projectile _guidedProjectile;
 
@@ -69,6 +71,7 @@ namespace Actor
 
             projectile.GetComponentInChildren<VFXController>()?.Enable();
             _crosshairUI.SetActive(false);
+            _attackUI.SetActive(false);
 
             OnStarted?.Invoke();
 
@@ -85,6 +88,7 @@ namespace Actor
                 input.Activate(false);
 
             _crosshairUI.SetActive(true);
+            _attackUI.SetActive(true);
 
             _guidedProjectile.OnHited.RemoveListener(FinishGuiding);
 

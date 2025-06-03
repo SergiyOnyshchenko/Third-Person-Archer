@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private bool _delayedLoading = false;
     [SerializeField] private bool _enableAd = true;
     public LevelData CurrentLevel => _database.CurrentLevel;
+    public int CurrentLevelIndex => _database.LevelIndex;
     public LevelDatabase Database { get => _database;}
 
     public static LevelManager Instance;

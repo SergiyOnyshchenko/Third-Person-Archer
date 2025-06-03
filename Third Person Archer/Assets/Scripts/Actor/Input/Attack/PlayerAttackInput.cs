@@ -7,6 +7,8 @@ namespace Actor
 {
     public class PlayerAttackInput : AttackInput
     {
+        [SerializeField] private UIButtonHold _button;
+
         private float _delay = 0.1f;
         private float _timer;
         private bool _isFrozen;
@@ -31,6 +33,24 @@ namespace Actor
             if (!IsActive)
                 return;
 
+            if (_button.IsHolding)
+            {
+                if (!_isHold)
+                {
+                    SendAttackStart();
+                    _isHold = true;
+                }
+            }
+            else
+            {
+                if (_isHold)
+                {
+                    SendAttackRelease();
+                    _isHold = false;
+                }
+            }
+
+            /*
             if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
                 return;
 
@@ -54,6 +74,7 @@ namespace Actor
 
                 _timer = 0;
             }
+            */
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Actor
     public class ModelView : System
     {
         [SerializeField] private SkinnedMeshRenderer[] _renderers;
+        [SerializeField] protected float _outlineWidth = 1f;
         private Material [][] _normalMaterials;
         private Outline _outline;
 
@@ -36,7 +37,7 @@ namespace Actor
                 return;
 
             if (value)
-                _outline.OutlineWidth = 1f;
+                _outline.OutlineWidth = _outlineWidth;
             else
                 _outline.OutlineWidth = 0;
         }

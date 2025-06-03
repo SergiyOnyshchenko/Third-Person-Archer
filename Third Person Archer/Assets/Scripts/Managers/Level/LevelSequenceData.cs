@@ -5,11 +5,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "LevelSequenceData", menuName = "Data/Level/LevelSequenceData")]
 public class LevelSequenceData : ScriptableObject
 {
+    [SerializeField] private int _index;
     [SerializeField] private LevelData[] _levels;
     [SerializeField] private LevelData _bossLevel;
     public LevelData[] Levels => GetAllLevels();
     public bool HasBossLevel => CheckBossLevel();
     public LevelData BossLevel { get => _bossLevel;}
+    public int Index { get => _index; }
 
     private LevelData[] GetAllLevels()
     {

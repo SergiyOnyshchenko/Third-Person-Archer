@@ -20,7 +20,7 @@ public class LevelNameView : MonoBehaviour
             return;
         }
 
-        string levelName = LevelManager.Instance.CurrentLevel.Name;
+        string levelName = LevelManager.Instance.CurrentLevel.Sequence.Index + "-" + LevelManager.Instance.CurrentLevelIndex + " " + LevelManager.Instance.CurrentLevel.Name;
 
         if (string.IsNullOrEmpty(levelName))
         {
