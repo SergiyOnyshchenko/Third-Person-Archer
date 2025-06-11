@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Lifetime : MonoBehaviour
 {
     [SerializeField] private float _lifetime;
     [SerializeField] private bool _onStart = true;
+
+    private IEnumerator _counter;
+
+    public UnityEvent OnLifetimeEnded = new UnityEvent();
 
     private void Start()
     {
@@ -13,9 +18,20 @@ public class Lifetime : MonoBehaviour
             StartLifetime();
     }
 
+    public void StartLifetime(float lifetime)
+    {
+        _lifetime = lifetime;
+        StartLifetime();
+    }
+
     public void StartLifetime()
     {
-        StartCoroutine(CountLifetime());
+        if (_counter != null)
+            StopCoroutine(_counter);
+
+        _counter = CountLifetime();
+
+        StartCoroutine(_counter);
     }
 
     private IEnumerator CountLifetime()
@@ -26,6 +42,7 @@ public class Lifetime : MonoBehaviour
 
     private void Die()
     {
+        OnLifetimeEnded?.Invoke();
         Destroy(gameObject);
     }
 }

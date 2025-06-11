@@ -18,6 +18,8 @@ namespace Actor
         [SerializeField] private GameObject _crosshairUI;
         [SerializeField] private GameObject _attackUI;
 
+        private readonly float _lifetime = 4f;
+
         private Projectile _guidedProjectile;
 
         private ActorController _actor;
@@ -60,7 +62,10 @@ namespace Actor
             _guidedProjectile.OnHited.AddListener(FinishGuiding);
 
             if (projectile.gameObject.TryGetComponent(out Lifetime lifetime))
-                lifetime.enabled = false;
+            {
+                lifetime.StartLifetime(_lifetime);
+                lifetime.OnLifetimeEnded.AddListener(FinishGuiding);
+            }
 
             _camera.transform.position = _guidedProjectile.transform.position;
             _camera.transform.rotation = _guidedProjectile.transform.rotation;
@@ -84,13 +89,19 @@ namespace Actor
 
         private void FinishGuiding()
         {
-            if (_guidedProjectile.Actor.TryGetInput(out FpvInput input))
-                input.Activate(false);
+            if (_guidedProjectile != null)
+            {
+                if (_guidedProjectile.Actor.TryGetInput(out FpvInput input))
+                    input.Activate(false);
+
+                if (_guidedProjectile.gameObject.TryGetComponent(out Lifetime lifetime))
+                    lifetime.OnLifetimeEnded.RemoveListener(FinishGuiding);
+
+                _guidedProjectile.OnHited.RemoveListener(FinishGuiding);
+            }
 
             _crosshairUI.SetActive(true);
             _attackUI.SetActive(true);
-
-            _guidedProjectile.OnHited.RemoveListener(FinishGuiding);
 
             DOVirtual.DelayedCall(0.75f, () =>
             {

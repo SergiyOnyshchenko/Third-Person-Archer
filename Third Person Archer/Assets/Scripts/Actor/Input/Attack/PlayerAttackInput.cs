@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Actor
 {
     public class PlayerAttackInput : AttackInput
@@ -33,24 +37,7 @@ namespace Actor
             if (!IsActive)
                 return;
 
-            if (_button.IsHolding)
-            {
-                if (!_isHold)
-                {
-                    SendAttackStart();
-                    _isHold = true;
-                }
-            }
-            else
-            {
-                if (_isHold)
-                {
-                    SendAttackRelease();
-                    _isHold = false;
-                }
-            }
-
-            /*
+#if UNITY_EDITOR
             if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(0))
                 return;
 
@@ -74,7 +61,29 @@ namespace Actor
 
                 _timer = 0;
             }
-            */
+#else
+
+            if (_button.IsHolding)
+            {
+                if (!_isHold)
+                {
+                    SendAttackStart();
+                    _isHold = true;
+                }
+            }
+            else
+            {
+                if (_isHold)
+                {
+                    SendAttackRelease();
+                    _isHold = false;
+                }
+            }
+
+#endif
+
         }
+
     }
-}
+
+    }
