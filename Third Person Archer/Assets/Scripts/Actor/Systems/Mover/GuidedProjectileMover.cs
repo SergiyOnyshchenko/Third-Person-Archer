@@ -19,6 +19,7 @@ namespace Actor
         private Rigidbody _rigidbody;
         private ProjectileStateProperty _projectileState;
         private Speed _speed;
+
         public ProjectileState State => _projectileState == null ? ProjectileState.Loaded : _projectileState.Value;
 
         public void InitActor(ActorController actor)

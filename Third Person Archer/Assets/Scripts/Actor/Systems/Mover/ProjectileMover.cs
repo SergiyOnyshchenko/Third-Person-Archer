@@ -11,6 +11,9 @@ namespace Actor
         private Rigidbody _rigidbody;
         private ProjectileStateProperty _projectileState;
         private Speed _speed;
+
+        private float _speedMultiplier = 1;
+
         public ProjectileState State => _projectileState == null ? ProjectileState.Loaded : _projectileState.Value;
 
         public void InitActor(ActorController actor)
@@ -24,6 +27,9 @@ namespace Actor
 
         public void Move(Vector3 direction)
         {
+            //_speedMultiplier += 5f * Time.fixedDeltaTime;
+            //_speedMultiplier = Mathf.Clamp(_speedMultiplier, 1f, 20f);
+
             _rigidbody.velocity = direction * _speed.Value * Time.fixedDeltaTime;
             _transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
         }

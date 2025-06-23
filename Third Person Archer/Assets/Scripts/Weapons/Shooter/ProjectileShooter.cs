@@ -31,6 +31,24 @@ public class ProjectileShooter : Shooter
             direction = (PointAlongDirection(_aimInput.GetAimRoot(), direction, 100f) - _shootPoint.position).normalized;
         }
 
+        if (_shootError != null)
+        {
+            float horizontalAngle = Random.Range(-_shootError.Value.x, _shootError.Value.x);
+            float verticalAngle = Random.Range(-_shootError.Value.y, _shootError.Value.y);
+
+            Quaternion horizontalRotation = Quaternion.AngleAxis(horizontalAngle, Vector3.up);
+            Vector3 horizontalRotated = horizontalRotation * direction;
+
+            Vector3 right = Vector3.Cross(Vector3.up, horizontalRotated);
+            if (right == Vector3.zero)
+                right = Vector3.right; 
+
+            Quaternion verticalRotation = Quaternion.AngleAxis(verticalAngle, right);
+            Vector3 finalDirection = verticalRotation * horizontalRotated;
+
+            direction = finalDirection.normalized;
+        }
+
         arrow.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
 
         yield return null;

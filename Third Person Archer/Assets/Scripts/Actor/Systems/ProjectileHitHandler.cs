@@ -78,6 +78,8 @@ namespace Actor
                 }
             }
 
+            _gameObject.transform.SetParent(collision.transform);
+
             OnHited?.Invoke();
         }
 

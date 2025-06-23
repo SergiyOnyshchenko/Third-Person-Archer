@@ -7,6 +7,7 @@ using UnityEngine;
 public class SimpleMoveProjectileSubstate : SubState, IActorIniter
 {
     private ProjectileDirection _direction;
+
     private Actor.ProjectileMover _mover;
 
     public void InitActor(ActorController actor)

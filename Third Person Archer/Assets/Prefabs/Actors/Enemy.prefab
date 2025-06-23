@@ -1361,7 +1361,7 @@ GameObject:
   - component: {fileID: 7726557271219509146}
   - component: {fileID: 3875850254506549597}
   m_Layer: 7
-  m_Name: Hit Feedback (1)
+  m_Name: Hit Feedback New
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1560,8 +1560,8 @@ MonoBehaviour:
           TargetBPM: 120
         Owner: {fileID: 3875850254506549597}
         DebugActive: 0
-        FreezeFrameDuration: 0.085
-        MinimumTimescaleThreshold: 0.1
+        FreezeFrameDuration: 0.1
+        MinimumTimescaleThreshold: 0.05
     - rid: 2913465622058500097
       type: {class: MMF_Sound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
       data:
@@ -3111,7 +3111,7 @@ GameObject:
   - component: {fileID: 5748496094681404662}
   - component: {fileID: 1604963366278269153}
   m_Layer: 7
-  m_Name: Set Active Healthbar
+  m_Name: Set Active Healthbar [Substate]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5194,6 +5194,58 @@ Transform:
   - {fileID: 1279814620535136444}
   m_Father: {fileID: 265161552527229980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6799537940094043160
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3407952675584244662}
+  - component: {fileID: 5157557168165713413}
+  m_Layer: 7
+  m_Name: Ragdoll [Substate]
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3407952675584244662
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6799537940094043160}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8621843522087197036}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5157557168165713413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6799537940094043160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16f5995318cdaeb418abe900e2339f76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _placement: 0
+  _delay: 0
 --- !u!1 &6860974634624362727
 GameObject:
   m_ObjectHideFlags: 0
@@ -5377,6 +5429,38 @@ Transform:
   m_Children:
   - {fileID: 1236746888258149475}
   m_Father: {fileID: 1610110800372143916}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7327558363548111134
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4625536772695756816}
+  m_Layer: 7
+  m_Name: Weapon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4625536772695756816
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7327558363548111134}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4748509264801929528}
+  m_Father: {fileID: 7292970375520031337}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7358771018229803680
 GameObject:
@@ -8201,6 +8285,51 @@ Transform:
   - {fileID: 3182500400886492331}
   m_Father: {fileID: 3110763221583417901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7558511544770180247
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4748509264801929528}
+  - component: {fileID: 4962446943524270259}
+  m_Layer: 7
+  m_Name: Shoot Error
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4748509264801929528
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7558511544770180247}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4625536772695756816}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4962446943524270259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7558511544770180247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c482cafc2d6d15c49829a5a64ad44388, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _value: {x: 4, y: 4}
 --- !u!1 &7587999362377958838
 GameObject:
   m_ObjectHideFlags: 0
@@ -9423,6 +9552,7 @@ MonoBehaviour:
   FeedbacksList:
   - rid: 4106447682943582208
   - rid: 4106447682943582209
+  - rid: 5574327534990393345
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   references:
@@ -9500,9 +9630,53 @@ MonoBehaviour:
           ButtonText: Debug Stop Sound
         PlayMethod: 1
         PoolSize: 10
-        MinVolume: 1.5
+        MinVolume: 2
         MaxVolume: 2.5
-        MinPitch: 0.5
+        MinPitch: 0.25
+        MaxPitch: 0.5
+        SfxAudioMixerGroup: {fileID: -3165942800488051908, guid: 7e984f512e89b60468e829489e8883e3, type: 2}
+    - rid: 5574327534990393345
+      type: {class: MMF_Sound, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks.MMTools}
+      data:
+        Active: 1
+        UniqueID: -30519802
+        Label: Sound
+        Channel: 0
+        Chance: 100
+        DisplayColor: {r: 0, g: 0, b: 0, a: 1}
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        Owner: {fileID: 602152116785363932}
+        DebugActive: 0
+        Sfx: {fileID: 8300000, guid: 4cb4ff3777957254ea71e8f7ebabaf21, type: 3}
+        RandomSfx: []
+        TestPlayButton:
+          ButtonText: Debug Play Sound
+        TestStopButton:
+          ButtonText: Debug Stop Sound
+        PlayMethod: 1
+        PoolSize: 10
+        MinVolume: 1
+        MaxVolume: 1
+        MinPitch: 1
         MaxPitch: 1
         SfxAudioMixerGroup: {fileID: -3165942800488051908, guid: 7e984f512e89b60468e829489e8883e3, type: 2}
 --- !u!1 &8605587277933287401
@@ -11130,6 +11304,9 @@ PrefabInstance:
       addedObject: {fileID: 6931351123245114567}
     - targetCorrespondingSourceObject: {fileID: 775419275912247823, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 4625536772695756816}
+    - targetCorrespondingSourceObject: {fileID: 775419275912247823, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 671466265763611371}
     - targetCorrespondingSourceObject: {fileID: 775419275912247823, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: -1
@@ -11191,6 +11368,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1752449267998290186, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5748496094681404662}
+    - targetCorrespondingSourceObject: {fileID: 1752449267998290186, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3407952675584244662}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6884175867910702686, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: 1

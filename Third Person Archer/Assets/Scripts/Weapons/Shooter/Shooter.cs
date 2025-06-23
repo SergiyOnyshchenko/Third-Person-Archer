@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Actor;
+using Actor.Properties;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -12,19 +13,18 @@ public abstract class Shooter : MonoBehaviour, IActorIniter
     private EventSystem _eventSystem;
     protected ElementalAttackType _elementalAttackType;
     protected AimInput _aimInput;
+    protected ShootError _shootError;
 
     public abstract void Shoot(Vector3 direction, float multiplier, UnityAction onHited);
 
     public void InitActor(ActorController actor)
     {
-        if(actor.TryGetInput(out AimInput aimInput))
-            _aimInput = aimInput;
+        if(actor.TryGetInput(out _aimInput)) { }
 
-        if (actor.TryGetSystem(out EventSystem eventSystem))
-            _eventSystem = eventSystem;
+        if (actor.TryGetSystem(out _eventSystem)) { }
 
-        if(actor.TryGetProperty(out ElementalAttackType elementalAttackType))
-            _elementalAttackType = elementalAttackType;
+        if (actor.TryGetProperty(out _elementalAttackType)) { }
+        if (actor.TryGetProperty(out _shootError)) { }
     }
 
     protected void SetTargetHitedEvent()

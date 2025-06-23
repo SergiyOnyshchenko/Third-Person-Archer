@@ -23,7 +23,7 @@ namespace Actor
             _actor.DeathHandler();
 
             if (_ragdoll != null)
-                _ragdoll.MakePhysical();
+               _ragdoll.MakePhysical();
         }
     }
 }
