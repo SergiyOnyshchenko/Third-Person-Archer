@@ -9,6 +9,7 @@ public class LevelSequenceView : MonoBehaviour
 
     private void Start()
     {
+        /*
         LevelSequenceData sequenceData = LevelManager.Instance.CurrentLevel.Sequence;
 
         if(sequenceData == null)
@@ -35,5 +36,6 @@ public class LevelSequenceView : MonoBehaviour
 
             instance.Init(i + 1, isBoss, isCurrent);
         }
+        */
     }
 }

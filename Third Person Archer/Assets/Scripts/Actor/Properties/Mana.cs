@@ -30,7 +30,8 @@ namespace Actor.Properties
         {
             if (LevelManager.Instance != null)
             {
-                _multiplier = LevelManager.Instance.CurrentLevel.ManaMultiplier;
+                //_multiplier = LevelManager.Instance.CurrentLevel.ManaMultiplier;
+                _multiplier = 1;
             }
         }
 
