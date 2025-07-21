@@ -207,7 +207,8 @@ public class AppMetricaEventReporter : MonoBehaviour
         if (LevelManager.Instance == null)
             return 0;
 
-        return LevelManager.Instance.Database.LevelNumber;
+        //return LevelManager.Instance.Database.LevelNumber;
+        return 0;
     }
 
     private int GetLevelIndex()
@@ -215,7 +216,8 @@ public class AppMetricaEventReporter : MonoBehaviour
         if (LevelManager.Instance == null)
             return 0;
 
-        return LevelManager.Instance.Database.LevelIndex;
+        //return LevelManager.Instance.CurrentMission.ID;
+        return 0;
     }
 
     private float GetLevelProgress()

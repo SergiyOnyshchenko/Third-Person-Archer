@@ -8,7 +8,7 @@ public class MissionSelectorView : MonoBehaviour
     {
         foreach (var buttonView in _buttonViews)
         {
-            buttonView.Bind(selector);
+            //buttonView.Bind(selector);
         }
     }
 }

@@ -3,7 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Mission", menuName = "GameMeta/MissionData", order = 1)]
 public class MissionData : ScriptableObject
 {
+    [SerializeField] private int _id;
     [SerializeField] private string _name;
+    [Space]
     [SerializeField] private MissionType _missionType;
     [Space]
     [SerializeField] private SceneReference _scene;
@@ -11,6 +13,7 @@ public class MissionData : ScriptableObject
     private bool _isUnlocked;
     private bool _isCompleted;
 
+    public int ID { get => _id; }
     public string Name { get => _name; }
     public MissionType MissionType => _missionType;
     public bool IsUnlocked => _isUnlocked;

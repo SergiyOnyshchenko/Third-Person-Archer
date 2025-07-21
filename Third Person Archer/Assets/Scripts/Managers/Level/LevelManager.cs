@@ -4,104 +4,51 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-public class LevelManager : MonoBehaviour
-{
-    [SerializeField] private LevelDatabase _database;
-    [SerializeField] private bool _delayedLoading = false;
-    [SerializeField] private bool _enableAd = true;
-    public LevelData CurrentLevel => _database.CurrentLevel;
-    public int CurrentLevelIndex => _database.LevelIndex;
-    public LevelDatabase Database { get => _database;}
+public class LevelManager : MonoBehaviour {
 
     public static LevelManager Instance;
 
-    private void Awake()
-    {
-        if(Instance == null)
+    [SerializeField] private string _mainMenuSceneName = "MainMenu";
+    [SerializeField] private bool _enableAd = true;
+
+    public MissionData CurrentMission { get; private set; }
+
+    private void Awake() {
+        if (Instance == null) {
             Instance = this;
-        else
-            Destroy(this);
-
-        if(!_delayedLoading) _database.Load();
-
-        Application.targetFrameRate = 60;
-    }
-
-    private IEnumerator Start()
-    {
-        if (_delayedLoading)
-        {
-            yield return new WaitForSeconds(0.5f);
-            _database.Load();
+            DontDestroyOnLoad(gameObject);
+        } else {
+            Destroy(gameObject);
         }
     }
 
-    private void OnEnable()
-    {
-        LevelEventSystem.OnLoadLevel.AddListener(LoadLevel);
-        LevelEventSystem.OnLoadNextLevel.AddListener(LoadNextLevel);
-        LevelEventSystem.OnReloadLevel.AddListener(ReloadLevel);
-        LevelEventSystem.OnLoadMainMenu.AddListener(LoadMainMenu);
-        LevelEventSystem.OnLoadPreloader.AddListener(LoadPreloader);
+    public void LoadMainMenu() {
+        LoadSceneWithFade(_mainMenuSceneName);
     }
 
-    private void OnDisable()
-    {
-        LevelEventSystem.OnLoadLevel.RemoveListener(LoadLevel);
-        LevelEventSystem.OnLoadNextLevel.RemoveListener(LoadNextLevel);
-        LevelEventSystem.OnReloadLevel.RemoveListener(ReloadLevel);
-        LevelEventSystem.OnLoadMainMenu.RemoveListener(LoadMainMenu);
-        LevelEventSystem.OnLoadPreloader.RemoveListener(LoadPreloader);
+    public void LaunchMission(MissionData missionData, bool useAd = false) {
+        if (missionData == null || missionData.Scene == null) {
+            Debug.LogError("Invalid mission or scene reference.");
+            return;
+        }
+
+        CurrentMission = missionData;
+        LoadSceneWithFade(missionData.Scene.ScenePath, useAd);
     }
 
-    public void LoadLevel(int index)
-    {
-        _database.TrySetLevel(index);
-        LoadLevel(_database.CurrentLevel, true);
-    }
-
-    public void LoadNextLevel()
-    {
-        LoadLevel(_database.CurrentLevel, true);
-    }
-
-    public void ReloadLevel()
-    {
-        LoadLevel(_database.CurrentLevel, true);
-    }
-
-    public void LoadMainMenu()
-    {
-        LoadLevel(_database.MainMenu, false);
-    }
-
-    public void LoadPreloader()
-    {
-        LoadLevel(_database.PreloadLevel, false);
-    }
-
-    private void LoadLevel(LevelData data, bool useAd)
-    {
-        if (Preloader.Instance != null)
-        {
-            if (useAd && _enableAd)
-            {
-                Preloader.Instance.FadeIn(() =>
-                {
-                    YsoCorp.GameUtils.YCManager.instance.adsManager.ShowInterstitial(() =>
-                    {
-                        SceneManager.LoadScene(data.Scene);
+    private void LoadSceneWithFade(string sceneName, bool useAd = false) {
+        if (Preloader.Instance != null) {
+            Preloader.Instance.FadeIn(() => {
+                if (useAd && _enableAd) {
+                    YsoCorp.GameUtils.YCManager.instance.adsManager.ShowInterstitial(() => {
+                        SceneManager.LoadScene(sceneName);
                     });
-                });
-            }
-            else
-            {
-                Preloader.Instance.FadeIn(() => SceneManager.LoadScene(data.Scene));
-            }
-        }
-        else
-        {
-            SceneManager.LoadScene(data.Scene);
+                } else {
+                    SceneManager.LoadScene(sceneName);
+                }
+            });
+        } else {
+            SceneManager.LoadScene(sceneName);
         }
     }
 }

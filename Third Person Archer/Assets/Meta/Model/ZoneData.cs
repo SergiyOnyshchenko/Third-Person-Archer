@@ -9,32 +9,25 @@ public class ZoneData : ScriptableObject
     [SerializeField] private bool _isZoneUnlocked;
 
     [Header("Mission Data")]
-    [SerializeField] private List<MissionData> _allMissions;
-    [Space]
     [SerializeField] private List<MissionSegmentData> _segments = new List<MissionSegmentData>();
     [SerializeField] private MissionData _bossMission;
 
     [Header("Boss Unlock Progress")]
     [Range(0, 1)]
     [SerializeField] private float _bossUnlockProgress;
-    
+
     public string ZoneName => _zoneName;
     public bool IsZoneUnlocked => _isZoneUnlocked;
     public float BossUnlockProgress => _bossUnlockProgress;
+    public List<MissionSegmentData> Segments => _segments;
 
     public void Init()
     {
-        _segments = new List<MissionSegmentData>
+        foreach (var segment in _segments)
         {
-            CreateSegment(MissionType.Campaign),
-            CreateSegment(MissionType.Sniper),
-            CreateSegment(MissionType.Contracts)
-        };
-
-        var bossMission = GetMissionsByType(MissionType.Boss);
-
-        if (bossMission != null && bossMission.Count > 0)
-            _bossMission = bossMission[0];
+            string key = _zoneName + segment.Type.ToString() + "Index";
+            segment.Init(key);
+        }
     }
 
     public bool IsBossUnlocked()
@@ -56,14 +49,23 @@ public class ZoneData : ScriptableObject
         {
             return _bossMission;
         }
-        else
+
+        foreach (var segment in _segments)
         {
-            foreach (var segment in _segments)
-                if (segment.Type == type)
-                    return segment.GetCurrentMission();
+            if (segment.Type == type)
+                return segment.GetCurrentMission();
         }
 
         return null;
+    }
+
+    public void AdvanceMission(MissionType type)
+    {
+        var segment = _segments.Find(s => s.Type == type);
+        if (segment != null)
+        {
+            segment.Advance();
+        }
     }
 
     public void UnlockZone()
@@ -71,16 +73,21 @@ public class ZoneData : ScriptableObject
         _isZoneUnlocked = true;
     }
 
-    private MissionSegmentData CreateSegment(MissionType type)
+    public int GetCompletedCount(MissionType type)
     {
-        return new MissionSegmentData(
-            type,
-            GetMissionsByType(type),
-            _zoneName + type.ToString() + "Index");
+        var segment = _segments.Find(s => s.Type == type);
+        return segment?.GetCompletedCount() ?? 0;
     }
 
-    private List<MissionData> GetMissionsByType(MissionType type)
+    public int GetTotalCompletedCount()
     {
-        return _allMissions.FindAll(m => m.MissionType == type);
+        int total = 0;
+
+        foreach (var segment in _segments)
+            total += segment.GetCompletedCount();
+            
+        if (IsBossUnlocked()) total += 1;
+
+        return total;
     }
 }

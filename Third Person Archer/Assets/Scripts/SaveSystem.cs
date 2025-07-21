@@ -3,8 +3,8 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEngine;
 
-namespace Saves
-{
+//namespace Saves
+//{
     [Serializable]
     public class Wrapper<T>
     {
@@ -154,4 +154,4 @@ namespace Saves
             }
         }
     }
-}
+//}

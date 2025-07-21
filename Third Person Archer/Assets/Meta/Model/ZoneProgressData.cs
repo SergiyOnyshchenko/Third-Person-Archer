@@ -10,6 +10,14 @@ public class ZoneProgressData : ScriptableObject
     public IReadOnlyList<ZoneData> AllZones => _allZones;
     public ZoneData CurrentZone => _allZones != null && _allZones.Count > _currentZoneIndex ? _allZones[_currentZoneIndex] : null;
 
+    public void InitAllZones()
+    {
+        foreach (var zone in _allZones)
+        {
+            zone.Init();
+        }
+    }
+
     public void SelectZone(int index)
     {
         if (index >= 0 && index < _allZones.Count && _allZones[index].IsZoneUnlocked)
@@ -34,5 +42,15 @@ public class ZoneProgressData : ScriptableObject
             // Implement reset logic as needed per zone/missions
         }
         _currentZoneIndex = 0;
+    }
+
+    public int GetTotalCompletedAcrossAllZones()
+    {
+        int total = 0;
+        
+        foreach (var zone in _allZones)
+            total += zone.GetTotalCompletedCount();
+
+        return total;
     }
 }

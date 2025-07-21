@@ -17,23 +17,6 @@ public class SendLevelWinEventSubState : SubState, IActorIniter
     {
         base.Enter();
 
-        int level_number = LevelManager.Instance.Database.LevelNumber;
-        int level_index = LevelManager.Instance.Database.LevelIndex;
-        float timer = GameplayTimer.Instance.Timer;
-
-        /*
-        LevelEventSystem.SendLevelFinish();
-
-        SDK_EventSystem.SendLevelWin(
-            level_number,
-            level_index,
-            timer);
-
-
-        if (AppMetricaEventReporter.Instance != null)
-            AppMetricaEventReporter.Instance.SendLevelWinEvent(_actor);
-        */
-
         YsoCorp.GameUtils.YCManager.instance.OnGameFinished(true);
     }  
 }

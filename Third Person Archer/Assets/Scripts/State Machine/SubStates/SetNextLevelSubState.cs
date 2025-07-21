@@ -7,6 +7,6 @@ public class SetNextLevelSubState : SubState
     public override void Enter()
     {
         base.Enter();
-        LevelManager.Instance.Database.SetNextLevel();
+        // Set level completed
     }
 }

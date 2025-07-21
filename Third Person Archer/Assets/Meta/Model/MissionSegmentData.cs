@@ -1,25 +1,39 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
+using System.Linq;
 
 [System.Serializable]
 public class MissionSegmentData
 {
     [SerializeField] private MissionType _type;
     [SerializeField] private List<MissionData> _missions = new List<MissionData>();
+    [SerializeField] private UnlockCondition _unlockCondition;
     private string _saveKey;
     private int _index = 0;
-    public int Index { get { return Mathf.Clamp(_index, 0, _missions.Count - 1); } }
-    public MissionType Type { get => _type; }
+    private int _realIndex = 0;
 
-    public MissionSegmentData(MissionType type, List<MissionData> missions, string saveKey)
+    public int Index => Mathf.Clamp(_index, 0, _missions.Count - 1);
+    public int RealIndex => _realIndex;
+
+    public MissionType Type => _type;
+    public UnlockCondition UnlockCondition => _unlockCondition;
+
+    public void Init(string saveKey)
     {
-        _type = type;
-        _missions = missions;
         _saveKey = saveKey;
 
         Load();
+    }
+
+    public void Advance()
+    {
+        _realIndex++;
+        _index++;
+
+        if (_index >= _missions.Count)
+            _index = 0;
+
+        Save();
     }
 
     public MissionData GetCurrentMission()
@@ -27,13 +41,25 @@ public class MissionSegmentData
         return _missions[Index];
     }
 
+    public int GetCompletedCount()
+    {
+        return _missions.Count(m => m.IsCompleted);
+    }
+
+    public int GetMissionIndex(MissionData mission)
+    {
+        return _missions.IndexOf(mission);
+    }
+
     public void Load()
     {
-        _index = PlayerPrefs.GetInt(_saveKey, 0);
+        _index = SaveSystem.Load(_saveKey + "_index", 0);
+        _realIndex = SaveSystem.Load(_saveKey + "_real", 0);
     }
 
     public void Save()
     {
-        PlayerPrefs.SetInt(_saveKey, _index);
+        SaveSystem.Save(_saveKey + "_index", _index);
+        SaveSystem.Save(_saveKey + "_real", _realIndex);
     }
 }

@@ -15,16 +15,7 @@ public class SendLevelStartEventSubState : SubState, IActorIniter
     {
         LevelEventSystem.SendLevelStart();
 
-        int level_number = LevelManager.Instance.Database.LevelNumber;
-        int level_index = LevelManager.Instance.Database.LevelIndex;
-        /*
-        SDK_EventSystem.SendLevelStarted(level_number, level_index);
-        LevelEventSystem.SendLevelStart();
-
-        if (AppMetricaEventReporter.Instance != null)
-            AppMetricaEventReporter.Instance.SendLevelStartEvent(_actor);
-        */
-
+        int level_number = LevelManager.Instance.CurrentMission.ID;
         YsoCorp.GameUtils.YCManager.instance.OnGameStarted(level_number);
 
         base.Exit();
