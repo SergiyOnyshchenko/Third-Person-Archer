@@ -3,15 +3,16 @@ using TMPro;
 
 public class ZoneMapView : MonoBehaviour
 {
+    [SerializeField] private ZoneData _zoneData;
+    [Space]
     [SerializeField] private TextMeshProUGUI _zoneNameText;
     [SerializeField] private GameObject _lockedIndicator;
 
-    public void Bind(ZoneData zone)
+    private void Start()
     {
-        if (zone == null) return;
+        _zoneNameText.text = _zoneData.Name;
 
-        _zoneNameText.text = zone.ZoneName;
-        _lockedIndicator.SetActive(!zone.IsZoneUnlocked);
+        if (DataManager.Instance.TryGetData(out MissionProgressData missionProgress))
+            _lockedIndicator.SetActive(!missionProgress.IsZoneUnlocked(_zoneData));
     }
 }
-

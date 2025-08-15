@@ -17,6 +17,7 @@ public class SendLevelWinEventSubState : SubState, IActorIniter
     {
         base.Enter();
 
+        RuntimeMissionEventManager.SendGameFinished();
         YsoCorp.GameUtils.YCManager.instance.OnGameFinished(true);
     }  
 }

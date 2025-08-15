@@ -3,12 +3,12 @@ using UnityEngine.UI;
 
 public class BossProgressView : MonoBehaviour
 {
+    [SerializeField] private ZoneData _data;
     [SerializeField] private Slider _slider;
 
-    public void Bind(ZoneData zone)
+    private void OnEnable()
     {
-        if (zone == null || _slider == null) return;
-        _slider.value = zone.BossUnlockProgress;
+        UpdateProgress(_data.BossProgress);
     }
 
     public void UpdateProgress(float progress)

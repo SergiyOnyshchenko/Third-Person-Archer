@@ -9,12 +9,12 @@ public class ReviveTransition : StateTransition
     public override void Enter()
     {
         base.Enter();
-        LevelEventSystem.OnContinueLevel.AddListener(DoTransition);
+        
     }
 
     public override void Exit() 
     {
-        LevelEventSystem.OnContinueLevel.RemoveListener(DoTransition);
+
         base.Exit();
     }
 }

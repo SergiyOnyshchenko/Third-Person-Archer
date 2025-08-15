@@ -10,8 +10,8 @@ public class PreGameIniter : MonoBehaviour
         QualitySettings.vSyncCount = 0;
     }
 
-    public void Start()
+    private void Start()
     {
-        LevelEventSystem.SendLoadPreloader();
+        ScenesLoader.Instance.LoadMainMenu();
     }
 }

@@ -6,22 +6,22 @@ public class LevelEventHandler : MonoBehaviour
 {
     public void SendLoadNextLevel()
     {
-        LevelEventSystem.SendLoadNextLevel();
+        ScenesLoader.Instance.LoadMainMenu();
     }
 
     public void SendContinueLevel()
     {
-        LevelEventSystem.SendContinueLevel();
+        
     }
 
     public void SendReloadLevel()
     {
-        LevelEventSystem.SendReloadLevel();
+        ScenesLoader.Instance.LoadCurrentMission();
     }
 
     public void SendLoadMainMenu()
     {
-        LevelEventSystem.SendLoadMainMenu();
+        ScenesLoader.Instance.LoadMainMenu();
     }
 
     public void SendBackToMainMenuButtonPressedEvent()

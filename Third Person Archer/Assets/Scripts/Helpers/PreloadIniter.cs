@@ -12,6 +12,5 @@ public class PreloadIniter : MonoBehaviour
     private IEnumerator Load()
     {
         yield return new WaitForSeconds(0.2f);
-        LevelEventSystem.SendLoadMainMenu();
     }
 }

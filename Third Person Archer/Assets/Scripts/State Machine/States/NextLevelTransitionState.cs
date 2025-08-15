@@ -7,8 +7,7 @@ public class NextLevelTransitionState : MainState
     public override void Enter()
     {
         base.Enter();
-
-        LevelEventSystem.SendLoadNextLevel();
+        ScenesLoader.Instance.LoadMainMenu();
     }
 
     public override void Exit()

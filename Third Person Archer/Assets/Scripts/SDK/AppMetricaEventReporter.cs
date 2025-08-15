@@ -204,19 +204,21 @@ public class AppMetricaEventReporter : MonoBehaviour
 
     private int GetLevelNumber()
     {
-        if (LevelManager.Instance == null)
-            return 0;
+        if (DataManager.Instance.TryGetData(out MissionProgressData missionProgressData))
+        {
+            return missionProgressData.GetTotalCompletedMissions();
+        }
 
-        //return LevelManager.Instance.Database.LevelNumber;
         return 0;
     }
 
     private int GetLevelIndex()
     {
-        if (LevelManager.Instance == null)
-            return 0;
+        if (DataManager.Instance.TryGetData(out MissionProgressData missionProgressData))
+        {
+            return missionProgressData.Mission.ID;
+        }
 
-        //return LevelManager.Instance.CurrentMission.ID;
         return 0;
     }
 

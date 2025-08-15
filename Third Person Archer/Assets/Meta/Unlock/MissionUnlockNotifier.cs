@@ -26,10 +26,12 @@ public class MissionUnlockNotifier
         {
             var mission = segment.GetCurrentMission();
 
-            // If it's not marked as seen and it can now be unlocked
-            if (MissionUnlockService.CanUnlock(mission, segment, _zone))
+            if (mission == null || !mission.HasUnlockCondition())
+                continue;
+
+            if (MissionUnlockService.CanUnlock(mission, _zone))
             {
-                string saveKey = GetSaveKey(_zone.ZoneName, segment.Type);
+                string saveKey = GetSaveKey(_zone.Name, segment.Type);
                 bool seen = SaveSystem.Load(saveKey, false);
 
                 if (!seen && !_newlyUnlocked[segment.Type])
@@ -49,7 +51,7 @@ public class MissionUnlockNotifier
     public void MarkSeen(MissionType type)
     {
         _newlyUnlocked[type] = false;
-        SaveSystem.Save(GetSaveKey(_zone.ZoneName, type), true);
+        SaveSystem.Save(GetSaveKey(_zone.Name, type), true);
     }
 
     public void ResetAllSeen()
@@ -57,7 +59,7 @@ public class MissionUnlockNotifier
         foreach (var type in _newlyUnlocked.Keys.ToList())
         {
             _newlyUnlocked[type] = false;
-            SaveSystem.Save(GetSaveKey(_zone.ZoneName, type), false);
+            SaveSystem.Save(GetSaveKey(_zone.Name, type), false);
         }
     }
 
@@ -65,4 +67,4 @@ public class MissionUnlockNotifier
     {
         return SaveKeyPrefix + zoneName + "_" + type;
     }
-} 
+}

@@ -6,7 +6,6 @@ public class SendLevelStartSubstate : SubState
 {
     public override void Exit()
     {
-        LevelEventSystem.SendLevelStart();
         base.Exit();
     }
 }

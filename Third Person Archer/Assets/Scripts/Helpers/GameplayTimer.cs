@@ -19,14 +19,12 @@ public class GameplayTimer : MonoBehaviour
 
     private void OnEnable()
     {
-        LevelEventSystem.OnLevelStarted.AddListener(StartTimer);
-        LevelEventSystem.OnLevelFinished.AddListener(FinishTimer);
+        StartTimer();
     }
 
     private void OnDisable()
     {
-        LevelEventSystem.OnLevelStarted.RemoveListener(StartTimer);
-        LevelEventSystem.OnLevelFinished.RemoveListener(FinishTimer);
+        FinishTimer();
     }
 
     public void StartTimer()

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PopupManager : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class PopupManager : MonoBehaviour
             Message = message;
         }
     }
+    
     [System.Serializable]
     public class PopupEntry
     {
@@ -24,6 +26,7 @@ public class PopupManager : MonoBehaviour
 
     [SerializeField] private List<PopupEntry> _popupEntries;
     [SerializeField] private Transform _popupContainer;
+    [SerializeField] private Image _backgroundBlocker;
     private Queue<PopupRequest> _queue = new();
     private Dictionary<PopupType, GameObject> _popupPrefabs = new();
     private bool _isShowing = false;
@@ -75,6 +78,7 @@ public class PopupManager : MonoBehaviour
     private IEnumerator ProcessQueue()
     {
         _isShowing = true;
+        _backgroundBlocker.gameObject.SetActive(true); 
 
         while (_queue.Count > 0)
         {
@@ -94,16 +98,15 @@ public class PopupManager : MonoBehaviour
 
             popup.Initialize(request.Message);
 
-            float timer = popup.GetDuration();
-            while (timer > 0f && !closed)
+            while (!closed)
             {
-                timer -= Time.deltaTime;
                 yield return null;
             }
 
             Destroy(popupGO);
         }
 
+        _backgroundBlocker.gameObject.SetActive(false); 
         _isShowing = false;
     }
 }

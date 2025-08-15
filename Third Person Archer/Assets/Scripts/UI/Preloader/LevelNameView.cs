@@ -14,22 +14,22 @@ public class LevelNameView : MonoBehaviour
 
     public void SetLevelName()
     {
-        if (LevelManager.Instance == null)
+        if (DataManager.Instance.TryGetData(out MissionProgressData missionProgressData))
+        {
+            string name = missionProgressData.Mission.Name;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                HideView();
+                return;
+            }
+
+            _textField.text = name;
+        }
+        else
         {
             HideView();
-            return;
         }
-
-        //string levelName = LevelManager.Instance.CurrentLevel.Sequence.Index + "-" + LevelManager.Instance.CurrentLevelIndex + " " + LevelManager.Instance.CurrentLevel.Name;
-        string levelName = "No Level Name";
-
-        if (string.IsNullOrEmpty(levelName))
-        {
-            HideView();
-            return;
-        }
-
-        _textField.text = levelName;
     }
 
     private void HideView()

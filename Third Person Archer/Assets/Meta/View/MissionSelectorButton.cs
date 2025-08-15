@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MissionSelectorButton : MonoBehaviour
+public class MissionSelectorButton : MonoBehaviour, IMetaGameInjectable, IMissionSelectorInjectable
 {
     [SerializeField] private MissionType _missionType;
     [SerializeField] private Button _button;
@@ -11,20 +11,45 @@ public class MissionSelectorButton : MonoBehaviour
     private MissionSelector _selector;
     private MetaGameController _metaGameController;
 
-    public void Bind(MissionSelector selector, MetaGameController controller)
+    public void InjectMetaGameController(MetaGameController controller)
+    {
+        _metaGameController = controller;
+        UpdateExclamation();
+    }
+
+    public void InjectMissionSelector(MissionSelector selector)
     {
         _selector = selector;
-        _metaGameController = controller;
 
-        _button.onClick.AddListener(OnClick);
         _selector.OnMissionSelected += UpdateView;
-
         UpdateView(_selector.Selected);
-        UpdateExclamation();
+    }
+
+    private void OnEnable()
+    {
+        _button.onClick.AddListener(OnClick);
+    }
+
+    private void OnDisable()
+    {
+        _button.onClick.RemoveListener(OnClick);
     }
 
     private void OnClick()
     {
+        var progress = _metaGameController?.MissionProgress;
+        var zone = progress?.Zone;
+        var segment = zone?.GetSegmentByType(_missionType);
+        var mission = segment?.GetCurrentMission();
+
+        if (segment == null || mission == null || !MissionUnlockService.CanUnlock(mission, zone))
+        {
+            string reason = MissionUnlockService.GetLockedReason(_missionType, zone);
+            PopupManager.Instance.EnqueuePopup(PopupType.Warning, reason);
+            return;
+        }
+
+        // If playable, select and mark
         _selector?.Select(_missionType);
         _metaGameController?.UnlockNotifier?.MarkSeen(_missionType);
         UpdateExclamation();
@@ -48,7 +73,5 @@ public class MissionSelectorButton : MonoBehaviour
     {
         if (_selector != null)
             _selector.OnMissionSelected -= UpdateView;
-
-        _button.onClick.RemoveListener(OnClick);
     }
-} 
+}

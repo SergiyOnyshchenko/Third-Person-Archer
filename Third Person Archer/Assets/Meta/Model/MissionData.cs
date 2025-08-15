@@ -7,26 +7,15 @@ public class MissionData : ScriptableObject
     [SerializeField] private string _name;
     [Space]
     [SerializeField] private MissionType _missionType;
+    [SerializeField] private UnlockCondition _unlockCondition;
     [Space]
     [SerializeField] private SceneReference _scene;
-
-    private bool _isUnlocked;
-    private bool _isCompleted;
 
     public int ID { get => _id; }
     public string Name { get => _name; }
     public MissionType MissionType => _missionType;
-    public bool IsUnlocked => _isUnlocked;
-    public bool IsCompleted => _isCompleted;
     public SceneReference Scene { get => _scene; }
-
-    public void MarkCompleted()
-    {
-        _isCompleted = true;
-    }
-
-    public void Unlock()
-    {
-        _isUnlocked = true;
-    }
+    public UnlockCondition UnlockCondition { get => _unlockCondition; }
+    public bool HasUnlockCondition() =>
+    UnlockCondition != null && UnlockCondition.Requirements != null && UnlockCondition.Requirements.Count > 0;
 }

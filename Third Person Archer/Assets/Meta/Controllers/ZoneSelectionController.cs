@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class ZoneSelectionController : MonoBehaviour
 {
-    [SerializeField] private ZoneProgressData _progressData;
+    [SerializeField] private MissionProgressData _progressData;
     [SerializeField] private Button _leftButton;
     [SerializeField] private Button _rightButton;
 
@@ -13,6 +14,9 @@ public class ZoneSelectionController : MonoBehaviour
     {
         _leftButton.onClick.AddListener(() => ChangeZone(-1));
         _rightButton.onClick.AddListener(() => ChangeZone(1));
+
+        int lastUnlockedIndex = _progressData.GetLastUnlockedZoneIndex();
+        _progressData.SelectZone(lastUnlockedIndex);
     }
 
     private void OnDestroy()
@@ -24,22 +28,13 @@ public class ZoneSelectionController : MonoBehaviour
     private void ChangeZone(int direction)
     {
         int zoneCount = _progressData.AllZones.Count;
-        if (zoneCount == 0) return;
 
-        int currentIndex = GetCurrentZoneIndex();
+        if (zoneCount == 0)
+            return;
+
+        int currentIndex = _progressData.GetCurrentZoneIndex();
         int nextIndex = (currentIndex + direction + zoneCount) % zoneCount;
 
         _progressData.SelectZone(nextIndex);
-        Debug.Log($"Zone viewed: {_progressData.CurrentZone.ZoneName}");
-    }
-
-    private int GetCurrentZoneIndex()
-    {
-        for (int i = 0; i < _progressData.AllZones.Count; i++)
-        {
-            if (_progressData.CurrentZone == _progressData.AllZones[i])
-                return i;
-        }
-        return 0;
     }
 }

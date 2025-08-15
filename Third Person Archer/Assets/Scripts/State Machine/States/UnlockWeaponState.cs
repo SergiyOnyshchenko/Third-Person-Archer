@@ -31,7 +31,7 @@ public class UnlockWeaponState : MainState, IActorIniter
             }
             else
             {
-                LevelEventSystem.SendLoadNextLevel();
+                ScenesLoader.Instance.LoadMainMenu();
             }
         });
     }

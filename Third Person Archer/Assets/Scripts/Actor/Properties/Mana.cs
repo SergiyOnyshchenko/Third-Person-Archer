@@ -26,15 +26,6 @@ namespace Actor.Properties
             PlayerPrefs.SetInt("Mana", _value);
         }
 
-        private void Start()
-        {
-            if (LevelManager.Instance != null)
-            {
-                //_multiplier = LevelManager.Instance.CurrentLevel.ManaMultiplier;
-                _multiplier = 1;
-            }
-        }
-
         public void Add(int value)
         {
             _value += Mathf.RoundToInt( value * _multiplier );

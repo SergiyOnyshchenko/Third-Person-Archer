@@ -1,20 +1,22 @@
 using UnityEngine;
+using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class MetaGameController : MonoBehaviour
 {
-    [SerializeField] private ZoneProgressData _progressData;
+    [SerializeField] private MissionProgressData _progressData;
 
-    private MissionType _selectedMissionType = MissionType.Campaign;
     private MissionUnlockNotifier _unlockNotifier;
-
-    public ZoneData CurrentZone => _progressData.CurrentZone;
-    public MissionType SelectedMissionType => _selectedMissionType;
+    public ZoneData CurrentZone => _progressData.Zone;
+    public MissionType SelectedMissionType => _progressData.MissionType;
     public MissionUnlockNotifier UnlockNotifier => _unlockNotifier;
+    public MissionProgressData MissionProgress => _progressData;
 
-    private void Awake()
+    private void Start()
     {
-        _progressData.InitAllZones();
         InitUnlockNotifier();
+        InjectChilds();
+        TryUnlockNextZone();
     }
 
     public void SelectZone(int index)
@@ -25,46 +27,62 @@ public class MetaGameController : MonoBehaviour
 
     public void SelectMission(MissionType missionType)
     {
-        _selectedMissionType = missionType;
         _unlockNotifier?.MarkSeen(missionType);
     }
 
     public bool CanPlaySelectedMission()
     {
-        var mission = _progressData.CurrentZone?.GetMission(_selectedMissionType);
-        var segment = _progressData.CurrentZone?.Segments.Find(s => s.Type == _selectedMissionType);
-        return MissionUnlockService.CanUnlock(mission, segment, _progressData.CurrentZone);
+        var mission = _progressData.GetMission(SelectedMissionType);
+        var segment = _progressData.GetSegment(SelectedMissionType);
+
+        Debug.Log("Mission Name " + mission.name + " " + MissionUnlockService.CanUnlock(mission, _progressData.Zone));
+
+        return MissionUnlockService.CanUnlock(mission, _progressData.Zone);
     }
 
     public void PlaySelectedMission()
     {
-        Debug.Log($"Playing {_selectedMissionType} mission in zone {_progressData.CurrentZone.ZoneName} level {_progressData.CurrentZone.GetMission(_selectedMissionType).name}");
+        if (!CanPlaySelectedMission())
+        {
+            Debug.LogWarning("Attempted to play a locked or invalid mission.");
+            PopupManager.Instance.EnqueuePopup(PopupType.Error, "This mission is locked. Complete previous missions first.");
+            return;
+        }
 
-        // TODO: Load scene, trigger mission start
-        // On success, call CompleteCurrentMission()
+        var mission = _progressData.GetMission(SelectedMissionType);
+        if (mission == null)
+        {
+            Debug.LogError("No mission found for selected type.");
+            return;
+        }
+
+        ScenesLoader.Instance.LoadCurrentMission();
     }
 
     public void CompleteCurrentMission()
     {
-        _progressData.CurrentZone.AdvanceMission(_selectedMissionType);
+        if (_progressData.Zone != null)
+        {
+            _progressData.Zone.AdvanceMission(SelectedMissionType);
+        }
+        else
+        {
+            Debug.LogWarning("Zone is null. Cannot advance mission.");
+        }
+
         _unlockNotifier.CheckForNewUnlocks();
     }
 
     public void TryUnlockNextZone()
     {
-        int currentIndex = GetCurrentZoneIndex();
-        int nextIndex = currentIndex + 1;
-        if (ZoneUnlockService.CanUnlockZone(_progressData, nextIndex))
-        {
-            _progressData.UnlockNextZone();
-        }
+        _progressData.EvaluateZoneUnlocks();
     }
 
     private int GetCurrentZoneIndex()
     {
         for (int i = 0; i < _progressData.AllZones.Count; i++)
         {
-            if (_progressData.CurrentZone == _progressData.AllZones[i])
+            if (_progressData.Zone == _progressData.AllZones[i])
                 return i;
         }
         return 0;
@@ -72,7 +90,7 @@ public class MetaGameController : MonoBehaviour
 
     private void InitUnlockNotifier()
     {
-        _unlockNotifier = new MissionUnlockNotifier(_progressData.CurrentZone);
+        _unlockNotifier = new MissionUnlockNotifier(_progressData.Zone);
         _unlockNotifier.OnNewMissionUnlocked += HandleNewUnlock;
         _unlockNotifier.CheckForNewUnlocks();
     }
@@ -89,5 +107,13 @@ public class MetaGameController : MonoBehaviour
         };
 
         PopupManager.Instance.EnqueuePopup(PopupType.Unlock, message);
+    }
+
+    private void InjectChilds()
+    {
+        var childs = GetComponentsInChildren<IMetaGameInjectable>(true);
+
+        foreach (var child in childs)
+            child.InjectMetaGameController(this);
     }
 }

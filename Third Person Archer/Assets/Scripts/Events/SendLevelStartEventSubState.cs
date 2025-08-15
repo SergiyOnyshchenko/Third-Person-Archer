@@ -13,10 +13,13 @@ public class SendLevelStartEventSubState : SubState, IActorIniter
 
     public override void Exit()
     {
-        LevelEventSystem.SendLevelStart();
+        RuntimeMissionEventManager.SendGameStarted();
 
-        int level_number = LevelManager.Instance.CurrentMission.ID;
-        YsoCorp.GameUtils.YCManager.instance.OnGameStarted(level_number);
+        if (DataManager.Instance.TryGetData(out MissionProgressData data))
+        {
+            int level_number = data.Mission.ID;
+            YsoCorp.GameUtils.YCManager.instance.OnGameStarted(level_number);
+        }
 
         base.Exit();
     }

@@ -9,12 +9,12 @@ public class StartLevelCallback : MonoBehaviour
 
     private void OnEnable()
     {
-        LevelEventSystem.OnLevelStarted.AddListener(Invoke);
+        RuntimeMissionEventManager.OnGameStarted.AddListener(Invoke);
     }
 
     private void OnDisable()
     {
-        LevelEventSystem.OnLevelStarted.RemoveListener(Invoke);
+        RuntimeMissionEventManager.OnGameStarted.RemoveListener(Invoke);
     }
 
     public void Invoke()
