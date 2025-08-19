@@ -15,7 +15,7 @@ public class ZoneData : ScriptableObject
 
     [Header("Mission Data")]
     [SerializeField] private List<MissionSegmentData> _segments = new();
-
+    
     #endregion
 
     #region Public Properties

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using Meta.Energy;
 using UnityEngine.SceneManagement;
 
 public class MetaGameController : MonoBehaviour
@@ -53,6 +54,12 @@ public class MetaGameController : MonoBehaviour
         if (mission == null)
         {
             Debug.LogError("No mission found for selected type.");
+            return;
+        }
+
+        if (EnergyServiceRunner.Instance.Service.TrySpendForMission(mission.MissionType) == SpendResult.NotEnough)
+        {
+            PopupManager.Instance.EnqueuePopup(PopupType.Error, "Not Enough Energy!");
             return;
         }
 
