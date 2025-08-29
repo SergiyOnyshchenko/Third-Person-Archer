@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using TMPro;
+using Meta.Economy;
 
 public class UpgradePurchaseButton : MonoBehaviour
 {
@@ -23,13 +24,13 @@ public class UpgradePurchaseButton : MonoBehaviour
 
     private void OnEnable()
     {
-        Economy.Instance.GetCurrency(_type).OnCurrencyUpdated += UpdateButtonView;
+        //Economy.Instance.GetCurrency(_type).OnCurrencyUpdated += UpdateButtonView;
         UpdateButtonView();
     }
 
     private void OnDisable()
     {
-        Economy.Instance.GetCurrency(_type).OnCurrencyUpdated -= UpdateButtonView;
+        //Economy.Instance.GetCurrency(_type).OnCurrencyUpdated -= UpdateButtonView;
     }
 
     public void SetPrice(int price)
@@ -62,14 +63,15 @@ public class UpgradePurchaseButton : MonoBehaviour
 
     private bool HasEnoughCost()
     {
-        return Economy.Instance.GetCurrency(_type).Amount >= _price;
+        //return Economy.Instance.GetCurrency(_type).Amount >= _price;
+        return false;
     }
 
     private void PurchaseWithCoins()
     {
         if (HasEnoughCost())
         {
-            Economy.Instance.GetCurrency(_type).Subtract(_price);
+            //Economy.Instance.GetCurrency(_type).Subtract(_price);
             GrantItem();
         }
     }

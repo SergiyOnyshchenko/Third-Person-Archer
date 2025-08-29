@@ -62,8 +62,8 @@ public class EnemyManager : MonoBehaviour
         {
             if (target.TryGetProperty(out DeathCost cost))
             {
-                if(cost.Value.Currency == CurrencyType.Coin)
-                    coins += cost.Value.Value;
+                //if(cost.Value.Currency == CurrencyType.Coin)
+                //    coins += cost.Value.Value;
             }
         }
 

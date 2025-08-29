@@ -21,7 +21,7 @@ public class WinPriceSubstate : SubState
 
     public override void Exit() 
     {
-        Economy.Instance.AddToCurrency(CurrencyType.Coin, _coinsPrice);
+        //Economy.Instance.AddToCurrency(CurrencyType.Coin, _coinsPrice);
 
         _adButton.onClick.RemoveListener(AdMultiplyPrice);
         base.Exit();

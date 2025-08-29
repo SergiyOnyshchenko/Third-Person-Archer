@@ -4,5 +4,5 @@ using UnityEngine;
 
 namespace Actor.Properties
 {
-    public class PriceProperty : SingleProperty<Price> { }
+    public class PriceProperty : SingleProperty<int> { }
 }
