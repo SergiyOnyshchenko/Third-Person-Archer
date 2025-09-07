@@ -6,8 +6,7 @@ using CustomAnimation;
 using CustomAnimation.Body;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UIElements;
+using UI.HUD;
 
 public class SpearController : WeaponController, IActorIniter, IPull
 {
@@ -16,9 +15,12 @@ public class SpearController : WeaponController, IActorIniter, IPull
     [SerializeField] private BodyIKPoseData _pullPose;
     [SerializeField] private BodyIKPoseData _throwPose;
     [SerializeField] private BodyIKPoseData _reloadPose;
+    [Header("States")]
+    [SerializeField] private DelayTransition _reloadTransiiton;
     private FpvController _fpv;
     private SpearHolder _spearHolder;
     private WeaponPull _weaponPull;
+    private float _reloadDuration;
     private bool _isPulling;
     private float _pullPower;
     public float PullPower { get => _pullPower; }
@@ -82,6 +84,7 @@ public class SpearController : WeaponController, IActorIniter, IPull
         PlayAnimation(lerpPose);
     }
 
+
     public void ReleasePull()
     {
         if (!CanAttack())
@@ -95,6 +98,24 @@ public class SpearController : WeaponController, IActorIniter, IPull
 
         _fpv.FpvAnimator.DoPose(_throwPose);
         DOVirtual.DelayedCall(0.15f, () => _fpv.FpvAnimator.DoPose(_reloadPose));
+
+        // START: tell HUD a reload is in progress for the known duration
+        if (_reloadDuration > 0f)
+        {
+            ReloadSignals.Start(_reloadDuration);
+            DG.Tweening.DOVirtual.DelayedCall(_reloadDuration, ReloadSignals.End); // end exactly when reload finishes
+        }
+        else
+        {
+            // If duration not set, you can still show a quick flash or skip.
+        }
+    }
+
+
+    public void SetReloadDuration(float duration)
+    {
+        _reloadTransiiton.SetDelay(duration);
+        _reloadDuration = duration;
     }
 
     private void SetPullPower(float pull)

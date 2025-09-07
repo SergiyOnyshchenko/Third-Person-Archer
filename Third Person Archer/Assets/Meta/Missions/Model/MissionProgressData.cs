@@ -134,7 +134,12 @@ public class MissionProgressData : GameData
             {
                 _lastUnlockedZoneIndex = i;
                 SaveSystem.Save("last_unlocked_zone_index", _lastUnlockedZoneIndex);
-                PopupManager.Instance.EnqueuePopup(PopupType.Unlock, $"New zone unlocked: {currentZone.Name}");
+  
+                UI.Core.ServiceLocator.Resolve<UI.Core.IUINavigator>()
+                    .ShowPopup("popup_unlock", new UI.Screens.ToastArgs{
+                        Message = $"New zone unlocked: {currentZone.Name}",
+                        Duration = 2f });
+
                 Debug.Log($"Zone {currentZone.Id} unlocked.");
             }
         }

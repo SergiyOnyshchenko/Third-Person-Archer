@@ -3,6 +3,7 @@ using Meta.Weapons.UI.Selection;
 using Meta.Weapons.UI.Upgrade;
 using Meta.Weapons.UI.Display;
 using Meta.Economy;
+using System.Linq;
 
 namespace Meta.Weapons.UI
 {
@@ -22,7 +23,7 @@ namespace Meta.Weapons.UI
 
         [Header("Backend")]
         [SerializeField] private WeaponsInitializer backend;
-        [SerializeField] private WeaponDef[] catalog;
+        [SerializeField] private WeaponCatalog catalog;
         [SerializeField] private ScriptableObject weaponIconProviderAsset;   // IWeaponIconProvider
         [SerializeField] private ScriptableObject weaponPrefabProviderAsset; // IWeaponPrefabProvider
 
@@ -49,7 +50,7 @@ namespace Meta.Weapons.UI
                 new YourWalletService(),
                 iconProvider,
                 prefabProvider,
-                catalog,
+                catalog.All.ToArray(),
                 new SystemTimeProvider(),
                 focusMap,
                 poseLibrary,

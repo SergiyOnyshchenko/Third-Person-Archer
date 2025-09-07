@@ -19,7 +19,8 @@ namespace Meta.Weapons.UI
         [SerializeField] private Transform bottomContainer;
 
         [Header("Navigation")]
-        [SerializeField] private Button backButton; // visible only in Upgrade mode
+        [SerializeField] private Button mainBackButton;
+        [SerializeField] private Button upgradeBackButton; // visible only in Upgrade mode
 
         public WeaponDisplayController Display => displayController;
         public WeaponInfoPanelView Info => infoPanelView;
@@ -28,7 +29,8 @@ namespace Meta.Weapons.UI
 
         public void SetBackVisible(bool visible)
         {
-            if (backButton) backButton.gameObject.SetActive(visible);
+            if (mainBackButton) mainBackButton.gameObject.SetActive(!visible);
+            if (upgradeBackButton) upgradeBackButton.gameObject.SetActive(visible);
         }
 
         public T SpawnBottomPanel<T>(T prefab) where T : Component
@@ -45,7 +47,7 @@ namespace Meta.Weapons.UI
 
         private void Awake()
         {
-            if (backButton) backButton.onClick.AddListener(() => OnBack?.Invoke());
+            if (upgradeBackButton) upgradeBackButton.onClick.AddListener(() => OnBack?.Invoke());
         }
     }
 }

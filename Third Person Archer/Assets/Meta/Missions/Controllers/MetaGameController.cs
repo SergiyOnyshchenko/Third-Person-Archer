@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using Meta.Energy;
 using UnityEngine.SceneManagement;
+using Unity.Mathematics;
 
 public class MetaGameController : MonoBehaviour
 {
@@ -36,8 +37,6 @@ public class MetaGameController : MonoBehaviour
         var mission = _progressData.GetMission(SelectedMissionType);
         var segment = _progressData.GetSegment(SelectedMissionType);
 
-        Debug.Log("Mission Name " + mission.name + " " + MissionUnlockService.CanUnlock(mission, _progressData.Zone));
-
         return MissionUnlockService.CanUnlock(mission, _progressData.Zone);
     }
 
@@ -46,7 +45,12 @@ public class MetaGameController : MonoBehaviour
         if (!CanPlaySelectedMission())
         {
             Debug.LogWarning("Attempted to play a locked or invalid mission.");
-            PopupManager.Instance.EnqueuePopup(PopupType.Error, "This mission is locked. Complete previous missions first.");
+
+            UI.Core.ServiceLocator.Resolve<UI.Core.IUINavigator>()
+                .ShowPopup("popup_error", new UI.Screens.ToastArgs{
+                    Message = "This mission is locked. Complete previous missions first.",
+                    Duration = 2f });
+
             return;
         }
 
@@ -59,7 +63,11 @@ public class MetaGameController : MonoBehaviour
 
         if (EnergyServiceRunner.Instance.Service.TrySpendForMission(mission.MissionType) == SpendResult.NotEnough)
         {
-            PopupManager.Instance.EnqueuePopup(PopupType.Error, "Not Enough Energy!");
+            UI.Core.ServiceLocator.Resolve<UI.Core.IUINavigator>()
+                .ShowPopup("popup_error", new UI.Screens.ToastArgs{
+                    Message = "Not Enough Energy!",
+                    Duration = 2f });
+
             return;
         }
 
@@ -113,7 +121,8 @@ public class MetaGameController : MonoBehaviour
             _ => "New mission unlocked!"
         };
 
-        PopupManager.Instance.EnqueuePopup(PopupType.Unlock, message);
+        UI.Core.ServiceLocator.Resolve<UI.Core.IUINavigator>()
+            .ShowPopup("popup_unlock", new UI.Screens.ToastArgs{ Message = message, Duration = 2f });
     }
 
     private void InjectChilds()

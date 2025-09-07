@@ -4,12 +4,14 @@ using Actor;
 using Actor.Properties;
 using UnityEngine;
 using TMPro;
+using Meta.Weapons;
 
-public class AmmoCountView<W> : MonoBehaviour, IActorIniter where W : WeaponController
+public class AmmoCountView<W> : MonoBehaviour, IActorIniter, IAmmoCountView where W : WeaponController
 {
-    [SerializeField] private WeaponType _weaponType;
+    [SerializeField] private WeaponClass _weaponType;
     [SerializeField] private TextMeshProUGUI _countField;
     private Ammo<W> _ammo;
+    public WeaponClass WeaponType => _weaponType;
 
     public void InitActor(ActorController actor)
     {

@@ -2,20 +2,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Actor.Properties
 {
     public class SingleProperty<T> : Property
     {
-        [SerializeField] protected T _value;
-        protected T _currentValue;
+        [SerializeField, FormerlySerializedAs("Value")] protected T _currentValue;
+        [SerializeField, FormerlySerializedAs("Base Value")] protected T _value;
         public T Value { get => _currentValue; }
         public T BaseValue { get => _value; }
         public event Action OnPropertyChanged;
 
         private void Awake()
         {
-            SetValue(_value);
+            if(_value != null)
+                SetValue(_value);
         }
 
         public void SetValue(T value)

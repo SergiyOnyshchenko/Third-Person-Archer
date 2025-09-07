@@ -10,12 +10,15 @@ namespace Actor
 {
     public class ProjectileHitHandler : System, IActorIniter
     {
+        [SerializeField] private ProjectileRangeConfig _projectileRangeConfig;
         [SerializeField] private bool _destroyAfterHit;
 
         private GameObject _gameObject;
         private CollisionTriggerHandler _collisionTriggerHandler;
 
         private ProjectileDirection _direction;
+        private TraveledDistance _traveledDistance;
+        private Range _range;
         private Damage _damage;
         private ElementalProperty _elemental;
 
@@ -30,11 +33,15 @@ namespace Actor
             _gameObject = actor.gameObject;
             _collisionTriggerHandler = actor.GetComponent<CollisionTriggerHandler>();
 
+            if (actor.TryGetProperty(out _damage)) { }
+
             if (actor.TryGetProperty(out _layerMask)) { }
             if (actor.TryGetProperty(out _hitData)) { }
-            if (actor.TryGetProperty(out _damage)) { }
             if (actor.TryGetProperty(out _elemental)) { }
+
             if (actor.TryGetProperty(out _direction)) { }
+            if (actor.TryGetProperty(out _traveledDistance)) { }
+            if (actor.TryGetProperty(out _range)) { }
 
 
             if (_collisionTriggerHandler != null)
@@ -61,11 +68,11 @@ namespace Actor
 
         private void Hit(Collision collision)
         {
-            if(_elemental.Value == ElementalType.NULL)
+            if (_elemental.Value == ElementalType.NULL)
             {
                 if (collision.collider.TryGetComponent(out IDamageable damager3))
                 {
-                    damager3.DoDamage(Mathf.RoundToInt(_damage.Value));
+                    damager3.DoDamage(CalculateDamage());
                     OnTargetHited?.Invoke();
                 }
 
@@ -87,6 +94,13 @@ namespace Actor
         {
             yield return new WaitForSeconds(delay);
             rigidbody.AddForce(direction * power, ForceMode.VelocityChange);
+        }
+
+        private int CalculateDamage()
+        {
+            var damageFactor = _projectileRangeConfig.EvaluateDamageFactor(_traveledDistance.Value, _range.BaseValue);
+            float damage = _damage.Value * damageFactor;
+            return Mathf.RoundToInt(damage);
         }
     }
 }

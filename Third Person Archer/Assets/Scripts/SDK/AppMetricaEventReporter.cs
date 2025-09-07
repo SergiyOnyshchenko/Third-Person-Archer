@@ -145,42 +145,6 @@ public class AppMetricaEventReporter : MonoBehaviour
         SendEvent("main_menu_skin_panel_open", parameters);
     }
 
-    public void SendWeaponUnlock(WeaponData data)
-    {
-        Dictionary<string, object> parameters = new Dictionary<string, object>()
-        {
-            { "weapon", data.ID },
-            { "level_number", GetLevelNumber() },
-            { "level_index", GetLevelIndex() },
-        };
-
-        SendEvent("weapon_unlock", parameters);
-    }
-
-    public void SendWeaponEquip(WeaponData data)
-    {
-        Dictionary<string, object> parameters = new Dictionary<string, object>()
-        {
-            { "weapon", data.ID },
-            { "level_number", GetLevelNumber() },
-            { "level_index", GetLevelIndex() },
-        };
-
-        SendEvent("weapon_equip", parameters);
-    }
-
-    public void SendSkinEquip(PlayerSkinData data)
-    {
-        Dictionary<string, object> parameters = new Dictionary<string, object>()
-        {
-            { "skin", data.Name },
-            { "level_number", GetLevelNumber() },
-            { "level_index", GetLevelIndex() },
-        };
-
-        SendEvent("skin_equip", parameters);
-    }
-
     public void SendHostageDied()
     {
         Dictionary<string, object> parameters = new Dictionary<string, object>()
@@ -252,8 +216,8 @@ public class AppMetricaEventReporter : MonoBehaviour
     {
         List<string> inventoryIDs = new List<string>();
 
-        if (actor.TryGetSystem(out WeaponInventory inventory))
-            inventoryIDs = inventory.WeaponsData.GetCurrentWeaponsID();
+        //if (actor.TryGetSystem(out WeaponInventory inventory))
+        //    inventoryIDs = inventory.WeaponsData.GetCurrentWeaponsID();
 
         return inventoryIDs;
     }

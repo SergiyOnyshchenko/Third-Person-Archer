@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Actor;
+using Meta.Weapons;
 
 public class OnWeaponTypeEquippedTransition : StateTransition, IActorIniter
 {
-    [SerializeField] private WeaponType _weaponType;
-    private WeaponInventory _inventory;
+    [SerializeField] private WeaponClass _weaponType;
+    private EquippedWeaponDef _equippedWeapon;
 
     public void InitActor(ActorController actor)
     {
-        if(actor.TryGetSystem(out WeaponInventory inventory))
-            _inventory = inventory;
+        if(actor.TryGetProperty(out _equippedWeapon)) {}
     }
 
     public override void Enter()
@@ -22,7 +22,7 @@ public class OnWeaponTypeEquippedTransition : StateTransition, IActorIniter
 
     public void CheckEquippedWeapon()
     {
-        if (_inventory.EquippedWeaponType == _weaponType)
+        if (_equippedWeapon.Value.Class == _weaponType)
             DoTransition();
     }
 }

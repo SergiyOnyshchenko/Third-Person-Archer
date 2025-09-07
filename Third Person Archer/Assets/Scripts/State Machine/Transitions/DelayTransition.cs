@@ -8,6 +8,11 @@ public class DelayTransition : StateTransition
     private float _timer;
     public float Ratio { get => _timer / _delay; }
 
+    public void SetDelay(float delay)
+    {
+        _delay = delay;
+    }
+
     public override void Enter()
     {
         base.Enter();

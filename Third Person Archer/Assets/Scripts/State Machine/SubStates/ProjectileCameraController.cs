@@ -12,6 +12,32 @@ using static RayFire.RayfireBomb;
 namespace Actor
 {
     [Serializable]
+    public class CinematicSpeedProfile
+    {
+        [Tooltip("Speed factor over normalized progress [0..1]. Keep average ~1.")]
+        public AnimationCurve SpeedOverProgress = new AnimationCurve(
+            new Keyframe(0f, 0.25f, 0f, 2f),   // gentle start
+            new Keyframe(0.35f, 0.7f),
+            new Keyframe(0.7f, 1.2f),
+            new Keyframe(1f, 1f, 0f, 0f)       // settle at ~1x
+        );
+
+        [Header("Duration vs Distance")]
+        [Tooltip("Approx distance at which we hit MaxDuration.")]
+        public float DurationDistance = 60f;
+        public float MinDuration = 0.35f;
+        public float MaxDuration = 1.10f;
+
+        [Header("Clamps (m/s)")]
+        public float MinStartSpeed = 20f;
+        public float MaxEndSpeed = 120f;
+
+        [Header("Safety")]
+        public float MinTargetDistance = 2f;  // avoid divide-by-zero for point-blank
+        public int CurveSamples = 64;         // used to normalize the curve
+    }
+
+    [Serializable]
     public class ProjectileView : IActorIniter
     {
         [SerializeField] private CinemachineVirtualCamera _camera;
@@ -79,7 +105,7 @@ namespace Actor
         {
             _projectile = projectile;
 
-            projectile.SetSpeed(16000);
+            projectile.SetSpeed(30f);
         }
     }
 
@@ -125,6 +151,8 @@ namespace Actor
     {
         [SerializeField] private ProjectileView _regularView;
         [SerializeField] private XRayProjectileView _xRayView;
+        [SerializeField] private CinematicSpeedProfile _cinematicProfile = new CinematicSpeedProfile();
+        private IEnumerator _cinematicSpeedRoutine;
 
         private ActorController _actor;
         private ShootingTargets _shootingTargets;
@@ -194,8 +222,8 @@ namespace Actor
             if (projectilePredictiveHit.collider != null)
             {
                 float distance = Vector3.Distance(projectile.transform.position, projectilePredictiveHit.point);
-                float offset = 1f;
-                StartCheckMaxTravaledDistance(distance + offset);
+                const float smallOffset = 1f;
+                StartCinematicSpeed(distance + smallOffset);
             }
 
             _projectile.OnHited.AddListener(HitProjectileHandler);
@@ -204,19 +232,28 @@ namespace Actor
         private void HitProjectileHandler()
         {
             _projectile.OnHited.RemoveListener(HitProjectileHandler);
-
             StopDeactivateTimer();
-            StopCheckMaxTravaledDistance();
+            StopCinematicSpeed();
 
             if (_currentView != null)
             {
                 _currentView.HitHandler();
-
-                DOVirtual.DelayedCall(_currentView.AfterHitDelay, () =>
-                {
-                    _currentView.ResetHandler();
-                });
+                DOVirtual.DelayedCall(_currentView.AfterHitDelay, () => _currentView.ResetHandler());
             }
+        }
+
+        private void StartCinematicSpeed(float targetDistance)
+        {
+            StopCinematicSpeed();
+            _cinematicSpeedRoutine = CinematicSpeedRoutine(targetDistance);
+            StartCoroutine(_cinematicSpeedRoutine);
+        }
+
+        private void StopCinematicSpeed()
+        {
+            if (_cinematicSpeedRoutine != null)
+                StopCoroutine(_cinematicSpeedRoutine);
+            _cinematicSpeedRoutine = null;
         }
 
         private void StartDeactivateTimer()
@@ -240,40 +277,53 @@ namespace Actor
                 _currentView.ResetHandler();
         }
 
-        private void StartCheckMaxTravaledDistance(float targetDistance)
+        private IEnumerator CinematicSpeedRoutine(float targetDistance)
         {
-            StopCheckMaxTravaledDistance();
-            _maxDistanceChecker = MaxTravaledDistanceChecker(targetDistance);
-            StartCoroutine(_maxDistanceChecker);
-        }
+            if (_projectile == null) yield break;
 
-        private void StopCheckMaxTravaledDistance()
-        {
-            if (_maxDistanceChecker != null)
-                StopCoroutine(_maxDistanceChecker);
-        }
+            // 1) pick a duration from distance
+            float d = Mathf.Max(targetDistance, _cinematicProfile.MinTargetDistance);
+            float t01 = Mathf.InverseLerp(0f, _cinematicProfile.DurationDistance, d);
+            float desiredDuration = Mathf.Lerp(_cinematicProfile.MinDuration, _cinematicProfile.MaxDuration, t01);
 
-        private IEnumerator MaxTravaledDistanceChecker(float targetDistance)
-        {
-            float startSpeed = _projectile.Speed.Value;
-            float maxSpeed = startSpeed * 5f;
-
-            do
+            // 2) compute average of curve to normalize area
+            float avg = 0f;
+            int n = Mathf.Max(4, _cinematicProfile.CurveSamples);
+            for (int i = 0; i < n; i++)
             {
-                if (_projectile == null)
-                    yield break;
-
-                float t = Mathf.InverseLerp(0, targetDistance, _projectile.TraveledDistance);
-                float currentSpeed = Mathf.Lerp(startSpeed, maxSpeed, t);
-
-                _projectile.SetSpeed(currentSpeed);
-
-                yield return new WaitForFixedUpdate();
+                float p = (float)i / (n - 1);
+                avg += Mathf.Max(0.0001f, _cinematicProfile.SpeedOverProgress.Evaluate(p));
             }
-            while (_projectile.TraveledDistance < targetDistance);
+            avg /= n;
 
-            if (_currentView != null)
-                _currentView.ResetHandler();
+            // base average speed needed to travel distance in desired time
+            float vAvg = d / desiredDuration;
+
+            // normalize curve so its average equals 1, then scale to vAvg
+            float k = vAvg / avg;
+
+            // Optional: seed an initial speed so the very first frame looks right
+            _projectile.SetSpeed(Mathf.Max(_cinematicProfile.MinStartSpeed, k * _cinematicProfile.SpeedOverProgress.Evaluate(0f)));
+
+            // 3) drive speed by progress (computed from *actual* traveled distance)
+            WaitForFixedUpdate wait = new WaitForFixedUpdate();
+            while (_projectile != null)
+            {
+                // progress 0..1 based on real distance
+                float progress = Mathf.Clamp01(_projectile.TraveledDistance / d);
+
+                // shape speed
+                float shaped = k * _cinematicProfile.SpeedOverProgress.Evaluate(progress);
+                float clamped = Mathf.Clamp(shaped, _cinematicProfile.MinStartSpeed, _cinematicProfile.MaxEndSpeed);
+
+                _projectile.SetSpeed(clamped);
+
+                if (progress >= 1f) break;
+                yield return wait;
+            }
+
+            // If we got here without a hit, gracefully reset the view
+            _currentView?.ResetHandler();
         }
     }
 }

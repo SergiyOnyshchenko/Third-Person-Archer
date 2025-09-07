@@ -5,7 +5,6 @@ using UnityEngine;
 using Cinemachine;
 using UnityEngine.Events;
 using DG.Tweening;
-using static RayFire.RayfireBomb;
 using Unity.Burst.CompilerServices;
 using RayFire;
 
@@ -192,7 +191,7 @@ namespace Actor
 
             _projectile.SetDamage(100);
             //_projectile.SetSpeed(3000);
-            _projectile.SetSpeed(16000);
+            _projectile.SetSpeed(30);
         }
 
         private void SetCameraSettings(CinemachineVirtualCamera camera, Transform target)

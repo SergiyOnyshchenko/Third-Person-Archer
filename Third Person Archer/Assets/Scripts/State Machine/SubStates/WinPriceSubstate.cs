@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Meta.Economy;
 
 public class WinPriceSubstate : SubState
 {
@@ -19,10 +20,9 @@ public class WinPriceSubstate : SubState
         _winCoinsView.Init(_coinsPrice);
     }
 
-    public override void Exit() 
+    public override void Exit()
     {
-        //Economy.Instance.AddToCurrency(CurrencyType.Coin, _coinsPrice);
-
+        Economy.Wallet.Add(CurrencyType.Cash, _coinsPrice);
         _adButton.onClick.RemoveListener(AdMultiplyPrice);
         base.Exit();
     }
@@ -31,7 +31,7 @@ public class WinPriceSubstate : SubState
     {
         YsoCorp.GameUtils.YCManager.instance.adsManager.ShowRewarded((bool value) =>
         {
-            if(value)
+            if (value)
             {
                 _adButton.gameObject.SetActive(false);
                 _coinsPrice *= _adMultiplier;

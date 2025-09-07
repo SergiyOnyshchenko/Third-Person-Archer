@@ -45,7 +45,10 @@ public class MissionSelectorButton : MonoBehaviour, IMetaGameInjectable, IMissio
         if (segment == null || mission == null || !MissionUnlockService.CanUnlock(mission, zone))
         {
             string reason = MissionUnlockService.GetLockedReason(_missionType, zone);
-            PopupManager.Instance.EnqueuePopup(PopupType.Warning, reason);
+
+            UI.Core.ServiceLocator.Resolve<UI.Core.IUINavigator>()
+                .ShowPopup("popup_warning", new UI.Screens.ToastArgs{ Message = reason, Duration = 2f });
+
             return;
         }
 

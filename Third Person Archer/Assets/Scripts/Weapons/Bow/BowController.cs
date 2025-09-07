@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using CustomAnimation;
 using UnityEngine;
 using CustomAnimation.Body;
-using static RootMotion.FinalIK.AimPoser;
 using DG.Tweening;
 using UnityEngine.Events;
-using static UnityEngine.Rendering.DebugUI;
-using UnityEngine.EventSystems;
+using Game.Weapons;
 using Actor.Properties;
 
 namespace Actor
@@ -30,7 +28,6 @@ namespace Actor
         private float _pullPower;
         private bool _isPulling;
         private float _reloadDuration = 1f;
-        private float _reloadMultiplier = 1f;
         private GameObject _bowModel => _bowView.Model;
         private BowSpring _bowSpring => _bowView.BowSpring;
         private GameObject _bowArrow => _bowView.Arrow;
@@ -42,7 +39,7 @@ namespace Actor
         {
             base.InitActor(actor);
 
-            if (actor.TryGetSystem(out BowViewController bowView))
+            if (actor.TryGetSystem(out BowFpvSkinView bowView))
                 _bowView = bowView;
 
             if (actor.TryGetSystem(out FpvController fpv))
@@ -95,7 +92,7 @@ namespace Actor
             if (!CanAttack())
                 return;
 
-            SetPullPower(_pullPower + (1.1f * Time.fixedDeltaTime * _reloadMultiplier));
+            SetPullPower(_pullPower + (1.1f * Time.fixedDeltaTime));
 
             var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
             PlayAnimation(lerpPose);
@@ -132,7 +129,7 @@ namespace Actor
         public void SetReloadSettings()
         {
             if (_fpv.FpvAnimator.Properties.TryGetProperty(out SpringPower power))
-                power.SetValue(5.5f * _reloadMultiplier);
+                power.SetValue(5.5f);
 
             _handArrow.gameObject.SetActive(false);
             _transitArrow.gameObject.SetActive(true);
@@ -142,22 +139,22 @@ namespace Actor
             _transitArrow.transform.localRotation = _handArrow.transform.localRotation;
         }
 
-        public void SetReloadMult(float value)
+        public void SetReloadDuration(float value)
         {
-            _reloadMultiplier = value;
+            _reloadDuration = value;
         }
 
         public void Reload(UnityAction onComplete)
         {
-            float duration = _reloadDuration / _reloadMultiplier;
+            float duration = _reloadDuration;
             
-            DOVirtual.DelayedCall(0.5f / _reloadMultiplier, () =>
+            DOVirtual.DelayedCall(0.25f, () =>
             {
                 _reloadAnimation.Play(duration);
                 _bowArrow.SetActive(false);
             });
 
-            duration += 0.5f / _reloadMultiplier;
+            duration += 0.25f;
 
             DOVirtual.DelayedCall(duration / 4, () =>
             {

@@ -16,6 +16,7 @@ public class Projectile : MonoBehaviour, IActorIniter
     private ElementalProperty _elemental;
     private Speed _speed;
     private Damage _damage;
+    private Actor.Properties.Range _range;
     private TraveledDistance _traveledDistance;
 
     //Systems
@@ -45,8 +46,9 @@ public class Projectile : MonoBehaviour, IActorIniter
         if (actor.TryGetProperty(out _direction)) { }
         if (actor.TryGetProperty(out _elemental)) { }
         if (actor.TryGetProperty(out _speed)) { }
+        if (actor.TryGetProperty(out _range)) { }
 
-        if (actor.TryGetProperty(out _damage)) 
+        if (actor.TryGetProperty(out _damage))
             _damage.SetValue(_damageValue);
 
         if (actor.TryGetProperty(out _traveledDistance)) { }
@@ -87,6 +89,14 @@ public class Projectile : MonoBehaviour, IActorIniter
             return;
 
         _speed.SetValue(newSpeed);
+    }
+
+    public void SetRange(float range)
+    {
+        if (_range == null)
+            return;
+
+        _range.SetValue(range);
     }
 
     public void EnableFeedbacks(bool value)

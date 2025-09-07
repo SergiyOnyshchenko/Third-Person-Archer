@@ -73,9 +73,9 @@ namespace Actor
             _fpv.RightHand.transform.rotation = _crossbowAnimator.RightHand.rotation;
         }
 
-        public void SetReloadSpeedMult(float mult)
+        public void SetReloadDuration(float duration)
         {
-            _crossbowAnimator.SetReloadSpeedMult(mult);
+            _crossbowAnimator.SetReloadDuration(duration);
         }
 
         private void ShootProjectile()

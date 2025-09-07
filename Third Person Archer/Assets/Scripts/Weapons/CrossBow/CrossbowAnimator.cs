@@ -2,19 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UI.HUD;
 
 public class CrossbowAnimator : MonoBehaviour
 {
     [Header("Animators")]
     [SerializeField] private Animator _weaponAnimator;
     [SerializeField] private Animator _handsAnimator;
+
     [Header("Hand Points")]
     [SerializeField] private Transform _leftHand;
     [SerializeField] private Transform _rightHand;
-    private float _reloadultiplier = 1;
+
+    [Header("Reload Settings")]
+    [SerializeField] private string _reloadStateName = "Reload"; // name of reload state in Animator
+    [SerializeField] private int _reloadLayer = 0;               // layer index of reload animation
+    private float _defaultReloadDuration;
+    private float _currentReloadDuration;
+
     private Animator[] _animators;
-    public Transform LeftHand { get => _leftHand; }
-    public Transform RightHand { get => _rightHand; }
+    public Transform LeftHand => _leftHand;
+    public Transform RightHand => _rightHand;
+
     public UnityAction OnShooted;
     public UnityAction OnNewArowSeted;
     public UnityAction OnReloaded;
@@ -22,12 +31,26 @@ public class CrossbowAnimator : MonoBehaviour
     private void Awake()
     {
         _animators = new Animator[] { _weaponAnimator, _handsAnimator };
+
+        // Cache default reload animation duration
+        if (_weaponAnimator != null)
+        {
+            var clipInfo = _weaponAnimator.runtimeAnimatorController.animationClips;
+            foreach (var clip in clipInfo)
+            {
+                if (clip.name == _reloadStateName)
+                {
+                    _defaultReloadDuration = clip.length;
+                    break;
+                }
+            }
+        }
     }
 
     private void OnEnable()
     {
         foreach (var animator in _animators)
-            animator.SetFloat("ReloadMult", _reloadultiplier);
+            animator.SetFloat("ReloadMult", 1f); // default speed
     }
 
     public void Shoot(UnityAction onShooted)
@@ -39,33 +62,38 @@ public class CrossbowAnimator : MonoBehaviour
     public void Reload(UnityAction onArrowSet)
     {
         OnNewArowSeted = onArrowSet;
+
+        // START: notify UI with known duration (fallback to default if needed)
+        float duration = _currentReloadDuration > 0f ? _currentReloadDuration :
+                         (_defaultReloadDuration > 0f ? _defaultReloadDuration : 0.01f);
+        ReloadSignals.Start(duration);
+
         SetTrigger("Reload");
-    }
-
-    public void SendShootEvent()
-    {
-        OnShooted?.Invoke();
-    }
-
-    public void SendSetNewArrowEvent()
-    {
-        OnNewArowSeted?.Invoke();
     }
 
     public void SendReloadEvent()
     {
         OnReloaded?.Invoke();
+        ReloadSignals.End(); 
     }
 
-    public void SetReloadSpeedMult(float mult)
+    public void SetReloadDuration(float desiredDuration)
     {
-        _reloadultiplier = mult;
+        if (_defaultReloadDuration <= 0f)
+        {
+            Debug.LogWarning("Default reload duration not set or not found!");
+            return;
+        }
 
-        //_weaponAnimator.SetFloat("ReloadMult", mult);
-        //_handsAnimator.SetFloat("ReloadMult", mult);
+        float mult = _defaultReloadDuration / desiredDuration;
+        _currentReloadDuration = desiredDuration; 
 
-
+        foreach (var animator in _animators)
+            animator.SetFloat("ReloadMult", mult);
     }
+
+    public void SendShootEvent() => OnShooted?.Invoke();
+    public void SendSetNewArrowEvent() => OnNewArowSeted?.Invoke();
 
     private void SetTrigger(string name)
     {

@@ -5,23 +5,26 @@ using UnityEngine;
 
 public class OnWeaponTypeChanged : StateTransition, IActorIniter
 {
-    private WeaponInventory _inventory;
+    private EquippedWeaponDef _equippedWeapon;
 
     public void InitActor(ActorController actor)
     {
-        if(actor.TryGetSystem(out WeaponInventory inventory))
-            _inventory = inventory;
+        if (actor.TryGetProperty(out _equippedWeapon)){}
     }
 
     public override void Enter()
     {
         base.Enter();
-        _inventory.OnWeaponChanged.AddListener(DoTransition);
+
+        if (_equippedWeapon != null)
+            _equippedWeapon.OnPropertyChanged += DoTransition;
     }
 
     public override void Exit()
     {
-        _inventory.OnWeaponChanged.RemoveListener(DoTransition);
+        if (_equippedWeapon != null)
+            _equippedWeapon.OnPropertyChanged -= DoTransition;
+
         base.Exit();
     }
 }

@@ -1,13 +1,14 @@
 // Optional: attach to a bootstrap scene object to wire services in your IoC container.
 using UnityEngine;
 using Meta.Economy;
+using System.Linq;
 
 namespace Meta.Weapons
 {
     public class WeaponsInitializer : MonoBehaviour
     {
         [Header("Catalog")]
-        [SerializeField] private WeaponDef[] _weaponCatalog;
+        [SerializeField] private WeaponCatalog _weaponCatalog;
         [SerializeField] private DefaultLoadoutConfig _defaultLoadoutConfig;
  
         // Example of how you might construct services, then expose them to your game:
@@ -33,10 +34,10 @@ namespace Meta.Weapons
             _time = new SystemTimeProvider();
 
             EquipmentService = new EquipmentService(WeaponRepository);
-            UpgradeService = new UpgradeService(WeaponRepository, JobsRepository, _wallet, _time, _weaponCatalog);
-            MissionGateService = new MissionGateService(WeaponRepository, StatsService, _weaponCatalog);
+            UpgradeService = new UpgradeService(WeaponRepository, JobsRepository, _wallet, _time, _weaponCatalog.All.ToArray());
+            MissionGateService = new MissionGateService(WeaponRepository, StatsService, _weaponCatalog.All.ToArray());
 
-            var applier = new DefaultLoadoutApplier(WeaponRepository, EquipmentService, _weaponCatalog, _defaultLoadoutConfig);
+            var applier = new DefaultLoadoutApplier(WeaponRepository, EquipmentService, _weaponCatalog.All.ToArray(), _defaultLoadoutConfig);
             applier.ApplyIfNeeded();
 
             // Optional: finalize any due upgrades immediately on load

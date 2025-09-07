@@ -27,10 +27,7 @@ namespace Actor
 
         public void Move(Vector3 direction)
         {
-            //_speedMultiplier += 5f * Time.fixedDeltaTime;
-            //_speedMultiplier = Mathf.Clamp(_speedMultiplier, 1f, 20f);
-
-            _rigidbody.velocity = direction * _speed.Value * Time.fixedDeltaTime;
+            _rigidbody.velocity = direction * _speed.Value;
             _transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
         }
     }

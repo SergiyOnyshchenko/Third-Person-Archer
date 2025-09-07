@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using static UnityEngine.Rendering.DebugUI;
+using Meta.Weapons;
 
 namespace Actor.Properties
 {
@@ -13,7 +13,7 @@ namespace Actor.Properties
         private int _currentCount;
         private IShootEvent _shootEvent;
         public int AmmoCount => _currentCount;
-        public abstract WeaponType WeaponType { get; }
+        public abstract WeaponClass WeaponType { get; }
 
         public UnityEvent OnAmmoModified = new UnityEvent();
 

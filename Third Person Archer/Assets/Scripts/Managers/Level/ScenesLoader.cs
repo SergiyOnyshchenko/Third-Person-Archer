@@ -41,7 +41,6 @@ public class ScenesLoader : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        // You can hardcode or store your main menu scene as a SceneReference elsewhere
         LoadScene("MainMenu");
     }
 
