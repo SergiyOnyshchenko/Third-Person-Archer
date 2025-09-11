@@ -34,7 +34,7 @@ namespace Meta.Weapons.UI.Selection
                 backendInitializer.WeaponRepository,
                 backendInitializer.EquipmentService,
                 backendInitializer.StatsService,
-                new YourWalletService(), // replace with your real wallet service instance
+                Meta.Economy.Economy.Wallet, // replace with your real wallet service instance
                 iconProvider,
                 prefabProvider,
                 weaponCatalog

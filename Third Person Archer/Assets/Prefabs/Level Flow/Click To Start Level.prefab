@@ -553,14 +553,13 @@ GameObject:
   - component: {fileID: 3341141116608624419}
   - component: {fileID: 6080822512003246}
   - component: {fileID: 1131709232313752822}
-  - component: {fileID: 3493630902654554920}
   m_Layer: 5
   m_Name: Coins For Ad Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1244332522013885286
 RectTransform:
   m_ObjectHideFlags: 0
@@ -666,20 +665,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &3493630902654554920
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5782457077326019407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6136940855bb6a4981dc42d3fc28af5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _coinsAmount: 3000
-  _textField: {fileID: 8814647750201515452}
 --- !u!1 &7189068435213952097
 GameObject:
   m_ObjectHideFlags: 0
@@ -1276,6 +1261,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Upgrade Panel
       objectReference: {fileID: 0}
+    - target: {fileID: 3010890874429409863, guid: 02d892fd4ede2d649a5cb71a85953944, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3116819284405102252, guid: 02d892fd4ede2d649a5cb71a85953944, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -1732,7 +1721,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -62.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1495526771353980890, guid: 02d892fd4ede2d649a5cb71a85953944, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

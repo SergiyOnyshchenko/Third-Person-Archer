@@ -6,10 +6,9 @@ namespace Actor
 {
     public class ManaDropper : System, IActorIniter
     {
-
-
         [SerializeField] private ManaDrop _prefab;
         private Transform _spawnPoint;
+        private int _manaDropAmount = 10;
 
         public void InitActor(ActorController actor)
         {
@@ -20,7 +19,12 @@ namespace Actor
         public void Drop()
         {
             ManaDrop manaDrop = Instantiate(_prefab, _spawnPoint.position, Quaternion.identity);
-            manaDrop.Init(Player.Instance, 10);
+            manaDrop.Init(Player.Instance, _manaDropAmount);
+        }
+
+        public void SetManaDropAmount(int amount)
+        {
+            _manaDropAmount = amount;
         }
     }
 }

@@ -93,10 +93,10 @@ public class Projectile : MonoBehaviour, IActorIniter
 
     public void SetRange(float range)
     {
-        if (_range == null)
-            return;
+        //if (_range == null)
+        //    return;
 
-        _range.SetValue(range);
+        //_range.SetValue(range);
     }
 
     public void EnableFeedbacks(bool value)

@@ -27,7 +27,7 @@ namespace Meta.Weapons.UI.Upgrade
                 backend.UpgradeService,
                 backend.EquipmentService,
                 backend.StatsService,
-                new YourWalletService(), // replace with your implementation
+                Meta.Economy.Economy.Wallet, // replace with your implementation
                 new SystemTimeProvider(),
                 weaponCatalog,
                 focusMap,

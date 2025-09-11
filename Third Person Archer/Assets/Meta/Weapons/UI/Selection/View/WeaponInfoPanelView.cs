@@ -76,9 +76,21 @@ namespace Meta.Weapons.UI.Selection
             purchaseButtonView.Configure(currency, price, visible, affordable, currencyVisuals, label);
         }
 
+        public void ClearContext()
+        {
+            if (equipButtonView) equipButtonView.SetVisible(false);
+            if (upgradeButton) upgradeButton.gameObject.SetActive(false);
+            if (purchaseButtonView) purchaseButtonView.gameObject.SetActive(false);
+        }
+
         private void Awake()
         {
-            if (upgradeButton) upgradeButton.onClick.AddListener(() => OnUpgrade?.Invoke());
+            if (upgradeButton)
+            {
+                upgradeButton.onClick.RemoveAllListeners();
+                upgradeButton.onClick.AddListener(() => OnUpgrade?.Invoke());
+            } 
+            
             if (equipButtonView) equipButtonView.OnEquipClicked = () => OnEquip?.Invoke();
             if (purchaseButtonView) purchaseButtonView.OnPurchaseRequested += (c, p) => OnPurchase?.Invoke(c, p);
         }

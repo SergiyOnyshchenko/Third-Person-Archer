@@ -19,7 +19,7 @@ namespace Meta.Weapons.UI
         private readonly IUpgradeService upgrade;
         private readonly IEquipmentService equip;
         private readonly IStatsService stats;
-        private readonly IWalletService wallet;
+        private readonly IWallet wallet;
         private readonly ITimeProvider time;
         private readonly WeaponDef[] catalog;
         private readonly WeaponUpgradeFocusMap focusMap;
@@ -41,7 +41,7 @@ namespace Meta.Weapons.UI
             IUpgradeService upgrade,
             IEquipmentService equip,
             IStatsService stats,
-            IWalletService wallet,
+            IWallet wallet,
             ITimeProvider time,
             WeaponDef[] catalog,
             WeaponUpgradeFocusMap focusMap,
@@ -178,7 +178,7 @@ namespace Meta.Weapons.UI
 
             var current = stats.Compute(def, inst);
 
-            // Preview one level up
+            // Preview one level up (clone instance and simulate +1 level for the selected part)
             var clone = new WeaponInstance
             {
                 WeaponId = inst.WeaponId,
@@ -192,38 +192,58 @@ namespace Meta.Weapons.UI
 
             var after = stats.Compute(def, clone);
 
-            // Fill panel (base numbers)
-            view.Info.SetStats(normalization, style, current, showComparison:false, equipped: current);
-            // Draw upgrade preview deltas on top (green only)
+            // Base stats
+            view.Info.SetStats(normalization, style, current, showComparison: false, equipped: current);
+            // Overlay the green "upgrade preview" deltas
             view.Info.GetComponentInChildren<WeaponStatsPanelView>()?.SetUpgradePreview(normalization, style, current, after);
 
-            // Show purchase area as "Upgrade" with Coins
+            // ----- Purchase UI for upgrade (COINS only) -----
             bool atMax = lv >= part.MaxLevel;
-            int price = (!atMax && part.Levels != null && lv >= 0 && lv < part.Levels.Length) ? part.Levels[lv].CashCost : 0;
+
+            // In your data this field is still named CashCost; you’re using it as Coins cost.
+            int price = (!atMax && part.Levels != null && lv >= 0 && lv < part.Levels.Length)
+                        ? part.Levels[lv].CashCost
+                        : 0;
+
             bool visible = !atMax;
             bool affordable = visible && wallet.CanAfford(host.CoinsCurrencyType, price);
 
+            // Show coins purchase area with label "Upgrade"
             view.Info.ConfigurePurchase(host.CoinsCurrencyType, price, visible, affordable, label: "Upgrade");
-            view.Info.ShowContextOwned(owned: true, isEquipped: true, selectedIsEquipped: false);
         }
+
 
         private void OnPurchaseUpgrade(CurrencyType currency, int price)
         {
+            // Selected part
             var part = def.Parts.FirstOrDefault(p => p.Id == selectedPartId);
             if (part == null) return;
 
-            var st = repo.Load();
-            var i = st.Weapons.FirstOrDefault(w => w.WeaponId == def.Id) ?? inst;
-            i.PartLevels.TryGetValue(part.Id, out var lv);
-            if (lv >= part.MaxLevel) return;
+            // Load state & current level
+            var state = repo.Load();
+            var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id)
+                       ?? new WeaponInstance { WeaponId = def.Id, Owned = true };
+            inst.PartLevels.TryGetValue(part.Id, out var level);
 
-            if (!wallet.CanAfford(currency, price)) return;
+            // Already maxed?
+            if (level >= part.MaxLevel) return;
 
-            wallet.Spend(currency, price);
-            var job = upgrade.StartUpgrade(def.Id, part.Id, UpgradePayment.CashWithTimer);
-            if (job == null) return;
+            // Afford?
+            if (!wallet.TrySpend(currency, price)) return;
 
-            RefreshAll();
+            // === INSTANT UPGRADE: apply level immediately, no job ===
+            inst.PartLevels[part.Id] = level + 1;
+
+            // Ensure instance is persisted in the save
+            var saved = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id);
+            if (saved == null)
+                state.Weapons.Add(inst);
+
+            repo.Save(state);
+
+            // Feedback + UI refresh
+            //PlayUpgradeFeedback();   // shake/VFX/slider anim if you already have it
+            RefreshAll();            // recompute stats, redraw right panel, list, etc.
         }
 
         private void RefreshAll()

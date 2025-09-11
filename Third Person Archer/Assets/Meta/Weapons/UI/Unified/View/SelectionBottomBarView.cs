@@ -27,6 +27,9 @@ namespace Meta.Weapons.UI
 
         public void ClearWeaponList()
         {
+            if (weaponListContainer == null || weaponListContainer.Equals(null))
+                return;
+
             for (int i = weaponListContainer.childCount - 1; i >= 0; i--)
                 Destroy(weaponListContainer.GetChild(i).gameObject);
         }

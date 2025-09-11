@@ -20,7 +20,7 @@ namespace Meta.Weapons
         public IMissionGateService MissionGateService { get; private set; }
 
         // Provide these from your composition root / DI in a real project
-        private IWalletService _wallet;
+        private IWallet _wallet;
         private ITimeProvider _time;
 
         private void Awake()
@@ -30,7 +30,7 @@ namespace Meta.Weapons
             StatsService = new StatsService();
 
             // Plug in your wallet implementation & time provider
-            _wallet = new YourWalletService();         // TODO: replace with your real service
+            _wallet = Meta.Economy.Economy.Wallet; 
             _time = new SystemTimeProvider();
 
             EquipmentService = new EquipmentService(WeaponRepository);
@@ -46,11 +46,11 @@ namespace Meta.Weapons
     }
 
     // Example wallet stub – replace with your real implementation
-    internal class YourWalletService : IWalletService
+    internal class YourWalletService 
     {
         public bool CanAfford(CurrencyType currency, int amount) => true; // TODO
         public void Spend(CurrencyType currency, int amount) { /* TODO */ }
-        public int GetBalance(CurrencyType currency) => 0; // TODO
+        public int Get(CurrencyType currency) => 0; // TODO
     }
 }
 

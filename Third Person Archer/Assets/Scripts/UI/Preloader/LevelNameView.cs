@@ -16,7 +16,7 @@ public class LevelNameView : MonoBehaviour
     {
         if (DataManager.Instance.TryGetData(out MissionProgressData missionProgressData))
         {
-            string name = missionProgressData.Mission.Name;
+            string name = missionProgressData.GetMission(missionProgressData.MissionType).Name;
 
             if (string.IsNullOrEmpty(name))
             {

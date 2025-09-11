@@ -7,7 +7,6 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 using Actor.Properties;
-using static RayFire.RayfireBomb;
 
 namespace Actor
 {
@@ -105,7 +104,8 @@ namespace Actor
         {
             _projectile = projectile;
 
-            projectile.SetSpeed(30f);
+            float speed = 30f;
+            projectile.SetSpeed(speed);
         }
     }
 
@@ -196,7 +196,7 @@ namespace Actor
                     }
                     else
                     {
-                        ShootRegularProjectileHandler(projectile, projectilePredictiveHit);
+                        //ShootRegularProjectileHandler(projectile, projectilePredictiveHit);
                     }
                 }
             }
@@ -271,7 +271,7 @@ namespace Actor
 
         private IEnumerator DeactivateTimer()
         {
-            yield return new WaitForSeconds(1.25f);
+            yield return new WaitForSeconds(3f);
 
             if (_currentView != null)
                 _currentView.ResetHandler();
@@ -281,48 +281,36 @@ namespace Actor
         {
             if (_projectile == null) yield break;
 
-            // 1) pick a duration from distance
             float d = Mathf.Max(targetDistance, _cinematicProfile.MinTargetDistance);
+
+            // pick duration from distance
             float t01 = Mathf.InverseLerp(0f, _cinematicProfile.DurationDistance, d);
-            float desiredDuration = Mathf.Lerp(_cinematicProfile.MinDuration, _cinematicProfile.MaxDuration, t01);
+            float T = Mathf.Lerp(_cinematicProfile.MinDuration, _cinematicProfile.MaxDuration, t01);
 
-            // 2) compute average of curve to normalize area
-            float avg = 0f;
-            int n = Mathf.Max(4, _cinematicProfile.CurveSamples);
-            for (int i = 0; i < n; i++)
-            {
-                float p = (float)i / (n - 1);
-                avg += Mathf.Max(0.0001f, _cinematicProfile.SpeedOverProgress.Evaluate(p));
-            }
-            avg /= n;
+            // to keep world speed constant during slow-mo
+            float InvTs() => 1f / Mathf.Max(0.01f, Time.timeScale);
 
-            // base average speed needed to travel distance in desired time
-            float vAvg = d / desiredDuration;
+            // start slow but ensure we can still accelerate enough to cover distance in ~T
+            float vAvg = d / T;
+            float v0 = Mathf.Min(_cinematicProfile.MinStartSpeed, 0.8f * vAvg); // <= 80% of avg speed
+            float a = Mathf.Max(0f, 2f * (d - v0 * T) / (T * T));              // constant accel (m/s^2)
 
-            // normalize curve so its average equals 1, then scale to vAvg
-            float k = vAvg / avg;
+            float t = 0f;
+            _projectile.SetSpeed(v0 * InvTs());
 
-            // Optional: seed an initial speed so the very first frame looks right
-            _projectile.SetSpeed(Mathf.Max(_cinematicProfile.MinStartSpeed, k * _cinematicProfile.SpeedOverProgress.Evaluate(0f)));
-
-            // 3) drive speed by progress (computed from *actual* traveled distance)
-            WaitForFixedUpdate wait = new WaitForFixedUpdate();
             while (_projectile != null)
             {
-                // progress 0..1 based on real distance
-                float progress = Mathf.Clamp01(_projectile.TraveledDistance / d);
+                t += Time.unscaledDeltaTime;
 
-                // shape speed
-                float shaped = k * _cinematicProfile.SpeedOverProgress.Evaluate(progress);
-                float clamped = Mathf.Clamp(shaped, _cinematicProfile.MinStartSpeed, _cinematicProfile.MaxEndSpeed);
+                float v = v0 + a * t; // linearly ramp up
+                v = Mathf.Min(v, _cinematicProfile.MaxEndSpeed);
 
-                _projectile.SetSpeed(clamped);
+                _projectile.SetSpeed(v * InvTs());
 
-                if (progress >= 1f) break;
-                yield return wait;
+                if (_projectile.TraveledDistance >= d || t >= T * 1.2f) break;
+                yield return null;
             }
 
-            // If we got here without a hit, gracefully reset the view
             _currentView?.ResetHandler();
         }
     }

@@ -28,7 +28,7 @@ public class ScenesLoader : MonoBehaviour
             return;
         }
 
-        var mission = _missionProgressData.Mission;
+        var mission = _missionProgressData.GetMission(_missionProgressData.MissionType);
 
         if (mission == null)
         {

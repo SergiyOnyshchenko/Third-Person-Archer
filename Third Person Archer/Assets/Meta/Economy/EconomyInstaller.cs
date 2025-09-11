@@ -12,7 +12,7 @@ namespace Meta.Economy
         [SerializeField] private CurrencyStartingBalanceConfig startingBalances;
 
         [Header("Storage")]
-        [SerializeField] private bool useSaveSystem; // requires ECONOMY_USE_SAVESYSTEM
+        [SerializeField] private bool useSaveSystem; 
 
         [Header("Lifetime")]
         [SerializeField] private bool dontDestroyOnLoad = true;

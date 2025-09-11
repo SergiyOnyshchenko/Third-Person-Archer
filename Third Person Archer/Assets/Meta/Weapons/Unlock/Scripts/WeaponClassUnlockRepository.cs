@@ -5,7 +5,7 @@ public sealed class WeaponClassUnlockRepository : IWeaponClassUnlockRepository
     /// <summary>
     /// File name used by your custom SaveSystem. You can pass your own via the ctor.
     /// </summary>
-    public const string DefaultFileName = "weapon_class_unlock_state.json";
+    public const string DefaultFileName = "weapon_class_unlock_state";
 
     private readonly string _fileName;
 

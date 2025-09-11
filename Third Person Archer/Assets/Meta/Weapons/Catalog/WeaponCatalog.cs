@@ -1,22 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Meta.Weapons
 {
     [CreateAssetMenu(menuName = "Meta/Weapons/Weapon Catalog", fileName = "WeaponCatalog")]
     public sealed class WeaponCatalog : ScriptableObject, ISerializationCallbackReceiver
     {
-        [Tooltip("All weapon definitions in the game. Fill manually or click 'Refresh From Project' in the context menu (Editor only).")]
+        [Tooltip("All weapon definitions in the game. Fill and order manually in the Inspector.")]
         [SerializeField] private List<WeaponDef> items = new();
-
-        [Header("Editor Auto-Sync (optional)")]
-        [Tooltip("If true, the catalog can be refreshed from the project with one click (Editor-only).")]
-        [SerializeField] private bool enableEditorAutoRefresh = true;
-
-        [Tooltip("Folders to search for WeaponDef assets when refreshing. Leave empty to scan the whole project.")]
-        [SerializeField] private string[] editorSearchFolders;
 
         // --------- Runtime caches ---------
         [NonSerialized] private Dictionary<string, WeaponDef> _byId;
@@ -51,101 +48,157 @@ namespace Meta.Weapons
         }
 
         public void OnBeforeSerialize() { /* no-op */ }
-        public void OnAfterDeserialize() => RebuildCaches();
-
-        private void OnEnable() => RebuildCaches();
+        public void OnAfterDeserialize() => RebuildCaches(logDuplicates: false);
+        private void OnEnable() => RebuildCaches(logDuplicates: false);
 
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            // Keep list clean and sorted in editor for sanity.
-            items = items.Where(x => x != null).Distinct().ToList();
-            items.Sort((a, b) =>
-            {
-                int c = a.Class.CompareTo(b.Class);
-                return c != 0 ? c : string.Compare(a.DisplayName, b.DisplayName, StringComparison.Ordinal);
-            });
-            RebuildCaches();
+            // IMPORTANT: do not modify 'items' here (no sorting/cleaning),
+            // and do not log duplicates while editing.
+            RebuildCaches(logDuplicates: false);
         }
 #endif
 
         private void BuildCachesIfNeeded()
         {
-            if (_byId == null || _byClass == null || _byId.Count != items.Count) RebuildCaches();
+            if (_byId == null || _byClass == null)
+                RebuildCaches(logDuplicates: Application.isPlaying); // only log in Play Mode
         }
 
-        private void RebuildCaches()
+        private void RebuildCaches(bool logDuplicates)
         {
             _byId = new Dictionary<string, WeaponDef>(StringComparer.Ordinal);
             _byClass = new Dictionary<WeaponClass, List<WeaponDef>>();
 
-            foreach (var def in items)
+            for (int i = 0; i < items.Count; i++)
             {
+                var def = items[i];
                 if (def == null) continue;
 
-                // Unique ID enforcement
-                if (string.IsNullOrEmpty(def.Id))
+                var id = def.Id ?? string.Empty; // keep case/spacing exactly as user set it
+
+                if (id.Length == 0)
                 {
-                    Debug.LogWarning($"WeaponCatalog: WeaponDef '{def.name}' has empty Id.");
+                    if (logDuplicates)
+                        Debug.LogWarning($"WeaponCatalog: A WeaponDef at index {i} ({def.name}) has empty Id.", this);
                     continue;
                 }
-                if (_byId.ContainsKey(def.Id))
+
+                if (_byId.ContainsKey(id))
                 {
-                    Debug.LogError($"WeaponCatalog: Duplicate WeaponDef Id '{def.Id}' found on '{def.name}'. Skipping.");
+                    if (logDuplicates)
+                    {
+#if UNITY_EDITOR
+                        string dupPath = AssetDatabase.GetAssetPath(def);
+                        string firstPath = AssetDatabase.GetAssetPath(_byId[id]);
+                        Debug.LogError(
+                            $"WeaponCatalog: Duplicate Id {FormatIdForDebug(id)}\n" +
+                            $"  First:  index={IndexOf(items, _byId[id])}, name={_byId[id].name}, path={firstPath}\n" +
+                            $"  Second: index={i}, name={def.name}, path={dupPath}",
+                            this);
+#else
+                        Debug.LogError($"WeaponCatalog: Duplicate WeaponDef Id '{id}'.", this);
+#endif
+                    }
+                    // Skip adding duplicate to caches
                     continue;
                 }
-                _byId.Add(def.Id, def);
+
+                _byId.Add(id, def);
 
                 if (!_byClass.TryGetValue(def.Class, out var list))
                 {
                     list = new List<WeaponDef>();
                     _byClass.Add(def.Class, list);
                 }
+
+                // Preserve the order as it appears in 'items'
                 list.Add(def);
             }
 
             _version++;
         }
 
-        // ------------------- EDITOR HELPERS -------------------
 #if UNITY_EDITOR
-        /// <summary>Editor-only: Scans the project for all WeaponDef assets and populates the list.</summary>
-        public void Editor_RefreshFromProject()
+        // Right-click the asset -> "Validate Duplicates" to get a clean report
+        [ContextMenu("Validate Duplicates")]
+        private void ContextValidateDuplicates()
         {
-            if (!enableEditorAutoRefresh)
+            ValidateAndReportDuplicates(verbose: true);
+        }
+#endif
+
+        /// <summary>Returns true if all IDs are unique; prints a minimal or verbose report.</summary>
+        public bool ValidateAndReportDuplicates(bool verbose = false)
+        {
+            var seen = new Dictionary<string, int>(StringComparer.Ordinal);
+            bool ok = true;
+
+            for (int i = 0; i < items.Count; i++)
             {
-                Debug.LogWarning("WeaponCatalog: Auto-refresh disabled on this asset.");
-                return;
+                var def = items[i];
+                if (def == null) continue;
+                var id = def.Id ?? string.Empty;
+
+                if (id.Length == 0)
+                {
+                    if (verbose)
+                        Debug.LogWarning($"[Validate] Empty Id at index {i} ({def.name})", this);
+                    ok = false;
+                    continue;
+                }
+
+                if (seen.TryGetValue(id, out var firstIndex))
+                {
+#if UNITY_EDITOR
+                    string dupPath = AssetDatabase.GetAssetPath(def);
+                    string firstPath = AssetDatabase.GetAssetPath(items[firstIndex]);
+                    Debug.LogError(
+                        $"[Validate] Duplicate Id {FormatIdForDebug(id)}\n" +
+                        $"  First:  index={firstIndex}, name={items[firstIndex].name}, path={firstPath}\n" +
+                        $"  Second: index={i}, name={def.name}, path={dupPath}",
+                        this);
+#else
+                    Debug.LogError($"[Validate] Duplicate Id '{id}' between indices {firstIndex} and {i}.", this);
+#endif
+                    ok = false;
+                }
+                else
+                {
+                    seen.Add(id, i);
+                }
             }
 
-            var guids = (editorSearchFolders != null && editorSearchFolders.Length > 0)
-                ? UnityEditor.AssetDatabase.FindAssets("t:WeaponDef", editorSearchFolders)
-                : UnityEditor.AssetDatabase.FindAssets("t:WeaponDef");
+            if (ok && verbose)
+                Debug.Log("[Validate] All IDs are unique.", this);
 
-            var found = new List<WeaponDef>();
-            foreach (var guid in guids)
-            {
-                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                var def = UnityEditor.AssetDatabase.LoadAssetAtPath<WeaponDef>(path);
-                if (def != null) found.Add(def);
-            }
-
-            items = found
-                .Where(x => x != null)
-                .Distinct()
-                .OrderBy(x => x.Class)
-                .ThenBy(x => x.DisplayName)
-                .ToList();
-
-            UnityEditor.EditorUtility.SetDirty(this);
-            UnityEditor.AssetDatabase.SaveAssets();
-            RebuildCaches();
-
-            Debug.Log($"WeaponCatalog: refreshed with {items.Count} WeaponDef assets.");
+            return ok;
         }
 
-        [ContextMenu("Refresh From Project (Editor)")]
-        private void Ctx_RefreshFromProject() => Editor_RefreshFromProject();
-#endif
+        private static int IndexOf(List<WeaponDef> list, WeaponDef target)
+        {
+            for (int i = 0; i < list.Count; i++)
+                if (ReferenceEquals(list[i], target)) return i;
+            return -1;
+        }
+
+        private static string FormatIdForDebug(string id)
+        {
+            if (id == null) return "null";
+            var sb = new StringBuilder();
+            sb.Append('"');
+            foreach (var c in id)
+            {
+                // make zero-width / control chars visible
+                if (char.IsControl(c) || c == '\u200B' || c == '\u200C' || c == '\u200D' || c == '\uFEFF')
+                    sb.Append($"\\u{(int)c:x4}");
+                else
+                    sb.Append(c);
+            }
+            sb.Append('"');
+            sb.Append($" (len={id.Length})");
+            return sb.ToString();
+        }
     }
 }

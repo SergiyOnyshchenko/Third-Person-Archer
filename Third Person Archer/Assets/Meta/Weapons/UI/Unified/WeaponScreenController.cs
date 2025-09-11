@@ -1,9 +1,11 @@
+using System;
 using UnityEngine;
 using Meta.Weapons.UI.Selection;
 using Meta.Weapons.UI.Upgrade;
 using Meta.Weapons.UI.Display;
 using Meta.Economy;
 using System.Linq;
+using Meta.Weapons.Unlocks;
 
 namespace Meta.Weapons.UI
 {
@@ -20,6 +22,8 @@ namespace Meta.Weapons.UI
         [SerializeField] private UIStatNormalizationConfig normalization;
         [SerializeField] private UIStyleConfig style;
         [SerializeField] private WeaponUpgradeFocusMap focusMap;
+        [SerializeField] private WeaponClassUnlockConfig unlockConfig;
+        [SerializeField] private bool useUnlocks = true;
 
         [Header("Backend")]
         [SerializeField] private WeaponsInitializer backend;
@@ -34,8 +38,17 @@ namespace Meta.Weapons.UI
 
         private void Start()
         {
-            var iconProvider   = weaponIconProviderAsset as IWeaponIconProvider;
+            var iconProvider = weaponIconProviderAsset as IWeaponIconProvider;
             var prefabProvider = weaponPrefabProviderAsset as IWeaponPrefabProvider;
+
+            Func<WeaponClass, bool> isUnlocked = _ => true; // default: everything visible
+
+            if (useUnlocks && unlockConfig != null)
+            {
+                var repo = new WeaponClassUnlockRepository();
+                var unlockService = new WeaponClassUnlockService(unlockConfig, repo);
+                isUnlocked = unlockService.IsUnlocked; 
+            }
 
             presenter = new WeaponScreenPresenter(
                 view,
@@ -47,14 +60,15 @@ namespace Meta.Weapons.UI
                 backend.EquipmentService,
                 backend.StatsService,
                 backend.UpgradeService,
-                new YourWalletService(),
+                Meta.Economy.Economy.Wallet,
                 iconProvider,
                 prefabProvider,
                 catalog.All.ToArray(),
                 new SystemTimeProvider(),
                 focusMap,
                 poseLibrary,
-                partFocusLibrary
+                partFocusLibrary,
+                isUnlocked
             );
 
             presenter.Show();

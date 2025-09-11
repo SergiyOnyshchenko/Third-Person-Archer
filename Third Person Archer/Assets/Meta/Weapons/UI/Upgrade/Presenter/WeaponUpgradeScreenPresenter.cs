@@ -18,7 +18,7 @@ namespace Meta.Weapons.UI.Upgrade
         private readonly IUpgradeService upgradeService;
         private readonly IEquipmentService equipmentService;
         private readonly IStatsService statsService;
-        private readonly IWalletService walletService;
+        private readonly IWallet walletService;
         private readonly ITimeProvider timeProvider;
         private readonly WeaponDef[] catalog;
         private readonly WeaponUpgradeFocusMap focusMap;
@@ -43,7 +43,7 @@ namespace Meta.Weapons.UI.Upgrade
             IUpgradeService upgradeService,
             IEquipmentService equipmentService,
             IStatsService statsService,
-            IWalletService walletService,
+            IWallet walletService,
             ITimeProvider timeProvider,
             WeaponDef[] catalog,
             WeaponUpgradeFocusMap focusMap,

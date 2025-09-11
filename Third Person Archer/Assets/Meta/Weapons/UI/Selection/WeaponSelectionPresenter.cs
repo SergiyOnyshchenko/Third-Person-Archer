@@ -25,7 +25,7 @@ namespace Meta.Weapons.UI.Selection
         private readonly IWeaponRepository weaponRepository;
         private readonly IEquipmentService equipmentService;
         private readonly IStatsService statsService;
-        private readonly IWalletService walletService;
+        private readonly IWallet walletService;
         private readonly IWeaponIconProvider iconProvider;
         private readonly IWeaponPrefabProvider prefabProvider;
         private readonly WeaponDef[] weaponCatalog;
@@ -45,7 +45,7 @@ namespace Meta.Weapons.UI.Selection
             IWeaponRepository weaponRepository,
             IEquipmentService equipmentService,
             IStatsService statsService,
-            IWalletService walletService,
+            IWallet walletService,
             IWeaponIconProvider iconProvider,
             IWeaponPrefabProvider prefabProvider,
             WeaponDef[] weaponCatalog)

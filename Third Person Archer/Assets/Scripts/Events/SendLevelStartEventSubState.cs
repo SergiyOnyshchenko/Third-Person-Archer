@@ -17,8 +17,8 @@ public class SendLevelStartEventSubState : SubState, IActorIniter
 
         if (DataManager.Instance.TryGetData(out MissionProgressData data))
         {
-            int level_number = data.Mission.ID;
-            YsoCorp.GameUtils.YCManager.instance.OnGameStarted(level_number);
+            //int level_number = data.Mission.ID;
+            //YsoCorp.GameUtils.YCManager.instance.OnGameStarted(level_number);
         }
 
         base.Exit();

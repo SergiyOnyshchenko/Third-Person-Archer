@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Meta.Weapons;
 
 namespace Meta.Economy
 {
@@ -45,6 +46,11 @@ namespace Meta.Economy
             var after = before - amount;
             Apply(type, after, after - before);
             return true;
+        }
+
+        public void Spend(CurrencyType currency, int amount)
+        {
+            TrySpend(currency, amount);
         }
 
         public void Add(CurrencyType type, int amount)

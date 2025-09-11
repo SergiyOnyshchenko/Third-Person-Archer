@@ -94,8 +94,6 @@ namespace Meta.Weapons.UI.Selection
             if (currentInstance == null) return;
             KillPoseTweens();
 
-            Debug.Log($"ApplyBasePose: {localPosition} {localEulerAngles}");
-
             var tr = currentInstance.transform;
             tr.localPosition = localPosition;
             tr.localRotation = Quaternion.Euler(localEulerAngles);

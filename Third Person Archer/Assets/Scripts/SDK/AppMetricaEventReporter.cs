@@ -180,7 +180,7 @@ public class AppMetricaEventReporter : MonoBehaviour
     {
         if (DataManager.Instance.TryGetData(out MissionProgressData missionProgressData))
         {
-            return missionProgressData.Mission.ID;
+            //return missionProgressData.Mission.ID;
         }
 
         return 0;

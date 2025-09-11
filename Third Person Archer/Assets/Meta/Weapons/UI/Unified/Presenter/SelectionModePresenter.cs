@@ -19,13 +19,14 @@ namespace Meta.Weapons.UI
         private readonly IWeaponRepository repo;
         private readonly IEquipmentService equip;
         private readonly IStatsService stats;
-        private readonly IWalletService wallet;
+        private readonly IWallet wallet;
         private readonly IWeaponIconProvider iconProvider;
         private readonly WeaponDef[] catalog;
         private readonly WeaponDisplayPoseLibrary poseLib;
-
+        private readonly Func<WeaponClass, bool> isClassUnlocked;
         private WeaponClass activeClass;
-
+        private bool _isActive;
+    
         public SelectionModePresenter(
             WeaponScreenPresenter host,
             WeaponScreenView view,
@@ -35,10 +36,11 @@ namespace Meta.Weapons.UI
             IWeaponRepository repo,
             IEquipmentService equip,
             IStatsService stats,
-            IWalletService wallet,
+            IWallet wallet,
             IWeaponIconProvider iconProvider,
             WeaponDef[] catalog,
-            WeaponDisplayPoseLibrary poseLib)
+            WeaponDisplayPoseLibrary poseLib,
+            Func<WeaponClass, bool> isClassUnlocked = null)
         {
             this.host = host;
             this.view = view;
@@ -52,21 +54,28 @@ namespace Meta.Weapons.UI
             this.iconProvider = iconProvider;
             this.catalog = catalog;
             this.poseLib = poseLib;
+            this.isClassUnlocked = isClassUnlocked ?? (_ => true);
 
             bar.OnTabSelected += OnTab;
             bar.OnWeaponSelected += OnWeaponSelected;
 
-            view.Info.OnEquip   = OnEquip;
+            view.Info.OnEquip = OnEquip;
             view.Info.OnUpgrade = OnUpgrade; // navigate to upgrade when selected == equipped
             view.Info.OnPurchase = OnPurchaseWeapon;
         }
 
         public void Enter()
         {
+            _isActive = true;
             view.Display.SetRotationEnabled(true);
 
-            // Build tabs (unique classes)
-            activeClass = catalog.Select(d => d.Class).Distinct().FirstOrDefault();
+            var unlockedClasses = catalog.
+                Select(d => d.Class).
+                Distinct().Where(c => this.isClassUnlocked(c)).
+                OrderBy(c => c.ToString()).ToList();
+
+            activeClass = unlockedClasses.FirstOrDefault();
+
             RebuildTabs();
             RebuildList();
             SelectInitial();
@@ -74,7 +83,7 @@ namespace Meta.Weapons.UI
 
         public void Exit()
         {
-            // nothing special
+            _isActive = false;
         }
 
         public void Tick() { }
@@ -82,8 +91,12 @@ namespace Meta.Weapons.UI
         private void RebuildTabs()
         {
             bar.ClearTabs();
-            foreach (var cls in catalog.Select(d => d.Class).Distinct().OrderBy(c => c.ToString()))
+            foreach (var cls in catalog.Select(d => d.Class)
+                                       .Distinct()
+                                       .OrderBy(c => c.ToString()))
             {
+                if (!isClassUnlocked(cls)) continue;                                   // <— NEW: skip locked
+
                 var t = bar.CreateTab();
                 t.Set(cls.ToString().ToUpperInvariant(), isSelected: cls.Equals(activeClass));
                 bar.HookTab(t, cls);
@@ -92,6 +105,9 @@ namespace Meta.Weapons.UI
 
         private void RebuildList()
         {
+            if (!_isActive) return;
+            if (bar == null || bar.Equals(null)) return; 
+
             bar.ClearWeaponList();
             var state = repo.Load();
 
@@ -142,20 +158,21 @@ namespace Meta.Weapons.UI
         }
 
         private void OnWeaponSelected(string weaponId)
-{
-    host.SelectedWeaponId = weaponId;
+        {
+            host.SelectedWeaponId = weaponId;
 
-    var def = catalog.First(d => d.Id == weaponId);
+            var def = catalog.First(d => d.Id == weaponId);
 
-    view.Display.LoadWeaponModel(weaponId);
-    view.Display.SetRotationEnabled(true);
+            view.Display.LoadWeaponModel(weaponId);
+            view.Display.SetRotationEnabled(true);
 
-    // Apply class-based selection pose
-    if (poseLib != null && poseLib.TryGetSelectionPose(def.Class, out var pose))
-        view.Display.ApplyBasePose(pose.LocalPosition, pose.LocalEulerAngles);
+            // Apply class-based selection pose
+            if (poseLib != null && poseLib.TryGetSelectionPose(def.Class, out var pose))
+                view.Display.ApplyBasePose(pose.LocalPosition, pose.LocalEulerAngles);
 
-    DrawInfo();
-}
+            DrawInfo();
+
+        }
 
         private void DrawInfo()
         {
@@ -217,6 +234,8 @@ namespace Meta.Weapons.UI
 
         private void OnPurchaseWeapon(CurrencyType currency, int price)
         {
+            if (!_isActive) return;
+
             var def = catalog.First(d => d.Id == host.SelectedWeaponId);
             if (!wallet.CanAfford(currency, price)) return;
 

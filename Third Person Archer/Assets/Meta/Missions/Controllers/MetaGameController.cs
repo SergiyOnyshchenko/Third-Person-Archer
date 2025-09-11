@@ -64,9 +64,11 @@ public class MetaGameController : MonoBehaviour
         if (EnergyServiceRunner.Instance.Service.TrySpendForMission(mission.MissionType) == SpendResult.NotEnough)
         {
             UI.Core.ServiceLocator.Resolve<UI.Core.IUINavigator>()
-                .ShowPopup("popup_error", new UI.Screens.ToastArgs{
+                .ShowPopup("popup_error", new UI.Screens.ToastArgs
+                {
                     Message = "Not Enough Energy!",
-                    Duration = 2f });
+                    Duration = 2f
+                });
 
             return;
         }
@@ -122,7 +124,9 @@ public class MetaGameController : MonoBehaviour
         };
 
         UI.Core.ServiceLocator.Resolve<UI.Core.IUINavigator>()
-            .ShowPopup("popup_unlock", new UI.Screens.ToastArgs{ Message = message, Duration = 2f });
+            .ShowPopup("popup_unlock", new UI.Screens.ToastArgs { Message = message, Duration = 2f });
+
+        _unlockNotifier.MarkSeen(type);
     }
 
     private void InjectChilds()

@@ -41,7 +41,6 @@ namespace Game.Weapons
             if (actor.TryGetProperty(out EquippedWeaponDef equipped))
             {
                 equipped.SetValue(definition);
-                Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA " + definition.name);
             }
 
             return true;

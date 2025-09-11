@@ -80,8 +80,9 @@ namespace Actor
                 {
                     Vector3 pushDirection = _direction.Value + (Vector3.up * 0.25f);
 
+                    float pushPower = 100f;
                     if (gameObject.activeInHierarchy)
-                        StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized, 50f, 0.1f));
+                        StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized + (Vector3.up * 0.6f), pushPower, 0.1f));
                 }
             }
 

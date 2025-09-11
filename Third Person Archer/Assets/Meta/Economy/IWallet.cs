@@ -12,6 +12,7 @@ namespace Meta.Economy
         int Get(CurrencyType type);
         bool CanAfford(CurrencyType type, int amount);
         bool TrySpend(CurrencyType type, int amount);
+        void Spend(CurrencyType type, int amount);
         void Add(CurrencyType type, int amount);
         void Set(CurrencyType type, int amount);
 

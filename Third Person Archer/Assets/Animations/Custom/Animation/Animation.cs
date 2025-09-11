@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using DG.Tweening;
-using static UnityEngine.Rendering.DebugUI;
+using UnityEngine;
+using UnityEngine.Events;
 
 namespace CustomAnimation
 {
@@ -12,40 +10,37 @@ namespace CustomAnimation
         [SerializeField] private AnimationPoseData<D>[] _poses;
         [SerializeField] private AnimatorController<T, D> _animator;
 
-        public void Init(AnimatorController<T, D> animator)
+        private Tween _playTween;
+
+        public void Init(AnimatorController<T, D> animator) => _animator = animator;
+
+        public void Play(float duration, bool ignoreTimeScale, UnityAction onCompleted)
         {
-            _animator = animator;
+            _playTween?.Kill();
+            _playTween = DOVirtual.Float(0f, 1f, duration, v =>
+            {
+                var pose = GetAnimationPose(v);
+                if (pose != null)
+                    _animator.DoPose(pose);
+            })
+            .SetUpdate(ignoreTimeScale)
+            .OnComplete(() => onCompleted?.Invoke());
         }
 
-        public void Play(float duration)
+        public IAnimationPose<D> GetAnimationPose(float t)
         {
-            DOVirtual.Float(0f, 1f, duration, v =>
-            {
-                _animator.DoPose(GetAnimationPose(v));
-            });
-        }
+            if (_poses == null || _poses.Length == 0) return null;
+            if (_poses.Length == 1) return _poses[0];
 
-        public IAnimationPose<D> GetAnimationPose(float value)
-        {
-            int previousPose = 0;
-            int nextPose = 0;
+            t = Mathf.Clamp01(t);
 
-            float segment = 1f / _poses.Length;
+            // Map normalized time to fractional index
+            float f = t * (_poses.Length - 1);    // e.g., 0..(N-1)
+            int prev = Mathf.FloorToInt(f);       // 0..N-2
+            int next = Mathf.Min(prev + 1, _poses.Length - 1);
+            float localT = f - prev;              // 0..1 within segment
 
-            for (int i = 0; i < _poses.Length; i++)
-            {
-                nextPose = i;
-
-                if (value <= i * segment)
-                    break;
-
-                previousPose = i;
-            }
-
-            value = Mathf.InverseLerp(previousPose, nextPose, value);
-
-            return _animator.LerpPoses(_poses[previousPose], _poses[nextPose], value);
+            return _animator.LerpPoses(_poses[prev], _poses[next], localT);
         }
     }
 }
-

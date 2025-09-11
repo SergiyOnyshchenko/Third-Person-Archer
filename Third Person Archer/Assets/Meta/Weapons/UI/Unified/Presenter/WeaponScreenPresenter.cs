@@ -24,7 +24,7 @@ namespace Meta.Weapons.UI
         private readonly IEquipmentService equipmentService;
         private readonly IStatsService statsService;
         private readonly IUpgradeService upgradeService;
-        private readonly IWalletService walletService;
+        private readonly IWallet walletService;
         private readonly IWeaponIconProvider iconProvider;
         private readonly IWeaponPrefabProvider prefabProvider;
         private readonly WeaponDef[] catalog;
@@ -32,6 +32,7 @@ namespace Meta.Weapons.UI
         private readonly WeaponUpgradeFocusMap focusMap;
         private readonly WeaponDisplayPoseLibrary poseLibrary;
         private readonly WeaponPartFocusLibrary partFocusLibrary;
+        private readonly Func<WeaponClass, bool> isClassUnlocked;
 
         // Mode machine
         private WeaponScreenMode mode;
@@ -51,14 +52,15 @@ namespace Meta.Weapons.UI
             IEquipmentService equipmentService,
             IStatsService statsService,
             IUpgradeService upgradeService,
-            IWalletService walletService,
+            IWallet walletService,
             IWeaponIconProvider iconProvider,
             IWeaponPrefabProvider prefabProvider,
             WeaponDef[] catalog,
             ITimeProvider timeProvider,
             WeaponUpgradeFocusMap focusMap,
             WeaponDisplayPoseLibrary poseLibrary,
-            WeaponPartFocusLibrary partFocusLibrary)  
+            WeaponPartFocusLibrary partFocusLibrary,
+            Func<WeaponClass, bool> isClassUnlocked = null)  
         {
             this.view = view;
             this.selectionBarPrefab = selectionBarPrefab;
@@ -77,6 +79,7 @@ namespace Meta.Weapons.UI
             this.focusMap = focusMap;
             this.poseLibrary = poseLibrary;
             this.partFocusLibrary = partFocusLibrary;
+            this.isClassUnlocked = isClassUnlocked ?? (_ => true);
 
             this.view.Display.Initialize(prefabProvider);
             this.view.OnBack += () => SwitchMode(WeaponScreenMode.Selection);
@@ -100,6 +103,7 @@ namespace Meta.Weapons.UI
             controller = null;
 
             view.SetBackVisible(next == WeaponScreenMode.Upgrade);
+            view.Info.ClearContext();
 
             switch (next)
             {
@@ -108,7 +112,8 @@ namespace Meta.Weapons.UI
                         var bar = view.SpawnBottomPanel(selectionBarPrefab);
                         controller = new SelectionModePresenter(this, view, bar,
                             normalization, style, weaponRepository, equipmentService,
-                            statsService, walletService, iconProvider, catalog, poseLibrary);
+                            statsService, walletService, iconProvider, catalog, poseLibrary,
+                            isClassUnlocked);
                         break;
                     }
                 case WeaponScreenMode.Upgrade:

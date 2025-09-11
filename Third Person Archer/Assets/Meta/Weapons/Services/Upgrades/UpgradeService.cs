@@ -41,13 +41,13 @@ namespace Meta.Weapons
 
         private readonly IWeaponRepository _weaponRepo;
         private readonly IUpgradeJobsRepository _jobsRepo;
-        private readonly IWalletService _wallet;
+        private readonly IWallet _wallet;
         private readonly ITimeProvider _time;
         private readonly WeaponDef[] _allDefs;
 
         public UpgradeService(IWeaponRepository weaponRepo,
                               IUpgradeJobsRepository jobsRepo,
-                              IWalletService wallet,
+                              IWallet wallet,
                               ITimeProvider timeProvider,
                               WeaponDef[] allDefs)
         {

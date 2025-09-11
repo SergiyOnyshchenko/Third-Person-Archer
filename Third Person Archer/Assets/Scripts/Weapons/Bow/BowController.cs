@@ -129,7 +129,7 @@ namespace Actor
         public void SetReloadSettings()
         {
             if (_fpv.FpvAnimator.Properties.TryGetProperty(out SpringPower power))
-                power.SetValue(5.5f);
+                power.SetValue(10f);
 
             _handArrow.gameObject.SetActive(false);
             _transitArrow.gameObject.SetActive(true);
@@ -147,31 +147,30 @@ namespace Actor
         public void Reload(UnityAction onComplete)
         {
             float duration = _reloadDuration;
+            UI.HUD.ReloadSignals.Start(duration);
             
-            DOVirtual.DelayedCall(0.25f, () =>
+            DOVirtual.DelayedCall(0, () =>
             {
-                _reloadAnimation.Play(duration);
                 _bowArrow.SetActive(false);
+                _reloadAnimation.Play(duration, false, () =>
+                {
+                    _handArrow.SetActive(false);
+                    _transitArrow.SetActive(false);
+                    _bowArrow.SetActive(true);
+
+                    UI.HUD.ReloadSignals.End();
+
+                    onComplete?.Invoke();
+                });
             });
 
-            duration += 0.25f;
-
-            DOVirtual.DelayedCall(duration / 4, () =>
+            DOVirtual.DelayedCall(duration - duration / 8, () =>
             {
-                //_handArrow.transform.SetParent(_bowArrow.transform.parent);
-                //_handArrow.SetActive(true);
-                //_handArrow.transform.DOLocalMove(_bowArrow.transform.localPosition, 0.75f).SetUpdate(true);
-                //_handArrow.transform.DOLocalRotate(_bowArrow.transform.localEulerAngles, 0.75f).SetUpdate(true);
+                _transitArrow.transform.SetParent(_bowArrow.transform.parent);
+                _transitArrow.transform.DOLocalMove(_bowArrow.transform.localPosition, duration/8).SetUpdate(true);
+                _transitArrow.transform.DOLocalRotate(_bowArrow.transform.localPosition, duration/8).SetUpdate(true);
             });
 
-            DOVirtual.DelayedCall(duration, () =>
-            {
-                _handArrow.SetActive(false);
-                _transitArrow.gameObject.SetActive(false);
-                _bowArrow.SetActive(true);
-
-                onComplete?.Invoke();
-            });
         }
 
         public void ResetReloadSettings()
