@@ -68,7 +68,7 @@ namespace Actor
 
         private void Hit(Collision collision)
         {
-            if (_elemental.Value == ElementalType.NULL)
+            if (_elemental != null && _elemental.Value == ElementalType.NULL)
             {
                 if (collision.collider.TryGetComponent(out IDamageable damager3))
                 {

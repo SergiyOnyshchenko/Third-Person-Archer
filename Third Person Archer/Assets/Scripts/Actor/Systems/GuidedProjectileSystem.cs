@@ -18,7 +18,11 @@ namespace Actor
         [SerializeField] private GameObject _crosshairUI;
         [SerializeField] private GameObject _attackUI;
 
-        private readonly float _lifetime = 4f;
+        private readonly float _speed = 3000f;
+
+        private readonly float _lifetime = 16f;
+        private float _lifeTimer;
+        private bool _lifeActive;
 
         private Projectile _guidedProjectile;
 
@@ -46,6 +50,19 @@ namespace Actor
             }
         }
 
+        private void Update()
+        {
+            if (_lifeActive)
+            {
+                _lifeTimer -= Time.unscaledDeltaTime;
+                if (_lifeTimer <= 0f)
+                {
+                    FinishGuiding();
+                }
+            }
+
+        }
+
         private void TryGuideProjectile(Projectile projectile)
         {
             if (_isActive)
@@ -61,11 +78,18 @@ namespace Actor
             _guidedProjectile = projectile;
             _guidedProjectile.OnHited.AddListener(FinishGuiding);
 
+            projectile.SetRange(1000);
+
+            /*
             if (projectile.gameObject.TryGetComponent(out Lifetime lifetime))
             {
                 lifetime.StartLifetime(_lifetime);
                 lifetime.OnLifetimeEnded.AddListener(FinishGuiding);
             }
+            */
+
+            _lifeTimer = _lifetime;
+            _lifeActive = true;
 
             _camera.transform.position = _guidedProjectile.transform.position;
             _camera.transform.rotation = _guidedProjectile.transform.rotation;
@@ -84,11 +108,14 @@ namespace Actor
             {
                 if (projectile.Actor.TryGetInput(out FpvInput input))
                     input.Activate(true);
+                    projectile.SetSpeed(_speed);
             });
         }
 
         private void FinishGuiding()
         {
+            _lifeActive = false;
+
             if (_guidedProjectile != null)
             {
                 if (_guidedProjectile.Actor.TryGetInput(out FpvInput input))

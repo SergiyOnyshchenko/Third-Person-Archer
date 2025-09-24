@@ -48,6 +48,11 @@ namespace Actor
             return false;
         }
 
+        public void DoAction(string actionName)
+        {
+            TryDoAction(actionName);
+        }
+
         public bool TryGetAction(string actionName, out ActorAction targetAction)
         {
             targetAction = null;

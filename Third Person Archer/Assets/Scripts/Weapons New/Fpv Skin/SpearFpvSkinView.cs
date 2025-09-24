@@ -1,4 +1,3 @@
-// Assets/Scripts/Weapons/FPV/SpearFpvSkinView.cs
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -77,7 +76,7 @@ namespace Game.Weapons
             foreach (var e in entries)
             {
                 if (e == null || string.IsNullOrWhiteSpace(e.WeaponId) || e.Root == null) continue;
-                if (_map.ContainsKey(e.WeaponId)) continue; // first wins
+                if (_map.ContainsKey(e.WeaponId)) continue; 
                 _map.Add(e.WeaponId, e.Root);
             }
         }

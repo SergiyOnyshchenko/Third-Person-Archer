@@ -32,7 +32,9 @@ public sealed class PlayerWeaponBinder : MonoBehaviour
         equipperSvc = new GameplayEquipperService()
             .Add(new BowGameplayEquipper(Projectiles, Visuals))
             .Add(new CrossbowGameplayEquipper(Projectiles, Visuals))
-            .Add(new SpearGameplayEquipper(Projectiles, Visuals));
+            .Add(new SpearGameplayEquipper(Projectiles, Visuals))
+            .Add(new ShurikenGameplayEquipper(Projectiles, Visuals))
+            .Add(new BoomerangGameplayEquipper(Projectiles, Visuals));
     }
 
     private void Start()

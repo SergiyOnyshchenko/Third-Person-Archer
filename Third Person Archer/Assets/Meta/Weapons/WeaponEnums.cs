@@ -7,7 +7,8 @@ namespace Meta.Weapons
         Bow = 0,
         Crossbow = 1,
         Spear = 2,
-        // Keep extensible. If your doc later adds a 4th class, just add here.
+        Shuriken = 3,
+        Boomerang = 4,
     }
 
     public enum WeaponStat

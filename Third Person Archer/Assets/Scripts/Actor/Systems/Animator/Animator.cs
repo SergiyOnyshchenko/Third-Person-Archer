@@ -63,6 +63,7 @@ namespace Actor
         {
             _animator.SetTrigger(name);
         }
+        
         public bool TryGetAnimationEvent(string name, out AnimationEvent animEvent)
         {
             foreach (var myEvent in _events)
