@@ -16,9 +16,12 @@ public class FieldOfView
     {
         Dictionary<ITarget, float> targetInView = new Dictionary<ITarget, float>();
 
+        if (targets == null)
+            return null;
+
         foreach (var target in targets)
-            if (IsTargetInView(target, out float distance))
-                targetInView.Add(target, distance);
+                if (IsTargetInView(target, out float distance))
+                    targetInView.Add(target, distance);
 
         return targetInView.OrderBy(kp => kp.Value).Select(kp => kp.Key).ToArray();
     }

@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class State : MonoBehaviour
 {
+    [Header("Events")]
     public UnityEvent EnteredState;
     public UnityEvent OutOfState;
 

@@ -732,19 +732,7 @@ MonoBehaviour:
         m_CallState: 2
   OnHited:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 501056795912534197}
-        m_TargetAssemblyTypeName: HitSoundTrigger, Assembly-CSharp
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   OnTargetHited:
     m_PersistentCalls:
       m_Calls:
@@ -1289,7 +1277,19 @@ MonoBehaviour:
   _destroyAfterHit: 0
   OnHited:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 501056795912534197}
+        m_TargetAssemblyTypeName: HitSoundTrigger, Assembly-CSharp
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   OnTargetHited:
     m_PersistentCalls:
       m_Calls:
@@ -1813,7 +1813,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3350356219356285532}
-  - component: {fileID: 884037404655385931}
+  - component: {fileID: 150693884224700413}
   m_Layer: 0
   m_Name: OnCollisionEnter [Transition]
   m_TagString: Untagged
@@ -1836,7 +1836,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 452306878489683691}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &884037404655385931
+--- !u!114 &150693884224700413
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1845,7 +1845,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4875521037942563805}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2eada0b4efb6a64c93ae6a02ef0b488, type: 3}
+  m_Script: {fileID: 11500000, guid: 39904765080ccdf48913edd4f608d91f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _nextState: {fileID: 5038667487005206483}
@@ -1985,6 +1985,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09c9f457bff6d4c4cb56bba23059267a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <IsActive>k__BackingField: 0
   _localSensitivity: 0.03334
   _overlimitSensitivity: 0.5
   _frameLimit: 100
@@ -2105,7 +2106,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6196982478411419258}
-  - component: {fileID: 4056360642166952775}
+  - component: {fileID: 8983812959769985997}
   m_Layer: 0
   m_Name: OnCollisionEnter [Transition]
   m_TagString: Untagged
@@ -2128,7 +2129,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2263040456482554102}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4056360642166952775
+--- !u!114 &8983812959769985997
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2137,7 +2138,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5793941769427042469}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2eada0b4efb6a64c93ae6a02ef0b488, type: 3}
+  m_Script: {fileID: 11500000, guid: 39904765080ccdf48913edd4f608d91f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _nextState: {fileID: 5038667487005206483}

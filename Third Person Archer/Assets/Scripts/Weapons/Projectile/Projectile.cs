@@ -72,8 +72,6 @@ public class Projectile : MonoBehaviour, IActorIniter
 
     public void SetDamage(int damage)
     {
-        Debug.Log("DEMAGE SETTED " + damage);
-
         _damageValue = damage;
 
         if(_damage != null)
@@ -111,11 +109,17 @@ public class Projectile : MonoBehaviour, IActorIniter
 
     public RaycastHit GetPredictiveHit()
     {
+        if(_hitPredictor == null)
+            return new RaycastHit();
+        
         return _hitPredictor.GetPredictiveHit();
     }
 
     public bool PreCheckTargetDeath()
     {
+        if(_hitPredictor == null)
+            return false;
+
         return _hitPredictor.PreCheckTargetDeath();
     }
 }

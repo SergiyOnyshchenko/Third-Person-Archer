@@ -20,11 +20,9 @@ public class OnProjectileOutOfRange : StateTransition, IActorIniter
     private void Start()
     {
         if (_range != null)
-            _outOfRangeDistance = _projectileRangeConfig.GetDespawnDistance(_range.Value);
+            _outOfRangeDistance = _projectileRangeConfig.GetDespawnDistance();
         else
             _outOfRangeDistance = 100;
-
-        _outOfRangeDistance = 20;
     }
 
     private void Update()

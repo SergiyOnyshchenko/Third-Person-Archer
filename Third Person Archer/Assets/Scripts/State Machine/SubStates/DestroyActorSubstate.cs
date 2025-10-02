@@ -15,6 +15,6 @@ public class DestroyActorSubstate : SubState, IActorIniter
     public override void Enter()
     {
         base.Enter();
-        //Destroy(_actor.gameObject);
+        Destroy(_actor.gameObject);
     }
 }

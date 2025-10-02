@@ -6,6 +6,6 @@ namespace Actor
 {
     public abstract class Input : MonoBehaviour
     {
-        public bool IsActive { get; protected set; }
+        [field: SerializeField] public bool IsActive { get; protected set; }
     }
 }

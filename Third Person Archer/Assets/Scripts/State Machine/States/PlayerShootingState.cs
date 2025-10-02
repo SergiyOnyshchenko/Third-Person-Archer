@@ -8,13 +8,16 @@ using UnityEngine.AI;
 
 public class PlayerShootingState : ProcessState, IActorIniter
 {
+    [Header("Actors")]
     [SerializeField] private ActorController[] _enemies;
     [SerializeField] private ActorController[] _hostages;
+    [SerializeField] private GameObject[] _additionalObjects;
+    [Header("Settings")]
     [SerializeField] private Transform _lookAtPoint;
     [SerializeField] private float _delay = 0.1f;
     [SerializeField] private bool _triggerEnemiesOnEnter;
     [SerializeField] private bool _hideEnemiesBeforeShooting = true;
-    private ActorController _player;
+    [SerializeField] private ActorController _player;
     private AttackInput _attackInput;
     private Health _health;
     private ShootingTargets _shootingTargets;
@@ -25,13 +28,8 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
         if (_hideEnemiesBeforeShooting)
         {
-            HideEnemiesBeforeSgooting();
+            HideEnemiesBeforeShooting();
         }
-    }
-
-    private void Start()
-    {
-
     }
 
     public void InitActor(ActorController actor)
@@ -159,7 +157,7 @@ public class PlayerShootingState : ProcessState, IActorIniter
         _enemies = allEnemies.ToArray();
     }
 
-    private void HideEnemiesBeforeSgooting()
+    private void HideEnemiesBeforeShooting()
     {
         int index = transform.GetSiblingIndex();
 
@@ -170,7 +168,7 @@ public class PlayerShootingState : ProcessState, IActorIniter
             if (previousState.TryGetComponent(out MainState state))
             {
                 ShowStateNextEnemies showStateNextEnemiesstate = gameObject.AddComponent<ShowStateNextEnemies>();
-                showStateNextEnemiesstate.Init(_enemies, state, true);
+                showStateNextEnemiesstate.Init(_enemies, _hostages, _additionalObjects, state, true);
             }
         }
 
@@ -181,7 +179,7 @@ public class PlayerShootingState : ProcessState, IActorIniter
             if (nextState.TryGetComponent(out MainState state))
             {
                 ShowStateNextEnemies showStateNextEnemiesstate = gameObject.AddComponent<ShowStateNextEnemies>();
-                showStateNextEnemiesstate.Init(_enemies, state, false);
+                showStateNextEnemiesstate.Init(_enemies, _hostages, _additionalObjects, state, false);
             }
         }
     }

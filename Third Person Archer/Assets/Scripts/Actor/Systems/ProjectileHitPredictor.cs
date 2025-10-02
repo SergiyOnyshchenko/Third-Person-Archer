@@ -11,7 +11,8 @@ namespace Actor
 
         private Damage _damage;
         private ProjectileDirection _direction;
-        private ProjectileHitLayermask _layermask;
+        //private ProjectileHitLayermask _hitLayermask;
+        private ProjectileEnemiesLayermask _enemyLayermask;
 
         public void InitActor(ActorController actor)
         {
@@ -19,13 +20,14 @@ namespace Actor
 
             if (actor.TryGetProperty(out _damage)) { }
             if (actor.TryGetProperty(out _direction)) { }
-            if (actor.TryGetProperty(out _layermask)) { }
+            //if (actor.TryGetProperty(out _hitLayermask)) { }
+            if (actor.TryGetProperty(out _enemyLayermask)) { }
         }
 
         public RaycastHit GetPredictiveHit()
         {
             RaycastHit hit;
-            Physics.Raycast(_transform.position + _direction.Value * 2, _direction.Value, out hit, _layermask.Value);
+            Physics.Raycast(_transform.position + _direction.Value * 2, _direction.Value, out hit, _enemyLayermask.Value);
             return hit;
         }
 
@@ -34,7 +36,7 @@ namespace Actor
         {
             RaycastHit hit;
 
-            if (Physics.Raycast(_transform.position + _direction.Value * 2, _direction.Value, out hit, _layermask.Value))
+            if (Physics.Raycast(_transform.position + _direction.Value * 2, _direction.Value, out hit, _enemyLayermask.Value))
             {
                 if (hit.collider.TryGetComponent(out IDamageChecker damageChecker))
                 {

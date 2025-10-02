@@ -43,7 +43,6 @@ namespace Actor
             if (actor.TryGetProperty(out _traveledDistance)) { }
             if (actor.TryGetProperty(out _range)) { }
 
-
             if (_collisionTriggerHandler != null)
                 _collisionTriggerHandler.CollisionEnter.AddListener(CollisionHandler);
         }
@@ -87,7 +86,6 @@ namespace Actor
             }
 
             _gameObject.transform.SetParent(collision.transform);
-
             OnHited?.Invoke();
         }
 

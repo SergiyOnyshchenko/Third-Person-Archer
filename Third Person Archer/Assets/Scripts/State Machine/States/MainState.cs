@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MainState : State
 {
+    [Header("States")]
     [SerializeField] private List<StateTransition> _transitions = new List<StateTransition>();
     [SerializeField] private List<SubState> _subStates = new List<SubState>();
     public List<StateTransition> Transitions { get => _transitions;}

@@ -13,6 +13,8 @@ namespace Actor
 
         protected virtual void Awake()
         {
+            AwakeChilds();
+
             InitInputs();
             InitProperties();
             InitSystems();
@@ -103,6 +105,14 @@ namespace Actor
         public void InitSystems()
         {
             _systems = GetComponentsInChildren<System>();
+        }
+
+        private void AwakeChilds()
+        {
+            var awakers = GetComponentsInChildren<IActorAwaker>(true);
+
+            foreach (var awaker in awakers)
+                awaker.AwakeActor(this);
         }
 
         private void InitChilds()

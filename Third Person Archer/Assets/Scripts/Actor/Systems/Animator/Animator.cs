@@ -34,6 +34,11 @@ namespace Actor
             _animator = animator;
         }
 
+        public void SetEventReciever(AnimationEventReciever eventReciever)
+        {
+            _aniamtionEventReciever = eventReciever;
+        }
+
         public void SwapAnimatorController(RuntimeAnimatorController animatorController)
         {
             _animator.runtimeAnimatorController = animatorController;

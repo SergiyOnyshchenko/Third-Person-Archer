@@ -9,7 +9,7 @@ namespace Actor
     public class Health : System, IActorIniter
     {
         private MaxHealth _maxHealth;
-        private int _health;
+        [SerializeField] private int _health;
         private IDamageReciever[] _damageRecievers;
         public int Value { get => _health; }
         public float Ratio { get => _health / _maxHealth.Value; }
@@ -25,7 +25,7 @@ namespace Actor
                 _maxHealth = maxHealth;
                 _maxHealth.OnPropertyChanged += UpdateMaxHealth;
             }
-                
+
             InitCurrentHealth(_maxHealth);
 
             _damageRecievers = actor.GetComponentsInChildren<IDamageReciever>();

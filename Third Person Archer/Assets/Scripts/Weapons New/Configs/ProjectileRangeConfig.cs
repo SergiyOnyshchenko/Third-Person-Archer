@@ -5,11 +5,11 @@ public class ProjectileRangeConfig : ScriptableObject
 {
     [Range(0f, 1f)] public float NoFalloffFraction = 0.5f; // e.g., 0..0.5R = full damage
     [Range(0.1f, 1f)] public float MinDamageFraction = 0.45f; // floor at max range
-    [Range(1f, 2f)] public float DespawnMultiplier = 1.25f;   // optional despawn tail, e.g., 1.25R
+    public float DespawnRange = 1000f;   // optional despawn tail, e.g., 1.25R
 
     public float GetFalloffStart(float rangeMeters) => Mathf.Max(0f, NoFalloffFraction * rangeMeters);
     public float GetFalloffEnd(float rangeMeters)   => Mathf.Max(0f, rangeMeters);
-    public float GetDespawnDistance(float rangeMeters) => Mathf.Max(0f, DespawnMultiplier * rangeMeters);
+    public float GetDespawnDistance() => DespawnRange;
 
     /// <summary>
     /// Returns a 0..1 damage factor based on traveled distance and the weapon's rangeMeters.

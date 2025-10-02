@@ -24,6 +24,9 @@ namespace Actor
             if (Target != null)
                 return;
 
+            if (_potentialTargets != null && _potentialTargets.Length == 0)
+                return;
+
             _fovUpdateTimer += Time.deltaTime;
 
             if (_fovUpdateTimer >= _fovUpdateDelay)

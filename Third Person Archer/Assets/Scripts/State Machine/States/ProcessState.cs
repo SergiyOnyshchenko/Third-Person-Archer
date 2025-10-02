@@ -5,6 +5,7 @@ using UnityEngine.Events;
 
 public class ProcessState : MainState
 {
+    [Header("Process")]
     public UnityEvent OnProcessFinished;
 
     protected void FinishProcess()

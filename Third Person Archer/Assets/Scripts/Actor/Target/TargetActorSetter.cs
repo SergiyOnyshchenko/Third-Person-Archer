@@ -16,7 +16,7 @@ public class TargetActorSetter : MonoBehaviour
 
     public void Set()
     {
-        var holders = GetComponentsInChildren<IActorIniter>();
+        var holders = GetComponentsInChildren<IActorIniter>(true);
 
         foreach (var holder in holders)
             holder.InitActor(_targetActor);
