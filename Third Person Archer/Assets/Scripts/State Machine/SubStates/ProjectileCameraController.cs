@@ -58,7 +58,7 @@ namespace Actor
             _actor = actor;
         }
 
-        public virtual void ShootHandler(Projectile projectile, RaycastHit predictiveHit, RaycastHit projectilePredictiveHit)
+        public virtual void ShootHandler(Projectile projectile, GameObject target, Vector3 hitpoint)
         {
             SetProjectileSettings(projectile);
             SetCameraSettings(projectile.transform);
@@ -115,11 +115,11 @@ namespace Actor
         [SerializeField] private Camera _xRayOverlayCamera;
         private ITriggerReciever _currentFreezeEnemy;
 
-        public override void ShootHandler(Projectile projectile, RaycastHit predictiveHit, RaycastHit projectilePredictiveHit)
+        public override void ShootHandler(Projectile projectile, GameObject target, Vector3 hitPoint)
         {
-            base.ShootHandler(projectile, predictiveHit, projectilePredictiveHit);
+            base.ShootHandler(projectile, target, hitPoint);
 
-            if (projectilePredictiveHit.collider != null && projectilePredictiveHit.collider.TryGetComponent(out ITriggerReciever triggerReciever))
+            if (target.TryGetComponent(out ITriggerReciever triggerReciever))
             {
                 _currentFreezeEnemy = triggerReciever;
                 _currentFreezeEnemy.ReciveTrigger("TimeFreeze", projectile.gameObject);
@@ -160,10 +160,11 @@ namespace Actor
 
         private ProjectileView _currentView;
         private Projectile _projectile;
+        private HitedEnemyPredictCache _hitedEnemyPredictCache;
 
         private IEnumerator _timer;
         private IEnumerator _maxDistanceChecker;
-  
+
 
         public void InitActor(ActorController actor)
         {
@@ -178,50 +179,38 @@ namespace Actor
             {
                 shooter.OnShooted.AddListener(ManageShootedProjectile);
             }
+            
+            if (actor.TryGetProperty(out _hitedEnemyPredictCache)) { }
         }
 
         private void ManageShootedProjectile(Projectile projectile)
         {
             _projectile = projectile;
 
-            RaycastHit projectilePredictiveHit = projectile.GetPredictiveHit();
+            if (_hitedEnemyPredictCache == null)
+                return;
 
-            if (projectilePredictiveHit.collider != null && projectilePredictiveHit.collider.TryGetComponent(out IDamageChecker damageChecker))
+            if (_hitedEnemyPredictCache.EnemyWillDie && _shootingTargets.Targets.Count == 1)
             {
-                if (projectile.PreCheckTargetDeath())
-                {
-                    if (_shootingTargets.Targets.Count == 1)
-                    {
-                        ShootXRayProjectileHandler(projectile, projectilePredictiveHit);
-                    }
-                    else
-                    {
-                        //ShootRegularProjectileHandler(projectile, projectilePredictiveHit);
-                    }
-                }
+                ShootXRayProjectileHandler(projectile, _hitedEnemyPredictCache.Target, _hitedEnemyPredictCache.HitPoint);
             }
         }
 
-        private void ShootRegularProjectileHandler(Projectile projectile, RaycastHit projectilePredictiveHit)
+        private void ShootXRayProjectileHandler(Projectile projectile, GameObject target, Vector3 hitPoint)
         {
-            ShootProjectileHandler(_regularView, projectile, projectilePredictiveHit);
+            ShootProjectileHandler(_xRayView, projectile, target, hitPoint);
         }
 
-        private void ShootXRayProjectileHandler(Projectile projectile, RaycastHit projectilePredictiveHit)
-        {
-            ShootProjectileHandler(_xRayView, projectile, projectilePredictiveHit);
-        }
-
-        private void ShootProjectileHandler(ProjectileView view, Projectile projectile, RaycastHit projectilePredictiveHit)
+        private void ShootProjectileHandler(ProjectileView view, Projectile projectile, GameObject target, Vector3 hitPoint)
         {
             _currentView = view;
-            _currentView.ShootHandler(projectile, projectilePredictiveHit, projectilePredictiveHit);
+            _currentView.ShootHandler(projectile, target, hitPoint);
 
             StartDeactivateTimer();
 
-            if (projectilePredictiveHit.collider != null)
+            if (target.TryGetComponent(out Collider collider))
             {
-                float distance = Vector3.Distance(projectile.transform.position, projectilePredictiveHit.point);
+                float distance = Vector3.Distance(projectile.transform.position, hitPoint);
                 const float smallOffset = 1f;
                 StartCinematicSpeed(distance + smallOffset);
             }

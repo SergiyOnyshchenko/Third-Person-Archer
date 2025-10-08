@@ -16,8 +16,8 @@ public class ProjectileHitSubstate : SubState, IActorIniter
     {
         _transform = actor.transform;
 
-        _rigidbody = actor.GetComponent<Rigidbody>();
-        _collider = actor.GetComponent<Collider>();
+        //_rigidbody = actor.GetComponent<Rigidbody>();
+        //_collider = actor.GetComponent<Collider>();
 
         if (actor.TryGetProperty(out _hitData)) { }
     }
@@ -26,15 +26,17 @@ public class ProjectileHitSubstate : SubState, IActorIniter
     {
         base.Enter();
 
+        /*
         _collider.enabled = false;
         _rigidbody.isKinematic = true;
 
-        if(_hitData != null && _hitData.Value != null)
+        if (_hitData != null && _hitData.Value != null)
         {
-            _transform.parent = _hitData.Value.transform;
-
-            if(_hitData.Value.contacts != null && _hitData.Value.contacts.Length > 0)
+            if (_hitData.Value.contacts != null && _hitData.Value.contacts.Length > 0)
                 _transform.position = _hitData.Value.contacts[0].point;
+
+            _transform.SetParent(_hitData.Value.transform);
         }
+        */
     }
 }

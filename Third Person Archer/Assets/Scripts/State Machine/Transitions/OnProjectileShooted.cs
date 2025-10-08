@@ -20,6 +20,12 @@ public class OnProjectileShooted : StateTransition, IActorIniter
             _projectile.OnShooted.AddListener(DoTransition);
     }
 
+    private void Update()
+    {
+        if (_projectile.IsShooted)
+            DoTransition();
+    }
+
     public override void Exit()
     {
         if (_projectile != null)

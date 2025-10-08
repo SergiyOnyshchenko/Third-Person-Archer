@@ -14,12 +14,13 @@ public abstract class Shooter : MonoBehaviour, IActorIniter
     protected ElementalAttackType _elementalAttackType;
     protected AimInput _aimInput;
     protected ShootError _shootError;
+    public Transform ShootPoint => _shootPoint;
 
     public abstract void Shoot(Vector3 direction, float multiplier, UnityAction onHited);
 
-    public void InitActor(ActorController actor)
+    public virtual void InitActor(ActorController actor)
     {
-        if(actor.TryGetInput(out _aimInput)) { }
+        if (actor.TryGetInput(out _aimInput)) { }
 
         if (actor.TryGetSystem(out _eventSystem)) { }
 

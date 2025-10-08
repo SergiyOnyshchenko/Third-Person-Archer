@@ -45,12 +45,6 @@ namespace Actor
             if (!CanAttack())
                 return;
 
-            //onComplete += HideArrow;
-            //onComplete += ShootProjectile;
-            //onComplete += InvokeShootEvent;
-
-            //_crossbowAnimator.Shoot(onComplete);
-
             HideArrow();
             ShootProjectile();
             InvokeShootEvent();

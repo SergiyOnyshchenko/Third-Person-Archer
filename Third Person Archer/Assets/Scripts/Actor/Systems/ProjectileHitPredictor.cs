@@ -31,7 +31,6 @@ namespace Actor
             return hit;
         }
 
-
         public bool PreCheckTargetDeath()
         {
             RaycastHit hit;

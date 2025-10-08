@@ -8,7 +8,7 @@ namespace Actor
     public class GuidedProjectileMover : System, IActorIniter
     {
         private float rotationSpeed = 750f;
-        float rotationAcceleration = 5f;
+        private float rotationAcceleration = 5f;
 
         private Vector2 _rotation = Vector2.zero;
 

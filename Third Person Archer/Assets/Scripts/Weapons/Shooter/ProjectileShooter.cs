@@ -5,69 +5,23 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class ProjectileShooter : Shooter
+public class ProjectileShooter : Shooter, IActorIniter
 {
+    [Header("Weapon")]
     [SerializeField] private Projectile _prefab;
+    public Projectile Prefab => _prefab;
     public UnityEvent<Projectile> OnShooted = new UnityEvent<Projectile>();
+
+    public void SetProjectile(Projectile projectile)
+    {
+        _prefab = projectile;
+    }
 
     public override void Shoot(Vector3 direction, float multiplier, UnityAction onHited)
     {
         onHited += SetTargetHitedEvent;
 
-        Projectile arrow = Instantiate(_prefab, _shootPoint.position, _shootPoint.rotation);
-        StartCoroutine(Shooting(arrow, direction, multiplier, onHited));
-    }
-
-    private IEnumerator Shooting(Projectile arrow, Vector3 direction, float multiplier, UnityAction onHited)
-    {
-        RaycastHit hit;
-
-        if (Physics.Raycast(_aimInput.GetAimRoot(), direction, out hit, Mathf.Infinity, arrow.HitLayers))
-        {
-            direction = (hit.point - _shootPoint.position).normalized;
-        }
-        else
-        {
-            direction = (PointAlongDirection(_aimInput.GetAimRoot(), direction, 100f) - _shootPoint.position).normalized;
-        }
-
-        if (_shootError != null)
-        {
-            float horizontalAngle = Random.Range(-_shootError.Value.x, _shootError.Value.x);
-            float verticalAngle = Random.Range(-_shootError.Value.y, _shootError.Value.y);
-
-            Quaternion horizontalRotation = Quaternion.AngleAxis(horizontalAngle, Vector3.up);
-            Vector3 horizontalRotated = horizontalRotation * direction;
-
-            Vector3 right = Vector3.Cross(Vector3.up, horizontalRotated);
-            if (right == Vector3.zero)
-                right = Vector3.right; 
-
-            Quaternion verticalRotation = Quaternion.AngleAxis(verticalAngle, right);
-            Vector3 finalDirection = verticalRotation * horizontalRotated;
-
-            direction = finalDirection.normalized;
-        }
-
-        arrow.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
-
-        yield return null;
-
-        if (_elementalAttackType != null)
-            arrow.SetElementalType(_elementalAttackType.Value);
-
-        arrow.Shoot(direction, multiplier, onHited);
-
-        OnShooted?.Invoke(arrow);
-    }
-
-   private Vector3 PointAlongDirection(Vector3 origin, Vector3 direction, float distance)
-   {
-        return origin + direction.normalized * distance;
-   }
-
-    public void SetProjectile(Projectile projectile)
-    {
-        _prefab = projectile;
+        Projectile projectile = Instantiate(Prefab, _shootPoint.position, _shootPoint.rotation);
+        projectile.Shoot(direction, multiplier, onHited);
     }
 }

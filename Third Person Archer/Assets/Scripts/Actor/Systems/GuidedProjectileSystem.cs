@@ -108,7 +108,9 @@ namespace Actor
             {
                 if (projectile.Actor.TryGetInput(out FpvInput input))
                     input.Activate(true);
-                    projectile.SetSpeed(_speed);
+                    
+                projectile.SetSpeed(_speed);
+                projectile.SetMoveType(ProjectileMoveType.Guided);
             });
         }
 

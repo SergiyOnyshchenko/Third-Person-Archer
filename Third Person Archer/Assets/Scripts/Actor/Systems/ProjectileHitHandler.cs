@@ -14,6 +14,8 @@ namespace Actor
         [SerializeField] private bool _destroyAfterHit;
 
         private GameObject _gameObject;
+        private Rigidbody _rigidbody;
+        private Collider _collider;
         private CollisionTriggerHandler _collisionTriggerHandler;
 
         private ProjectileDirection _direction;
@@ -31,6 +33,9 @@ namespace Actor
         public void InitActor(ActorController actor)
         {
             _gameObject = actor.gameObject;
+            _rigidbody = actor.GetComponent<Rigidbody>();
+            _collider = actor.GetComponent<Collider>();
+
             _collisionTriggerHandler = actor.GetComponent<CollisionTriggerHandler>();
 
             if (actor.TryGetProperty(out _damage)) { }
@@ -85,7 +90,13 @@ namespace Actor
                 }
             }
 
+            _collider.enabled = false;
+            _rigidbody.isKinematic = true;
+            _rigidbody.interpolation = RigidbodyInterpolation.None;
+
+            Destroy(_rigidbody);
             _gameObject.transform.SetParent(collision.transform);
+
             OnHited?.Invoke();
         }
 

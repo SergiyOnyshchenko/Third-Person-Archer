@@ -8,15 +8,17 @@ using Actor.Properties;
 
 public class Projectile : MonoBehaviour, IActorIniter
 {
-    [field: SerializeField] public ActorController Actor {  get; private set; }
+    [field: SerializeField] public ActorController Actor { get; private set; }
 
     //Properties
     [SerializeField] private ProjectileHitLayermask _hitLayermask;
+    private ProjectileMoveTypeProperty _moveType;
     private ProjectileDirection _direction;
     private ElementalProperty _elemental;
     private Speed _speed;
+    private Gravity _gravity;
     private Damage _damage;
-    private Actor.Properties.Range _range;
+    private Range _range;
     private TraveledDistance _traveledDistance;
 
     //Systems
@@ -30,6 +32,7 @@ public class Projectile : MonoBehaviour, IActorIniter
     public LayerMask HitLayers { get => _hitLayermask.Value; }
     public int Damage { get => _damage.Value; }
     public Speed Speed { get => _speed; }
+    public bool IsShooted { get; private set; }
 
     public UnityEvent OnShooted = new UnityEvent();
     public UnityEvent OnHited = new UnityEvent();
@@ -43,10 +46,12 @@ public class Projectile : MonoBehaviour, IActorIniter
 
     public void InitActor(ActorController actor)
     {
+        if (actor.TryGetProperty(out _moveType)) { }
         if (actor.TryGetProperty(out _direction)) { }
         if (actor.TryGetProperty(out _elemental)) { }
         if (actor.TryGetProperty(out _speed)) { }
         if (actor.TryGetProperty(out _range)) { }
+        if (actor.TryGetProperty(out _gravity)) { }
 
         if (actor.TryGetProperty(out _damage))
             _damage.SetValue(_damageValue);
@@ -62,19 +67,27 @@ public class Projectile : MonoBehaviour, IActorIniter
     {
         _direction.SetValue(direction);
 
+        IsShooted = true;
         OnShooted?.Invoke();
-        _hitHandler.OnTargetHited.AddListener(onHited);
 
+        _hitHandler.OnTargetHited.AddListener(onHited);
         _hitHandler.OnHited = OnHited;
 
-        PreCheckTargetDeath();
+        //PreCheckTargetDeath();
+    }
+
+    public void SetMoveType(ProjectileMoveType type)
+    {
+        if (_moveType == null)
+            return;
+
+        _moveType.SetValue(type);
     }
 
     public void SetDamage(int damage)
     {
         _damageValue = damage;
-
-        if(_damage != null)
+        if (_damage != null)
             _damage.SetValue(_damageValue);
     }
 
@@ -83,20 +96,22 @@ public class Projectile : MonoBehaviour, IActorIniter
         _elemental.SetValue(type);
     }
 
-    public void SetSpeed(float newSpeed)
+    public void SetSpeed(float speed)
     {
-        if (_speed == null)
-            return;
-
-        _speed.SetValue(newSpeed);
+        if (_speed == null) return;
+        _speed.SetValue(speed);
     }
 
     public void SetRange(float range)
     {
-        //if (_range == null)
-        //    return;
+        if (_range == null) return;
+        _range.SetValue(range);
+    }
 
-        //_range.SetValue(range);
+    public void SetGravity(float gravity)
+    {
+        if (_gravity == null) return;
+        _gravity.SetValue(gravity);
     }
 
     public void EnableFeedbacks(bool value)

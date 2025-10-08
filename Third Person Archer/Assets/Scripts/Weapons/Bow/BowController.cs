@@ -25,14 +25,13 @@ namespace Actor
         private WeaponPull _weaponPull;
         private FpvController _fpv;
         private IBowView _bowView;
-        private float _pullPower;
-        private bool _isPulling;
         private float _reloadDuration = 1f;
         private GameObject _bowModel => _bowView.Model;
         private BowSpring _bowSpring => _bowView.BowSpring;
         private GameObject _bowArrow => _bowView.Arrow;
-        public float PullPower { get => _pullPower; }
-        public bool IsPulling { get => _isPulling;}
+        public float PullPower => _weaponPull.Value;
+        public bool IsPulling => _weaponPull.Value > 0;
+
         public UnityEvent OnPullStarted = new UnityEvent();
 
         public override void InitActor(ActorController actor)
@@ -76,53 +75,29 @@ namespace Actor
 
         public void BeginPull()
         {
-            if (!CanAttack())
-                return;
-
-            SetPullPower(0);
             _bowSpring.SetHandIK(_fpv.RightHand.IkPoint);
             _bowArrow.SetActive(true);
-            _isPulling = true;
 
             OnPullStarted?.Invoke();
         }
 
         public void HoldPull()
         {
-            if (!CanAttack())
-                return;
-
-            SetPullPower(_pullPower + (1.1f * Time.fixedDeltaTime));
-
-            var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
+            var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _weaponPull.Value);
             PlayAnimation(lerpPose);
         }
 
         public void ReleasePull()
         {
-            if (!CanAttack())
-                return;
-
             Shoot(1f, () => SetTargetHitedEvent());
 
-            _isPulling = false;
             _bowSpring.ResetHandIK();
-            SetPullPower(0);
             _fpv.FpvAnimator.DoPose(_releasePose);
             _bowArrow.SetActive(false);
         }
         #endregion
 
-        private void SetPullPower(float pull)
-        {
-            _pullPower = Mathf.Clamp(pull, 0f, 1f);
-            _weaponPull.SetValue(_pullPower);
-        }
-
-        private void SetTargetHitedEvent()
-        {
-            
-        }
+        private void SetTargetHitedEvent() {}
 
         #region Reloading
 

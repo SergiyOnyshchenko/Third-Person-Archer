@@ -12,8 +12,6 @@ namespace Actor
         private ProjectileStateProperty _projectileState;
         private Speed _speed;
 
-        private float _speedMultiplier = 1;
-
         public ProjectileState State => _projectileState == null ? ProjectileState.Loaded : _projectileState.Value;
 
         public void InitActor(ActorController actor)
