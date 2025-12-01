@@ -276,7 +276,6 @@ public class NpcRunawayState : MainState, IActorIniter
     private void MoveTo(Vector3 destination)
     {
         _mover.Move(destination, null);
-        Debug.Log("MOVE TO " + destination);
     }
 
     private void OnDrawGizmosSelected()

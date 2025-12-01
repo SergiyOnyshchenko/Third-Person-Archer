@@ -15,6 +15,5 @@ public class ActorNoiseReceiver : MonoBehaviour, IActorIniter, ISoundListener
     public void ReciveSound(string name, float power, GameObject owner)
     {
         _actions.DoAction("Alert");
-        Debug.Log("NOISE ALERT");
     }
 }

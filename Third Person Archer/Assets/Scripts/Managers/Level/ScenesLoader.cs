@@ -44,6 +44,24 @@ public class ScenesLoader : MonoBehaviour
         LoadScene("MainMenu");
     }
 
+    public void LoadMission(MissionData mission)
+    {
+        if (mission == null)
+        {
+            Debug.LogError("[ScenesLoader] LoadMission called with NULL mission.");
+            return;
+        }
+
+        var scenePath = mission.Scene != null ? mission.Scene.ScenePath : null;
+        if (string.IsNullOrEmpty(scenePath))
+        {
+            Debug.LogError($"[ScenesLoader] Mission '{mission.Name}' has no scene path.");
+            return;
+        }
+
+        LoadScene(scenePath);
+    }
+
     private void LoadScene(string scenePath)
     {
         if (Preloader.Instance == null)
