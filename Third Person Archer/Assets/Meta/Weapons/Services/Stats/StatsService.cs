@@ -4,46 +4,53 @@ namespace Meta.Weapons
 {
     public class StatsService : IStatsService
     {
-        public WeaponStats Compute(WeaponDef def, WeaponInstance instance)
+        public WeaponStats Compute(WeaponDef def, int upgradeLevel)
         {
             if (def == null) return WeaponStats.Zero;
 
-            var stats = def.BaseStats;
-
-            // Apply part levels
-            foreach (var part in def.Parts)
+            var tempInstance = new WeaponInstance
             {
-                instance.PartLevels.TryGetValue(part.Id, out var level);
-                if (level <= 0) continue;
+                WeaponId = def.Id,
+                Owned = true,
+                UpgradeLevel = upgradeLevel
+            };
 
-                // clamp
-                level = Mathf.Clamp(level, 1, part.MaxLevel);
+            return Compute(def, tempInstance);
+        }
 
-                var lvlDef = part.Levels[level - 1];
-                if (lvlDef.Modifiers != null)
-                {
-                    for (int i = 0; i < lvlDef.Modifiers.Length; i++)
-                        lvlDef.Modifiers[i].Apply(ref stats);
-                }
-            }
+        public WeaponStats Compute(WeaponDef def, WeaponInstance instance)
+        {
+            if (def == null) return WeaponStats.Zero;
+            if (instance == null) return def.BaseStats;
 
-            // Apply Mastery (percent modifiers)
-            foreach (var part in def.Parts)
+            // No parts/mastery anymore: just interpolate between BaseStats and MaxStats using curve.
+            var baseStats = def.BaseStats;
+            var maxStats = def.MaxStats;
+
+            if (def.MaxUpgradeLevel <= 0)
+                return baseStats;
+
+            float tNorm = def.GetNormalizedLevel(instance.UpgradeLevel);
+            float tCurve = def.UpgradeCurve01 != null
+                ? def.UpgradeCurve01.Evaluate(tNorm)
+                : tNorm;
+
+            tCurve = Mathf.Clamp01(tCurve);
+
+            return LerpWeaponStats(baseStats, maxStats, tCurve);
+        }
+
+        private static WeaponStats LerpWeaponStats(WeaponStats a, WeaponStats b, float t)
+        {
+            return new WeaponStats
             {
-                if (part.Mastery == null) continue;
-                instance.MasteryTiers.TryGetValue(part.Id, out var tier);
-                if (tier <= 0) continue;
-
-                tier = Mathf.Clamp(tier, 1, part.Mastery.MaxTier);
-                var t = part.Mastery.Tiers[tier - 1];
-                if (t.PercentModifiers != null)
-                {
-                    for (int i = 0; i < t.PercentModifiers.Length; i++)
-                        t.PercentModifiers[i].Apply(ref stats);
-                }
-            }
-
-            return stats;
+                Damage = Mathf.Lerp(a.Damage, b.Damage, t),
+                Balance = Mathf.Lerp(a.Balance, b.Balance, t),
+                Distance = Mathf.Lerp(a.Distance, b.Distance, t),
+                AmmoCount = Mathf.Lerp(a.AmmoCount, b.AmmoCount, t),
+                ReloadTime = Mathf.Lerp(a.ReloadTime, b.ReloadTime, t),
+                Zoom = Mathf.Lerp(a.Zoom, b.Zoom, t),
+            };
         }
     }
 }

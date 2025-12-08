@@ -25,7 +25,7 @@ namespace Meta.Weapons
             var bestId = selection.ChooseBestOwnedWeaponFor(requirement);
             if (string.IsNullOrEmpty(bestId)) return null;
 
-            equipment.Equip(bestId);
+            //equipment.Equip(bestId);
             return bestId;
         }
     }

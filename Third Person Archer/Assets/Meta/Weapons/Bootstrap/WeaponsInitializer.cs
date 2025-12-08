@@ -1,4 +1,3 @@
-// Optional: attach to a bootstrap scene object to wire services in your IoC container.
 using UnityEngine;
 using Meta.Economy;
 using System.Linq;
@@ -7,50 +6,54 @@ namespace Meta.Weapons
 {
     public class WeaponsInitializer : MonoBehaviour
     {
+        public static WeaponsInitializer Instance { get; private set; }
+
         [Header("Catalog")]
         [SerializeField] private WeaponCatalog _weaponCatalog;
         [SerializeField] private DefaultLoadoutConfig _defaultLoadoutConfig;
- 
-        // Example of how you might construct services, then expose them to your game:
+
+        // Exposed services
         public IWeaponRepository WeaponRepository { get; private set; }
-        public IUpgradeJobsRepository JobsRepository { get; private set; }
         public IStatsService StatsService { get; private set; }
         public IEquipmentService EquipmentService { get; private set; }
         public IUpgradeService UpgradeService { get; private set; }
         public IMissionGateService MissionGateService { get; private set; }
 
-        // Provide these from your composition root / DI in a real project
         private IWallet _wallet;
-        private ITimeProvider _time;
 
         private void Awake()
         {
+            // Singleton setup
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            InitializeServices();
+        }
+
+        private void InitializeServices()
+        {
+            // Core repositories & services
             WeaponRepository = new WeaponRepository();
-            JobsRepository = new UpgradeJobsRepository();
-            StatsService = new StatsService();
+            StatsService     = new StatsService();
 
-            // Plug in your wallet implementation & time provider
-            _wallet = Meta.Economy.Economy.Wallet; 
-            _time = new SystemTimeProvider();
+            // Global wallet from your Economy
+            _wallet = Meta.Economy.Economy.Wallet;
 
-            EquipmentService = new EquipmentService(WeaponRepository);
-            UpgradeService = new UpgradeService(WeaponRepository, JobsRepository, _wallet, _time, _weaponCatalog.All.ToArray());
-            MissionGateService = new MissionGateService(WeaponRepository, StatsService, _weaponCatalog.All.ToArray());
+            var allDefs = _weaponCatalog.All.ToArray();
 
-            var applier = new DefaultLoadoutApplier(WeaponRepository, EquipmentService, _weaponCatalog.All.ToArray(), _defaultLoadoutConfig);
+            EquipmentService  = new EquipmentService(WeaponRepository);
+            UpgradeService    = new UpgradeService(WeaponRepository, _wallet, allDefs);
+            MissionGateService = new MissionGateService(WeaponRepository, StatsService, allDefs);
+
+            // Apply default loadout once
+            var applier = new DefaultLoadoutApplier(WeaponRepository, EquipmentService, allDefs, _defaultLoadoutConfig);
             applier.ApplyIfNeeded();
-
-            // Optional: finalize any due upgrades immediately on load
-            UpgradeService.ProcessDueUpgrades();
         }
     }
-
-    // Example wallet stub – replace with your real implementation
-    internal class YourWalletService 
-    {
-        public bool CanAfford(CurrencyType currency, int amount) => true; // TODO
-        public void Spend(CurrencyType currency, int amount) { /* TODO */ }
-        public int Get(CurrencyType currency) => 0; // TODO
-    }
 }
-

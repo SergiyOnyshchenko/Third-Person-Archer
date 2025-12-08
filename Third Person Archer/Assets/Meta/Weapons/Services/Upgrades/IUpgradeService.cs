@@ -4,34 +4,17 @@ namespace Meta.Weapons
 {
     public enum UpgradePayment
     {
-        CashWithTimer,
-        GoldInstant
+        Currencies, // Money + class-specific token
+        Ad          // Ad-based free upgrade
     }
 
     public interface IUpgradeService
     {
-        event Action<UpgradeJob> OnUpgradeStarted;
-        event Action<UpgradeJob> OnUpgradeCompleted;
+        /// <summary>Raised after a successful upgrade.</summary>
+        event Action<string, int> OnWeaponUpgraded; // (weaponId, newLevel)
 
-        /// <summary> Starts a part upgrade for a weapon. Returns null if validation fails. </summary>
-        UpgradeJob StartUpgrade(string weaponId, string partId, UpgradePayment payment);
-
-        /// <summary> Should be called on app start or periodically to finalize due jobs. </summary>
-        void ProcessDueUpgrades();
-
-        /// <summary> Attempts a Mastery tier upgrade (post-cap). Returns true on success. </summary>
-        bool TryUpgradeMastery(string weaponId, string partId);
-
-        UpgradeJob[] GetActiveJobs();
-    }
-
-    [Serializable]
-    public class UpgradeJob
-    {
-        public string JobId;
-        public string WeaponId;
-        public string PartId;
-        public int TargetLevel;
-        public DateTime UtcFinishAt;
+        bool CanUpgrade(string weaponId);
+        bool TryUpgradeWithCurrencies(string weaponId); // Cash + class token
+        bool TryUpgradeWithAd(string weaponId);         // no wallet cost
     }
 }

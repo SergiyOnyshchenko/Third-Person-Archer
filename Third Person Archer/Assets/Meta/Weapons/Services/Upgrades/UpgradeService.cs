@@ -1,190 +1,89 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Meta.Economy;
 
 namespace Meta.Weapons
 {
-    [Serializable]
-    public class UpgradeJobsState
-    {
-        public List<UpgradeJob> Jobs = new();
-    }
-
-    public interface IUpgradeJobsRepository
-    {
-        UpgradeJobsState Load();
-        void Save(UpgradeJobsState state);
-    }
-
-    public class UpgradeJobsRepository : IUpgradeJobsRepository
-    {
-        private const string FileName = "WeaponUpgradeJobs.json";
-
-        public UpgradeJobsState Load()
-        {
-            var loaded = SaveSystem.Load(FileName, new UpgradeJobsState());
-            return loaded ?? new UpgradeJobsState();
-        }
-
-        public void Save(UpgradeJobsState state)
-        {
-            SaveSystem.Save(FileName, state);
-        }
-    }
-
     public class UpgradeService : IUpgradeService
     {
-        public event Action<UpgradeJob> OnUpgradeStarted;
-        public event Action<UpgradeJob> OnUpgradeCompleted;
+        public event System.Action<string, int> OnWeaponUpgraded;
 
         private readonly IWeaponRepository _weaponRepo;
-        private readonly IUpgradeJobsRepository _jobsRepo;
         private readonly IWallet _wallet;
-        private readonly ITimeProvider _time;
         private readonly WeaponDef[] _allDefs;
 
         public UpgradeService(IWeaponRepository weaponRepo,
-                              IUpgradeJobsRepository jobsRepo,
                               IWallet wallet,
-                              ITimeProvider timeProvider,
                               WeaponDef[] allDefs)
         {
             _weaponRepo = weaponRepo;
-            _jobsRepo = jobsRepo;
-            _wallet = wallet;
-            _time = timeProvider;
-            _allDefs = allDefs;
+            _wallet     = wallet;
+            _allDefs    = allDefs;
         }
 
-        public UpgradeJob[] GetActiveJobs() => _jobsRepo.Load().Jobs.ToArray();
-
-        public UpgradeJob StartUpgrade(string weaponId, string partId, UpgradePayment payment)
+        public bool CanUpgrade(string weaponId)
         {
-            var state = _weaponRepo.Load();
-            var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == weaponId && w.Owned);
-            if (inst == null) return null;
+            var (def, inst, _) = GetDefAndInstance(weaponId);
+            if (def == null || inst == null) return false;
 
-            var def = _allDefs.FirstOrDefault(d => d.Id == weaponId);
-            if (def == null) return null;
-
-            var part = def.Parts.FirstOrDefault(p => p.Id == partId);
-            if (part == null) return null;
-
-            inst.PartLevels.TryGetValue(part.Id, out var currentLevel);
-            if (currentLevel >= part.MaxLevel) return null; // Already capped (use Mastery instead)
-
-            var nextIdx = Mathf.Clamp(currentLevel + 1, 1, part.MaxLevel) - 1;
-            var levelDef = part.Levels[nextIdx];
-
-            if (payment == UpgradePayment.GoldInstant)
-            {
-                if (!_wallet.CanAfford(CurrencyType.Gold, levelDef.GoldCost))
-                    return null;
-
-                _wallet.Spend(CurrencyType.Gold, levelDef.GoldCost);
-                inst.PartLevels[part.Id] = currentLevel + 1;
-                _weaponRepo.Save(state);
-
-                var instantJob = new UpgradeJob
-                {
-                    JobId = Guid.NewGuid().ToString("N"),
-                    WeaponId = weaponId,
-                    PartId = partId,
-                    TargetLevel = currentLevel + 1,
-                    UtcFinishAt = _time.UtcNow
-                };
-                OnUpgradeStarted?.Invoke(instantJob);
-                OnUpgradeCompleted?.Invoke(instantJob);
-                return instantJob;
-            }
-            else
-            {
-                if (!_wallet.CanAfford(CurrencyType.Cash, levelDef.CashCost))
-                    return null;
-
-                _wallet.Spend(CurrencyType.Cash, levelDef.CashCost);
-
-                var jobsState = _jobsRepo.Load();
-                var job = new UpgradeJob
-                {
-                    JobId = Guid.NewGuid().ToString("N"),
-                    WeaponId = weaponId,
-                    PartId = partId,
-                    TargetLevel = currentLevel + 1,
-                    UtcFinishAt = _time.UtcNow.AddSeconds(levelDef.BuildSeconds)
-                };
-                jobsState.Jobs.Add(job);
-                _jobsRepo.Save(jobsState);
-
-                OnUpgradeStarted?.Invoke(job);
-                return job;
-            }
+            if (def.UpgradePriceProfile == null) return false;
+            return inst.UpgradeLevel < def.MaxUpgradeLevel;
         }
 
-        public void ProcessDueUpgrades()
+        public bool TryUpgradeWithCurrencies(string weaponId)
         {
-            var jobs = _jobsRepo.Load();
-            if (jobs.Jobs.Count == 0) return;
+            var (def, inst, state) = GetDefAndInstance(weaponId);
+            if (def == null || inst == null) return false;
 
-            var now = _time.UtcNow;
-            var due = jobs.Jobs.Where(j => j.UtcFinishAt <= now).ToList();
-            if (due.Count == 0) return;
+            var profile = def.UpgradePriceProfile;
+            if (profile == null) return false;
 
-            var state = _weaponRepo.Load();
-
-            foreach (var job in due)
-            {
-                var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == job.WeaponId && w.Owned);
-                var def = _allDefs.FirstOrDefault(d => d.Id == job.WeaponId);
-                if (inst == null || def == null) continue;
-
-                var part = def.Parts.FirstOrDefault(p => p.Id == job.PartId);
-                if (part == null) continue;
-
-                // finalize level
-                inst.PartLevels.TryGetValue(part.Id, out var curLevel);
-                if (job.TargetLevel == curLevel + 1)
-                {
-                    inst.PartLevels[part.Id] = job.TargetLevel;
-                }
-
-                OnUpgradeCompleted?.Invoke(job);
-                jobs.Jobs.Remove(job);
-            }
-
-            _weaponRepo.Save(state);
-            _jobsRepo.Save(jobs);
-        }
-
-        public bool TryUpgradeMastery(string weaponId, string partId)
-        {
-            var state = _weaponRepo.Load();
-            var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == weaponId && w.Owned);
-            if (inst == null) return false;
-
-            var def = _allDefs.FirstOrDefault(d => d.Id == weaponId);
-            var part = def?.Parts.FirstOrDefault(p => p.Id == partId);
-            if (part == null || part.Mastery == null) return false;
-
-            // Require part at max level
-            inst.PartLevels.TryGetValue(part.Id, out var level);
-            if (level < part.MaxLevel) return false;
-
-            inst.MasteryTiers.TryGetValue(part.Id, out var currentTier);
-            if (currentTier >= part.Mastery.MaxTier) return false;
-
-            var nextTier = currentTier + 1;
-            var tierDef = part.Mastery.Tiers[nextTier - 1];
-            if (!_wallet.CanAfford(CurrencyType.KillTags, tierDef.KillTagsCost))
+            if (inst.UpgradeLevel >= def.MaxUpgradeLevel)
                 return false;
 
-            _wallet.Spend(CurrencyType.KillTags, tierDef.KillTagsCost);
-            inst.MasteryTiers[part.Id] = nextTier;
+            profile.EvaluateUpgradeCost(inst.UpgradeLevel, def.MaxUpgradeLevel,
+                                        out var cashCost, out var tokenCost);
 
+            var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(def.Class);
+
+            if (!_wallet.CanAfford(CurrencyType.Cash, cashCost)) return false;
+            if (!_wallet.CanAfford(tokenCurrency, tokenCost)) return false;
+
+            _wallet.Spend(CurrencyType.Cash, cashCost);
+            _wallet.Spend(tokenCurrency, tokenCost);
+
+            inst.UpgradeLevel++;
             _weaponRepo.Save(state);
+            OnWeaponUpgraded?.Invoke(weaponId, inst.UpgradeLevel);
             return true;
+        }
+
+        public bool TryUpgradeWithAd(string weaponId)
+        {
+            var (def, inst, state) = GetDefAndInstance(weaponId);
+            if (def == null || inst == null) return false;
+
+            var profile = def.UpgradePriceProfile;
+            if (profile == null || !profile.CanUpgradeWithAd)
+                return false;
+
+            if (inst.UpgradeLevel >= def.MaxUpgradeLevel)
+                return false;
+
+            // No wallet checks: ad already rewarded externally.
+            inst.UpgradeLevel++;
+            _weaponRepo.Save(state);
+            OnWeaponUpgraded?.Invoke(weaponId, inst.UpgradeLevel);
+            return true;
+        }
+
+        private (WeaponDef def, WeaponInstance inst, WeaponsState state) GetDefAndInstance(string weaponId)
+        {
+            var state = _weaponRepo.Load();
+            var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == weaponId && w.Owned);
+            if (inst == null) return (null, null, state);
+
+            var def = _allDefs.FirstOrDefault(d => d.Id == weaponId);
+            return (def, inst, state);
         }
     }
 }

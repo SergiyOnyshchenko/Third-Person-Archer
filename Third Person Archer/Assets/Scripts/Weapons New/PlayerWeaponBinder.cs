@@ -44,6 +44,7 @@ public sealed class PlayerWeaponBinder : MonoBehaviour
 
     public void EquipEquippedWeapon()
     {
+        /*
         if (actor == null) { Debug.LogError("PlayerWeaponBinder: ActorController not assigned."); return; }
         if (backend == null || backend.WeaponRepository == null || backend.EquipmentService == null || backend.StatsService == null)
         {
@@ -70,5 +71,6 @@ public sealed class PlayerWeaponBinder : MonoBehaviour
 
         // Perform in-scene wiring (projectile, reload, holders, FPV/TPV)
         equipperSvc.Equip(actor, def, stats);
+        */
     }
 }

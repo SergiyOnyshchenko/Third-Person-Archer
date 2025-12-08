@@ -4,10 +4,13 @@ namespace Meta.Weapons
 {
     public interface IEquipmentService
     {
-        event Action<string> OnEquippedWeaponChanged; // weaponId
+        /// <summary>Fired when a slot changes: (class, newWeaponId).</summary>
+        event Action<WeaponClass, string> OnEquippedWeaponChanged;
 
-        bool Equip(string weaponId);   // returns true if equipped
-        bool Unequip(string weaponId); // returns true if unequipped
-        string GetEquippedWeaponId(WeaponsState state);
+        bool Equip(WeaponClass cls, string weaponId);
+        string GetEquippedWeaponId(WeaponsState state, WeaponClass cls);
+
+        /// <summary>Returns the equipped weapon id for the given class using saved state.</summary>
+        string GetEquippedWeaponId(WeaponClass cls);
     }
 }
