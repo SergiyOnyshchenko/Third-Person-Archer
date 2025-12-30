@@ -9,8 +9,6 @@ namespace Meta.Weapons
 
         bool Equip(WeaponClass cls, string weaponId);
         string GetEquippedWeaponId(WeaponsState state, WeaponClass cls);
-
-        /// <summary>Returns the equipped weapon id for the given class using saved state.</summary>
         string GetEquippedWeaponId(WeaponClass cls);
     }
 }

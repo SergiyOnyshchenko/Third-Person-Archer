@@ -23,8 +23,8 @@ namespace Meta.Weapons
         {
             _weaponRepository = weaponRepository;
             _equipmentService = equipmentService;
-            _catalog          = catalog;
-            _config           = config;
+            _catalog = catalog;
+            _config = config;
         }
 
         public void ApplyIfNeeded()
@@ -33,7 +33,7 @@ namespace Meta.Weapons
                 return;
 
             var applied = SaveSystem.Load(AppliedFlagKey, false);
-            var state   = _weaponRepository.Load();
+            var state = _weaponRepository.Load();
 
             bool ownsAny = state.Weapons.Any(w => w.Owned);
 
@@ -51,8 +51,8 @@ namespace Meta.Weapons
                 {
                     inst = new WeaponInstance
                     {
-                        WeaponId     = id,
-                        Owned        = true,
+                        WeaponId = id,
+                        Owned = true,
                         UpgradeLevel = 0
                     };
                     state.Weapons.Add(inst);
@@ -68,18 +68,20 @@ namespace Meta.Weapons
             // 2) Fill each class slot if empty with first owned default of that class
             var byId = _catalog.ToDictionary(d => d.Id);
 
-            FillSlotIfEmpty(state, WeaponClass.Bow,       byId);
-            FillSlotIfEmpty(state, WeaponClass.Crossbow,  byId);
-            FillSlotIfEmpty(state, WeaponClass.Spear,     byId);
-            FillSlotIfEmpty(state, WeaponClass.Shuriken,  byId);
+            FillSlotIfEmpty(state, WeaponClass.Bow, byId);
+            FillSlotIfEmpty(state, WeaponClass.Crossbow, byId);
+            FillSlotIfEmpty(state, WeaponClass.Spear, byId);
+            FillSlotIfEmpty(state, WeaponClass.Shuriken, byId);
             FillSlotIfEmpty(state, WeaponClass.Boomerang, byId);
 
             _weaponRepository.Save(state);
             SaveSystem.Save(AppliedFlagKey, true);
         }
 
-        private void FillSlotIfEmpty(WeaponsState state, WeaponClass cls,
-                                     System.Collections.Generic.Dictionary<string, WeaponDef> byId)
+        private void FillSlotIfEmpty(
+            WeaponsState state,
+            WeaponClass cls,
+            System.Collections.Generic.Dictionary<string, WeaponDef> byId)
         {
             var current = _equipmentService.GetEquippedWeaponId(state, cls);
             if (!string.IsNullOrEmpty(current))
@@ -91,9 +93,16 @@ namespace Meta.Weapons
                 .Select(x => x.id)
                 .FirstOrDefault();
 
-            if (!string.IsNullOrEmpty(candidate))
+            if (string.IsNullOrEmpty(candidate))
+                return;
+
+            switch (cls)
             {
-                _equipmentService.Equip(cls, candidate);
+                case WeaponClass.Bow: state.EquippedBowId = candidate; break;
+                case WeaponClass.Crossbow: state.EquippedCrossbowId = candidate; break;
+                case WeaponClass.Spear: state.EquippedSpearId = candidate; break;
+                case WeaponClass.Shuriken: state.EquippedShurikenId = candidate; break;
+                case WeaponClass.Boomerang: state.EquippedBoomerangId = candidate; break;
             }
         }
     }

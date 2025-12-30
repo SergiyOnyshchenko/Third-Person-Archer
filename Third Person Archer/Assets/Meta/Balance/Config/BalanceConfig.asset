@@ -1,0 +1,348 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10bf7ecaf8f36c84ab8832a57e3096da, type: 3}
+  m_Name: BalanceConfig
+  m_EditorClassIdentifier: 
+  _loops:
+    _maxSupportedLoopIndex: 2
+    _loopMultipliers:
+    - CampaignDifficulty: 1
+      ContractDifficulty: 1
+      SniperDifficulty: 1
+      CampaignCash: 1
+      CampaignTokens: 1
+      ContractCash: 1
+      SniperCash: 1
+      BossCash: 1
+      ContractTokens: 1
+      SniperTokens: 1
+      BossTokens: 1
+      GateDamage: 1
+      EconomyCost: 1
+    - CampaignDifficulty: 1.2
+      ContractDifficulty: 1
+      SniperDifficulty: 1
+      CampaignCash: 1
+      CampaignTokens: 1
+      ContractCash: 1
+      SniperCash: 1
+      BossCash: 1
+      ContractTokens: 1
+      SniperTokens: 1
+      BossTokens: 1
+      GateDamage: 1
+      EconomyCost: 1
+    - CampaignDifficulty: 1.35
+      ContractDifficulty: 1
+      SniperDifficulty: 1
+      CampaignCash: 1
+      CampaignTokens: 1
+      ContractCash: 1
+      SniperCash: 1
+      BossCash: 1
+      ContractTokens: 1
+      SniperTokens: 1
+      BossTokens: 1
+      GateDamage: 1
+      EconomyCost: 1
+  _enemies:
+    _campaignDifficultyCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0.2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 20
+        value: 5
+        inSlope: 0.2
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _enemyTypeProfiles:
+    - Type: 0
+      HpMultiplier: 2
+      DamageMultiplier: 1.3
+    - Type: 1
+      HpMultiplier: 1
+      DamageMultiplier: 0.75
+    - Type: 2
+      HpMultiplier: 0.5
+      DamageMultiplier: 2
+    _contractsDifficulty:
+      Base: 1
+      PerStep: 0.05
+      RandomSpread: 0
+    _sniperDifficulty:
+      Base: 1.2
+      PerStep: 0.05
+      RandomSpread: 0
+    _weaponClassDifficultyMultipliers:
+    - 1
+    - 1
+    - 1
+    - 1
+    - 1
+    CampaignHpFromGate: 8
+    CampaignDamageFromGate: 0.15
+    ContractHpFromGate: 6.5
+    ContractDamageFromGate: 0.12
+    SniperHpFromGate: 2.5
+    SniperDamageFromGate: 0.06
+    MultiplayerHpMultiplier: 1
+    MultiplayerDamageMultiplier: 1
+  _gates:
+    _weaponGateProfiles:
+    - Class: 0
+      BaseDamage: 10
+      MissionGrowth: 5
+      AdditionalCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DamageCap: 92
+    - Class: 1
+      BaseDamage: 8
+      MissionGrowth: 4
+      AdditionalCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DamageCap: 120
+    - Class: 2
+      BaseDamage: 20
+      MissionGrowth: 6
+      AdditionalCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DamageCap: 120
+    - Class: 3
+      BaseDamage: 5
+      MissionGrowth: 3
+      AdditionalCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DamageCap: 50
+    - Class: 4
+      BaseDamage: 12
+      MissionGrowth: 4
+      AdditionalCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DamageCap: 100
+    _gateComfortFactor: 1.2
+  _rewards:
+    _profiles:
+    - MissionType: 0
+      Entries:
+      - Channel: 0
+        Progression:
+          Base: 100
+          PerStep: 10
+          RandomSpread: 0
+      - Channel: 1
+        Progression:
+          Base: 2
+          PerStep: 2
+          RandomSpread: 0
+    - MissionType: 1
+      Entries:
+      - Channel: 2
+        Progression:
+          Base: 5
+          PerStep: 5
+          RandomSpread: 0
+    - MissionType: 2
+      Entries:
+      - Channel: 0
+        Progression:
+          Base: 200
+          PerStep: 100
+          RandomSpread: 0
+    - MissionType: 3
+      Entries:
+      - Channel: 0
+        Progression:
+          Base: 400
+          PerStep: 100
+          RandomSpread: 0
+      - Channel: 2
+        Progression:
+          Base: 10
+          PerStep: 10
+          RandomSpread: 0
+  _weaponPerformance:
+    _multipliers:
+    - Class: 0
+      DamageMultiplier: 1
+    - Class: 1
+      DamageMultiplier: 0.8
+    - Class: 2
+      DamageMultiplier: 2
+    - Class: 3
+      DamageMultiplier: 0.5
+    - Class: 4
+      DamageMultiplier: 1.25
+  _economyPacing:
+    _default:
+      TargetUpgradesPerCampaignMission: 1
+      PurchaseAffordWindowMissions: 2
+      UpgradeMoneyPressure: 0.5
+      UpgradeBudgetShare: 0.65
+      ExpectedContractsPerCampaign: 5
+      ExpectedSnipersPerCampaign: 3
+    _zoneOverrides:
+    - ZoneIndex: 0
+      Values:
+        TargetUpgradesPerCampaignMission: 3
+        PurchaseAffordWindowMissions: 2
+        UpgradeMoneyPressure: 0.5
+        UpgradeBudgetShare: 0.5
+        ExpectedContractsPerCampaign: 3
+        ExpectedSnipersPerCampaign: 4
+    - ZoneIndex: 1
+      Values:
+        TargetUpgradesPerCampaignMission: 2
+        PurchaseAffordWindowMissions: 4
+        UpgradeMoneyPressure: 0.5
+        UpgradeBudgetShare: 0.5
+        ExpectedContractsPerCampaign: 4
+        ExpectedSnipersPerCampaign: 3
+    - ZoneIndex: 2
+      Values:
+        TargetUpgradesPerCampaignMission: 1
+        PurchaseAffordWindowMissions: 6
+        UpgradeMoneyPressure: 0.5
+        UpgradeBudgetShare: 0.5
+        ExpectedContractsPerCampaign: 6
+        ExpectedSnipersPerCampaign: 4
+  _rounding:
+    _minMoney: 10
+    _useNiceMoneySteps: 1
+    _minTokens: 1
+    _tokenStepSmall: 1
+    _tokenStepMedium: 2
+    _tokenStepLarge: 5

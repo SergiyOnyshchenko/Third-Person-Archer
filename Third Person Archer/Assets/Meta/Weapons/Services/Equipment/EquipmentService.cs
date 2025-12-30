@@ -1,5 +1,7 @@
 // EquipmentService.cs
+using System.Diagnostics;
 using System.Linq;
+using UnityEngine;
 
 namespace Meta.Weapons
 {

@@ -42,6 +42,11 @@ namespace Game.Weapons
             {
                 equipped.SetValue(definition);
             }
+            
+            if (actor.TryGetProperty(out WeaponBalance balance))
+            {
+                balance.Initialize(stats);
+            }
 
             return true;
         }
@@ -96,7 +101,8 @@ namespace Game.Weapons
 
         protected void ApplyZoomStat(ActorController actor, float value)
         {
-            if (actor.TryGetProperty(out ZoomMagnification zoomMagnification)) {
+            if (actor.TryGetProperty(out ZoomMagnification zoomMagnification)) 
+            {
                 zoomMagnification.SetValue(value);
             }
         }

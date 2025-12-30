@@ -60,7 +60,8 @@ public class CrosshairView : MonoBehaviour, IActorIniter
         {
             if (_equippedWeapon != null && _equippedWeapon.Value != null)
             {
-                if (_equippedWeapon.Value.Class == Meta.Weapons.WeaponClass.Crossbow)
+                if (_equippedWeapon.Value.Class == Meta.Weapons.WeaponClass.Crossbow || 
+                    _equippedWeapon.Value.Class == Meta.Weapons.WeaponClass.Shuriken)
                     ShowView(true);
                 else
                     ShowView(false);

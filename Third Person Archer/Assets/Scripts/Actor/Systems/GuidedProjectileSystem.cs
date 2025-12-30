@@ -17,21 +17,15 @@ namespace Actor
         [Space]
         [SerializeField] private GameObject _crosshairUI;
         [SerializeField] private GameObject _attackUI;
-
         private readonly float _speed = 3000f;
-
         private readonly float _lifetime = 16f;
         private float _lifeTimer;
         private bool _lifeActive;
-
         private Projectile _guidedProjectile;
-
         private ActorController _actor;
         private ProjectileShooter[] _shooters;
-
         private PlayerAttackInput _attackInput;
         private AimInput _aimInput;
-
         public UnityEvent OnStarted = new UnityEvent();
         public UnityEvent OnFinished = new UnityEvent();
 
@@ -73,10 +67,10 @@ namespace Actor
 
         private void StartGuiding(Projectile projectile)
         {
+            projectile.SetMoveType(ProjectileMoveType.Guided);
             _attackInput.FreezeAttack();
 
             _guidedProjectile = projectile;
-            _guidedProjectile.OnHited.AddListener(FinishGuiding);
 
             projectile.SetRange(1000);
 
@@ -102,15 +96,16 @@ namespace Actor
             _crosshairUI.SetActive(false);
             _attackUI.SetActive(false);
 
-            OnStarted?.Invoke();
-
             DOVirtual.DelayedCall(0.25f, () =>
             {
+                OnStarted?.Invoke();
+
                 if (projectile.Actor.TryGetInput(out FpvInput input))
                     input.Activate(true);
                     
                 projectile.SetSpeed(_speed);
                 projectile.SetMoveType(ProjectileMoveType.Guided);
+                _guidedProjectile.OnHited.AddListener(FinishGuiding);
             });
         }
 
@@ -123,8 +118,8 @@ namespace Actor
                 if (_guidedProjectile.Actor.TryGetInput(out FpvInput input))
                     input.Activate(false);
 
-                if (_guidedProjectile.gameObject.TryGetComponent(out Lifetime lifetime))
-                    lifetime.OnLifetimeEnded.RemoveListener(FinishGuiding);
+                //if (_guidedProjectile.gameObject.TryGetComponent(out Lifetime lifetime))
+                //    lifetime.OnLifetimeEnded.RemoveListener(FinishGuiding);
 
                 _guidedProjectile.OnHited.RemoveListener(FinishGuiding);
             }

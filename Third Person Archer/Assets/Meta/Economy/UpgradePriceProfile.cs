@@ -5,8 +5,9 @@ using Meta.Economy;
 
 namespace Meta.Weapons
 {
-    [CreateAssetMenu(menuName = "Meta/Weapons/Upgrade Price Profile", fileName = "UpgradePriceProfile")]
-    public class UpgradePriceProfile : ScriptableObject
+    //[CreateAssetMenu(menuName = "Meta/Weapons/Upgrade Price Profile", fileName = "UpgradePriceProfile")]
+    [System.Serializable]
+    public class UpgradePriceProfile 
     {
         [Header("Purchase (one-time)")]
         [Tooltip("Multiplier applied to WeaponDef.PurchaseCash when computing final cash cost.")]

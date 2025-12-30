@@ -1,19 +1,22 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BossProgressView : MonoBehaviour
-{
-    [SerializeField] private ZoneData _data;
+public sealed class BossProgressView : MonoBehaviour
+{ 
+    [SerializeField] private ZoneData _zoneData;
     [SerializeField] private Slider _slider;
-
-    private void OnEnable()
+    /// <summary>
+    /// Presenter provides completed/total campaign count for the current zone.
+    /// </summary>
+    private void Start()
     {
-        UpdateProgress(_data.BossProgress);
+        SetProgress(_zoneData.BossProgress01);
     }
 
-    public void UpdateProgress(float progress)
+    public void SetProgress(float p)
     {
         if (_slider != null)
-            _slider.value = Mathf.Clamp01(progress);
+            _slider.value = p;
     }
 }

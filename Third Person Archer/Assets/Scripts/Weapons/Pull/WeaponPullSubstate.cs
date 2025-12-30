@@ -9,6 +9,7 @@ public class WeaponPullSubstate : SubState, IActorIniter
     [SerializeField] private AnimationCurve _pullCurve = AnimationCurve.Linear(0, 0, 1, 1);
     private AttackInput _attackInput;
     private WeaponPull _pull;
+    private WeaponBalance _balance;
 
     private bool _isPulling;
     private bool _wasHolding;
@@ -18,6 +19,7 @@ public class WeaponPullSubstate : SubState, IActorIniter
     {
         if (actor.TryGetInput(out _attackInput)) { }
         if (actor.TryGetProperty(out _pull)) { }
+        if (actor.TryGetProperty(out _balance)) { }
     }
 
     public override void Enter()
@@ -45,12 +47,11 @@ public class WeaponPullSubstate : SubState, IActorIniter
 
         bool isHolding = _attackInput.IsHold;
 
-        // Detect edge: begin pull
         if (isHolding && !_wasHolding)
         {
             BeginPull();
         }
-        // Detect edge: release pull
+
         else if (!isHolding && _wasHolding)
         {
             ReleasePull();
@@ -83,7 +84,7 @@ public class WeaponPullSubstate : SubState, IActorIniter
         if (!_isPulling)
             return;
 
-        _rawPull += Time.deltaTime * _pullSpeed;
+        _rawPull += Time.deltaTime * _balance.Speed;
         _rawPull = Mathf.Clamp01(_rawPull);
 
         float curvedValue = _pullCurve.Evaluate(_rawPull);

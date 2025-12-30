@@ -9,11 +9,16 @@ namespace Meta.Weapons
         [Header("Identity")]
         [SerializeField] private string _id = "weapon_id";
         [SerializeField] private string _displayName = "Weapon Name";
+        [SerializeField] private Sprite _icon;
         [SerializeField] private WeaponClass _class;
 
         [Header("Unlock")]
         [Tooltip("Campaign level index (global) after which this weapon becomes visible/purchasable. 0 = available from start.")]
         [SerializeField] private int _unlockAfterCampaignLevel = 0;
+
+        [Space]
+        [Space]
+        [Space]
 
         [Header("Base & Max Stats")]
         [Tooltip("Stats at upgrade level 0.")]
@@ -30,6 +35,10 @@ namespace Meta.Weapons
                  "X = normalized level (0..1), Y = curve factor (0..1).")]
         [SerializeField] private AnimationCurve _upgradeCurve01 =
             AnimationCurve.Linear(0f, 0f, 1f, 1f);
+
+        [Space]
+        [Space]
+        [Space]
 
         [Header("Purchase Cost (per weapon)")]
         [Tooltip("One-time cash cost to buy this weapon.")]
@@ -48,6 +57,7 @@ namespace Meta.Weapons
 
         public string Id => _id;
         public string DisplayName => _displayName;
+        public Sprite Icon => _icon;
         public WeaponClass Class => _class;
 
         public int UnlockAfterCampaignLevel => _unlockAfterCampaignLevel;

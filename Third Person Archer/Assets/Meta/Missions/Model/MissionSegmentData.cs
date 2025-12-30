@@ -1,118 +1,152 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 [System.Serializable]
 public class MissionSegmentData
 {
-
-    #region Serialized Fields
-
+    [Header("Segment")]
+    [Tooltip("Mission type this segment holds.")]
     [SerializeField] private MissionType _type;
+
+    [Tooltip("Ordered list of missions for this segment.")]
     [SerializeField] private List<MissionData> _missions = new();
 
-    #endregion
+    // Runtime / persistent progress
+    [SerializeField, Tooltip("Current mission index for this segment (resets on new loop/run if you choose).")]
+    private int _currentIndex = 0;
 
-    #region Private Runtime Data
+    [SerializeField, Tooltip("Total number of completions in this segment across all time (monotonic).")]
+    private int _totalCompletedCount = 0;
+
+    [SerializeField, Tooltip("Per-mission flag: completed at least once.")]
+    private List<bool> _completedOnce = new();
 
     private string _saveKey;
-    private int _index = 0;
-    private int _realIndex = 0;
-
-    #endregion
-
-    #region Public Properties
 
     public MissionType Type => _type;
-    public int Index => Mathf.Clamp(_index, 0, _missions.Count - 1);
-    public int RealIndex => _realIndex;
     public IReadOnlyList<MissionData> Missions => _missions;
 
-    #endregion
-
-    #region Initialization
+    public int CurrentIndex => _currentIndex;
+    public int TotalCompletedCount => _totalCompletedCount;
 
     public void Init(string saveKey)
     {
         _saveKey = saveKey;
+        EnsureCompletedOnceSize();
         Load();
     }
 
-    #endregion
-
-    #region Mission Navigation
-
     public MissionData GetCurrentMission()
     {
-        return _missions.Count > 0 ? _missions[Index] : null;
+        if (_missions == null || _missions.Count == 0)
+            return null;
+
+        int idx = Mathf.Clamp(_currentIndex, 0, _missions.Count - 1);
+        return _missions[idx];
     }
 
-    public MissionData GetFirstPlayableMission()
+    public bool IsFullyCompleted()
     {
-        for (int i = 0; i < _missions.Count; i++)
-        {
-            bool isUnlocked = i <= _index;
-            bool isCompleted = i < _realIndex;
-
-            if (isUnlocked && !isCompleted)
-                return _missions[i];
-        }
-
-        return null;
+        if (_missions == null) return true;
+        return GetCompletedOnceCount() >= _missions.Count;
     }
 
-    public MissionData GetFirstMission()
+    public int GetCompletedOnceCount()
     {
-        return _missions.Count > 0 ? _missions[0] : null;
+        EnsureCompletedOnceSize();
+
+        int count = 0;
+        for (int i = 0; i < _completedOnce.Count; i++)
+            if (_completedOnce[i]) count++;
+
+        return count;
     }
 
-    public int GetMissionIndex(MissionData mission)
+    public bool IsMissionCompletedOnce(MissionData mission)
     {
-        return _missions.IndexOf(mission);
+        if (mission == null || _missions == null) return false;
+
+        EnsureCompletedOnceSize();
+        int idx = _missions.IndexOf(mission);
+        if (idx < 0 || idx >= _completedOnce.Count) return false;
+
+        return _completedOnce[idx];
     }
 
+    /// <summary>
+    /// Marks the current mission as completed and advances index by 1 (clamped).
+    /// Does NOT loop back automatically; loop logic is handled at higher level.
+    /// </summary>
     public void Advance()
     {
-        _realIndex++;
-        _index++;
+        if (_missions == null || _missions.Count == 0)
+            return;
 
-        if (_index >= _missions.Count)
-            _index = 0;
+        EnsureCompletedOnceSize();
+
+        int idx = Mathf.Clamp(_currentIndex, 0, _missions.Count - 1);
+        _completedOnce[idx] = true;
+
+        _totalCompletedCount++;
+
+        _currentIndex++;
+        if (_currentIndex >= _missions.Count)
+            _currentIndex = _missions.Count - 1; // stop at end (no wrap)
 
         Save();
     }
 
-
-    public bool IsMissionUnlocked(MissionData mission)
+    public void ResetCurrentIndexForNewLoop()
     {
-        return _missions.IndexOf(mission) <= _index;
+        _currentIndex = 0;
+        Save();
     }
 
-    public bool IsMissionCompleted(MissionData mission)
+    private void EnsureCompletedOnceSize()
     {
-        return _missions.IndexOf(mission) < _realIndex;
+        if (_missions == null)
+        {
+            _completedOnce.Clear();
+            return;
+        }
+
+        if (_completedOnce == null)
+            _completedOnce = new List<bool>();
+
+        while (_completedOnce.Count < _missions.Count)
+            _completedOnce.Add(false);
+
+        while (_completedOnce.Count > _missions.Count)
+            _completedOnce.RemoveAt(_completedOnce.Count - 1);
     }
 
-    #endregion
-
-    #region Progress & Saving
-
-    public int GetCompletedCount()
+    private void Load()
     {
-        return _realIndex;
+        if (string.IsNullOrEmpty(_saveKey))
+            return;
+
+        _currentIndex = SaveSystem.Load(_saveKey + "_current", 0);
+        _totalCompletedCount = SaveSystem.Load(_saveKey + "_total", 0);
+
+        EnsureCompletedOnceSize();
+        for (int i = 0; i < _completedOnce.Count; i++)
+        {
+            _completedOnce[i] = SaveSystem.Load(_saveKey + "_once_" + i, false);
+        }
     }
 
-    public void Load()
+    private void Save()
     {
-        _index = SaveSystem.Load(_saveKey + "_index", 0);
-        _realIndex = SaveSystem.Load(_saveKey + "_real", 0);
-    }
+        if (string.IsNullOrEmpty(_saveKey))
+            return;
 
-    public void Save()
-    {
-        SaveSystem.Save(_saveKey + "_index", _index);
-        SaveSystem.Save(_saveKey + "_real", _realIndex);
-    }
+        SaveSystem.Save(_saveKey + "_current", _currentIndex);
+        SaveSystem.Save(_saveKey + "_total", _totalCompletedCount);
 
-    #endregion
+        EnsureCompletedOnceSize();
+        for (int i = 0; i < _completedOnce.Count; i++)
+        {
+            SaveSystem.Save(_saveKey + "_once_" + i, _completedOnce[i]);
+        }
+    }
 }

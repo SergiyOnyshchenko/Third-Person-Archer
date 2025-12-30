@@ -36,6 +36,11 @@ public class PullCameraMotion : SubState, IActorIniter
         if (actor.TryGetProperty(out _zoomFovMult)) { }
     }
 
+    public override void Exit()
+    {
+        base.Exit();
+    }
+
     private void FixedUpdate()
     {
         UpdateCameraZoom(_pull.PullPower);

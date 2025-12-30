@@ -14,23 +14,79 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: spear_02
   _displayName: Heacy Spear
+  _icon: {fileID: 0}
   _class: 2
+  _unlockAfterCampaignLevel: 23
   _baseStats:
-    Damage: 16
+    Damage: 130
     Balance: 46
     Distance: 21
     AmmoCount: 10
     ReloadTime: 1.4
     Zoom: 1.1
-  _acquisition:
-    IsVIPOnly: 0
-    CanBuyWithCash: 1
-    CanBuyWithGold: 0
-    CashPrice: 200
-    GoldPrice: 0
-  _unlockAfterCampaignLevel: 0
-  _parts:
-  - {fileID: 11400000, guid: 08dea3db4c8f8a54692765246381b2d6, type: 2}
-  - {fileID: 11400000, guid: ef38ef3ddeefc9a4bb06e6f615fd2b74, type: 2}
-  - {fileID: 11400000, guid: 45691ab78926c844c90c8b3128844df4, type: 2}
-  - {fileID: 11400000, guid: c3d4d01859023f04792a7034cbd64611, type: 2}
+  _maxStats:
+    Damage: 190
+    Balance: 0
+    Distance: 0
+    AmmoCount: 0
+    ReloadTime: 0
+    Zoom: 0
+  _maxUpgradeLevel: 10
+  _upgradeCurve01:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _purchaseCash: 1000
+  _purchaseTokens: 25
+  _upgradePriceProfile:
+    _purchaseCashMultiplier: 1
+    _purchaseTokenMultiplier: 1
+    _startUpgradeCash: 125
+    _maxUpgradeCash: 275
+    _startUpgradeTokens: 21
+    _maxUpgradeTokens: 42
+    _priceCurve01:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    _canUpgradeWithAd: 1

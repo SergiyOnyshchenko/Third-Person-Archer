@@ -62,7 +62,7 @@ public class ScenesLoader : MonoBehaviour
         LoadScene(scenePath);
     }
 
-    private void LoadScene(string scenePath)
+    public void LoadScene(string scenePath)
     {
         if (Preloader.Instance == null)
         {

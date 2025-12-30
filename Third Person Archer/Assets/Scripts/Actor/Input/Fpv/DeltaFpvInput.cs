@@ -15,8 +15,8 @@ namespace Actor
 
         void Update()
         {
-            if (IsFrozen)
-                return;
+            //if (IsFrozen)
+            //    return;
 
             Horizontal = 0;
             Vertical = 0;
@@ -27,7 +27,6 @@ namespace Actor
                 int fingerId = touch.fingerId;
                 Vector2 pos = touch.position;
 
-                // ✅ Skip touches from the right half of the screen
                 if (pos.x > Screen.width * 0.5f)
                 {
                     _lastTouchPositions.Remove(fingerId);

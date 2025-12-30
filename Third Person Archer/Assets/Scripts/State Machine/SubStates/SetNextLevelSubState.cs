@@ -10,7 +10,7 @@ public class SetNextLevelSubState : SubState
 
         if (DataManager.Instance.TryGetData(out MissionProgressData data))
         {
-            data.CompleteCurrentMission();
+            //data.CompleteCurrentMission();
         }
     }
 }

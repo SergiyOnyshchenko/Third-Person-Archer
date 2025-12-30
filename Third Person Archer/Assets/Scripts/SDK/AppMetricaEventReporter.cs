@@ -168,10 +168,12 @@ public class AppMetricaEventReporter : MonoBehaviour
 
     private int GetLevelNumber()
     {
+        /*
         if (DataManager.Instance.TryGetData(out MissionProgressData missionProgressData))
         {
             return missionProgressData.GetTotalCompletedMissions();
         }
+        */
 
         return 0;
     }

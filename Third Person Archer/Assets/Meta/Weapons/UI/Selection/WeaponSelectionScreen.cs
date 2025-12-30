@@ -4,6 +4,7 @@ using Meta.Economy;
 using TMPro;
 using UI.Core;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Meta.Weapons.UI
 {
@@ -13,6 +14,7 @@ namespace Meta.Weapons.UI
         [SerializeField] private WeaponCatalog _weaponCatalog;
         [SerializeField] private CurrencyVisualLibrary _currencyVisualLibrary;
         [SerializeField] private WeaponClassIconLibrary _weaponClassIconLibrary;
+        [SerializeField] private WeaponStatsRangeConfig _statsRangeConfig;
 
         [Header("Selected Weapon Info")]
         [SerializeField] private TextMeshProUGUI _selectedWeaponNameText;
@@ -38,23 +40,26 @@ namespace Meta.Weapons.UI
         private List<WeaponDef> _classWeapons = new();
         private WeaponDef _selectedDef;
         private WeaponInstance _selectedInstance;
+        private string _pendingPreselectWeaponId;
+
         private readonly List<WeaponListItemView> _spawnedItems = new();
+        public UnityEvent<WeaponDef> OnWeaponSelected = new UnityEvent<WeaponDef>();
 
         private void Awake()
         {
             _weaponsInitializer = WeaponsInitializer.Instance;
 
-            _weaponRepo       = _weaponsInitializer.WeaponRepository;
-            _statsService     = _weaponsInitializer.StatsService;
+            _weaponRepo = _weaponsInitializer.WeaponRepository;
+            _statsService = _weaponsInitializer.StatsService;
             _equipmentService = _weaponsInitializer.EquipmentService;
-            _upgradeService   = _weaponsInitializer.UpgradeService;
-            _wallet           = Meta.Economy.Economy.Wallet;
+            _upgradeService = _weaponsInitializer.UpgradeService;
+            _wallet = Meta.Economy.Economy.Wallet;
 
             if (_pricePanel != null)
             {
-                _pricePanel.OnEquipClicked     += HandleEquipClicked;
-                _pricePanel.OnPurchaseClicked  += HandlePurchaseClicked;
-                _pricePanel.OnUpgradeClicked   += HandleUpgradeClicked;
+                _pricePanel.OnEquipClicked += HandleEquipClicked;
+                _pricePanel.OnPurchaseClicked += HandlePurchaseClicked;
+                _pricePanel.OnUpgradeClicked += HandleUpgradeClicked;
                 _pricePanel.OnAdUpgradeClicked += HandleAdUpgradeClicked;
             }
         }
@@ -63,9 +68,9 @@ namespace Meta.Weapons.UI
         {
             if (_pricePanel != null)
             {
-                _pricePanel.OnEquipClicked     -= HandleEquipClicked;
-                _pricePanel.OnPurchaseClicked  -= HandlePurchaseClicked;
-                _pricePanel.OnUpgradeClicked   -= HandleUpgradeClicked;
+                _pricePanel.OnEquipClicked -= HandleEquipClicked;
+                _pricePanel.OnPurchaseClicked -= HandlePurchaseClicked;
+                _pricePanel.OnUpgradeClicked -= HandleUpgradeClicked;
                 _pricePanel.OnAdUpgradeClicked -= HandleAdUpgradeClicked;
             }
         }
@@ -80,6 +85,8 @@ namespace Meta.Weapons.UI
 
         public void ApplyArgs(WeaponSelectionArgs args)
         {
+            _pendingPreselectWeaponId = args.PreselectWeaponId;
+            _currentCampaignLevel = args.CampaignLevel;
             ShowForClass(args.WeaponClass, args.CampaignLevel);
         }
 
@@ -88,7 +95,7 @@ namespace Meta.Weapons.UI
         /// </summary>
         public void ShowForClass(WeaponClass weaponClass, int currentCampaignLevel)
         {
-            _currentClass         = weaponClass;
+            _currentClass = weaponClass;
             _currentCampaignLevel = currentCampaignLevel;
 
             gameObject.SetActive(true);
@@ -118,8 +125,8 @@ namespace Meta.Weapons.UI
             foreach (var def in _classWeapons)
             {
                 var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id && w.Owned);
-                bool isOwned    = inst != null && inst.Owned;
-                bool isLocked   = _currentCampaignLevel < def.UnlockAfterCampaignLevel;
+                bool isOwned = inst != null && inst.Owned;
+                bool isLocked = _currentCampaignLevel < def.UnlockAfterCampaignLevel;
                 bool isEquipped = _equipmentService.GetEquippedWeaponId(state, _currentClass) == def.Id;
 
                 var stats = isOwned ? _statsService.Compute(def, inst) : def.BaseStats;
@@ -135,7 +142,19 @@ namespace Meta.Weapons.UI
 
         private void SelectInitialWeapon()
         {
-            var state      = _weaponRepo.Load();
+            if (!string.IsNullOrEmpty(_pendingPreselectWeaponId))
+            {
+                var target = _classWeapons.FirstOrDefault(d => d != null && d.Id == _pendingPreselectWeaponId);
+                _pendingPreselectWeaponId = null;
+
+                if (target != null)
+                {
+                    SelectWeapon(target);
+                    return;
+                }
+            }
+
+            var state = _weaponRepo.Load();
             var equippedId = _equipmentService.GetEquippedWeaponId(state, _currentClass);
 
             var initial = _classWeapons.FirstOrDefault(d => d.Id == equippedId)
@@ -169,16 +188,16 @@ namespace Meta.Weapons.UI
             var state = _weaponRepo.Load();
             _selectedInstance = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id && w.Owned);
 
-            bool isLocked   = _currentCampaignLevel < def.UnlockAfterCampaignLevel;
-            bool isOwned    = _selectedInstance != null && _selectedInstance.Owned;
+            bool isLocked = _currentCampaignLevel < def.UnlockAfterCampaignLevel;
+            bool isOwned = _selectedInstance != null && _selectedInstance.Owned;
             bool isEquipped = _equipmentService.GetEquippedWeaponId(state, _currentClass) == def.Id;
 
             var currentStats = isOwned
                 ? _statsService.Compute(def, _selectedInstance)
                 : def.BaseStats;
 
-            var minStats = def.BaseStats;
-            var maxStats = def.MaxStats;
+            var minStats = _statsRangeConfig != null ? _statsRangeConfig.Min : WeaponStats.Zero;
+            var maxStats = _statsRangeConfig != null ? _statsRangeConfig.Max : def.MaxStats;
             _statsPanel.SetCurrentStats(currentStats, minStats, maxStats);
 
             if (isOwned && isEquipped && def.MaxUpgradeLevel > 0 &&
@@ -195,8 +214,7 @@ namespace Meta.Weapons.UI
 
             if (isLocked)
             {
-                string msg = $"Unlocks at campaign level {def.UnlockAfterCampaignLevel}\n" +
-                             "and when you level up the previous weapon.";
+                string msg = $"Unlocks at campaign level {def.UnlockAfterCampaignLevel}";
                 _pricePanel.ShowLocked(msg);
             }
             else if (!isOwned)
@@ -211,15 +229,17 @@ namespace Meta.Weapons.UI
             {
                 ShowUpgradeUI(def, _selectedInstance);
             }
+
+            OnWeaponSelected?.Invoke(def);
         }
 
         private void ShowPurchaseUI(WeaponDef def)
         {
-            int cashRequired   = def.PurchaseCash;
+            int cashRequired = def.PurchaseCash;
             int tokensRequired = def.PurchaseTokens;
 
             var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(def.Class);
-            int tokenOwned    = _wallet.Get(tokenCurrency);
+            int tokenOwned = _wallet.Get(tokenCurrency);
 
             var moneyIcon = GetCurrencyIcon(CurrencyType.Cash);
             var tokenIcon = GetCurrencyIcon(tokenCurrency);
@@ -242,14 +262,14 @@ namespace Meta.Weapons.UI
                 return;
             }
 
-            bool canUpgrade  = _upgradeService.CanUpgrade(def.Id);
+            bool canUpgrade = _upgradeService.CanUpgrade(def.Id);
             int currentLevel = inst.UpgradeLevel;
 
             profile.EvaluateUpgradeCost(currentLevel, def.MaxUpgradeLevel,
                                         out var cashRequired, out var tokensRequired);
 
             var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(def.Class);
-            int tokenOwned    = _wallet.Get(tokenCurrency);
+            int tokenOwned = _wallet.Get(tokenCurrency);
 
             var moneyIcon = GetCurrencyIcon(CurrencyType.Cash);
             var tokenIcon = GetCurrencyIcon(tokenCurrency);
@@ -299,11 +319,11 @@ namespace Meta.Weapons.UI
         {
             if (_selectedDef == null) return;
 
-            var def   = _selectedDef;
+            var def = _selectedDef;
             var state = _weaponRepo.Load();
-            var inst  = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id);
+            var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id);
 
-            int cashRequired   = def.PurchaseCash;
+            int cashRequired = def.PurchaseCash;
             int tokensRequired = def.PurchaseTokens;
 
             var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(def.Class);
@@ -318,8 +338,8 @@ namespace Meta.Weapons.UI
             {
                 inst = new WeaponInstance
                 {
-                    WeaponId     = def.Id,
-                    Owned        = true,
+                    WeaponId = def.Id,
+                    Owned = true,
                     UpgradeLevel = 0
                 };
                 state.Weapons.Add(inst);

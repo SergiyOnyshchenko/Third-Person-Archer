@@ -7,11 +7,17 @@ namespace Meta.Weapons.UI
 {
     public class LoadoutSlotView : MonoBehaviour
     {
+        [Header("UI")]
         [SerializeField] private Image _iconImage;
         [SerializeField] private TextMeshProUGUI _nameText;
         [SerializeField] private TextMeshProUGUI _damageText;
+
+        [Header("State")]
+        [SerializeField] private GameObject _lockedRoot;
+        [SerializeField] private GameObject _damageRoot;
+
+        [Header("Interaction")]
         [SerializeField] private Button _button;
-        [SerializeField] private GameObject _equippedBadge;
 
         private Action _onClick;
 
@@ -21,21 +27,46 @@ namespace Meta.Weapons.UI
                 _button.onClick.AddListener(HandleClick);
         }
 
-        public void SetData(Sprite icon, string weaponName, float damage, bool isEquipped, Action onClick)
+        public void SetData(
+            Sprite icon,
+            string weaponName,
+            float damage,
+            bool interactable,
+            Action onClick)
         {
+            /*
             if (_iconImage != null)
+            {
                 _iconImage.sprite = icon;
+                _iconImage.enabled = icon != null;
+            }
+            */
 
             if (_nameText != null)
-                _nameText.text = weaponName ?? "-";
+                _nameText.text = weaponName;
 
             if (_damageText != null)
                 _damageText.text = Mathf.RoundToInt(damage).ToString();
 
-            if (_equippedBadge != null)
-                _equippedBadge.SetActive(isEquipped);
+            _onClick = interactable ? onClick : null;
 
-            _onClick = onClick;
+            if (_button != null)
+                _button.interactable = interactable;
+        }
+
+        public void SetLocked(bool locked)
+        {
+            if (_lockedRoot != null)
+                _lockedRoot.SetActive(locked);
+
+            if(_damageRoot != null)
+                _damageRoot.SetActive(!locked);
+
+            if (_button != null)
+                _button.interactable = !locked;
+
+            if (locked)
+                _onClick = null;
         }
 
         private void HandleClick()

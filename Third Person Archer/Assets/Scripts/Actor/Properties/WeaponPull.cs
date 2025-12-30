@@ -4,19 +4,23 @@ using UnityEngine;
 using UnityEngine.Events;
 using Actor.Properties;
 
-public class WeaponPull : FloatProperty
+public class WeaponPull : FloatProperty, IPull
 {
     public UnityEvent OnPullBegin = new UnityEvent();
     public UnityEvent OnPullRelease = new UnityEvent();
+    public float PullPower => Value;
+    public bool IsPulling { get; private set; }
 
     public void BeginPull()
     {
+        IsPulling = true;
         SetPullValue(0);
         OnPullBegin?.Invoke();
     }
 
     public void ReleasePull()
     {
+        IsPulling = false;
         OnPullRelease?.Invoke();
     }
 

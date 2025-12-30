@@ -33,6 +33,8 @@ namespace Meta.Weapons.UI
         /// </summary>
         public void SetCurrentStats(WeaponStats current, WeaponStats minStats, WeaponStats maxStats)
         {
+            Reset();
+
             if (_damageView != null)
                 _damageView.SetCurrent(current.Damage,     minStats.Damage,     maxStats.Damage);
             if (_balanceView != null)

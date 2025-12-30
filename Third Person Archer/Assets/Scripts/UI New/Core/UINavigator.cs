@@ -14,6 +14,17 @@ namespace UI.Core
         Transform OverlaysRoot { get; }
         Transform PopupsRoot { get; }
 
+        event Action<ScreenView> ScreenOpened;
+        event Action<ScreenView> ScreenClosed;
+
+        event Action<ScreenView> ModalOpened;
+        event Action<ScreenView> ModalClosed;
+
+        event Action<ScreenView> OverlayShown;
+        event Action<string> OverlayHidden; // hidden overlays are destroyed, id is enough
+
+        event Action<ScreenView> PopupShown;
+
         /// <summary>Open a full-screen, push onto stack.</summary>
         void Open(string screenId, object? args = null, bool reuseCached = true);
         /// <summary>Go back in full-screen stack (if allowed).</summary>
@@ -55,10 +66,21 @@ namespace UI.Core
         public Transform OverlaysRoot => _overlaysRoot;
         public Transform PopupsRoot => _popupsRoot;
 
+        public event Action<ScreenView>? ScreenOpened;
+        public event Action<ScreenView>? ScreenClosed;
+
+        public event Action<ScreenView>? ModalOpened;
+        public event Action<ScreenView>? ModalClosed;
+
+        public event Action<ScreenView>? OverlayShown;
+        public event Action<string>? OverlayHidden;
+
+        public event Action<ScreenView>? PopupShown;
+
         private void Awake()
         {
             _transition = ServiceLocator.TryResolve<ITransitionPlayer>(out var t) ? t : new DOTweenFadeTransitionPlayer();
-            _analytics  = ServiceLocator.TryResolve<IUIAnalytics>(out var a) ? a : new NullUIAnalytics();
+            _analytics = ServiceLocator.TryResolve<IUIAnalytics>(out var a) ? a : new NullUIAnalytics();
 
             _composedRegistry = new ChainedRegistry(_registries);
             ServiceLocator.Register<IUINavigator>(this);
@@ -117,6 +139,8 @@ namespace UI.Core
             // Show new
             yield return _transition.PlayEnter(next);
             next.OnOpened.Invoke();
+            ScreenOpened?.Invoke(next);
+
             next.OnFocusGained.Invoke();
             _analytics.OnScreenOpened(next.ScreenId);
 
@@ -130,6 +154,8 @@ namespace UI.Core
             top.OnFocusLost.Invoke();
             yield return _transition.PlayExit(top);
             top.OnClosed.Invoke();
+            ScreenClosed?.Invoke(top);
+
             _analytics.OnScreenClosed(top.ScreenId);
 
             _screenStack.RemoveAt(_screenStack.Count - 1);
@@ -145,6 +171,8 @@ namespace UI.Core
             ApplyArgsIfAny(modal, args);
             yield return _transition.PlayEnter(modal);
             modal.OnOpened.Invoke();
+            ModalOpened?.Invoke(modal);
+
             modal.OnFocusGained.Invoke();
             _modalStack.Add(modal);
             _analytics.OnModalOpened(modal.ScreenId);
@@ -156,6 +184,8 @@ namespace UI.Core
             m.OnFocusLost.Invoke();
             yield return _transition.PlayExit(m);
             m.OnClosed.Invoke();
+            ModalClosed?.Invoke(m);
+
             _modalStack.RemoveAt(_modalStack.Count - 1);
             Destroy(m.gameObject);
             _analytics.OnModalClosed(m.ScreenId);
@@ -166,6 +196,7 @@ namespace UI.Core
             var ov = InstantiateView(screenId, _overlaysRoot);
             _transition.InstantShow(ov);
             ov.OnOpened.Invoke();
+            OverlayShown?.Invoke(ov);
             yield break;
         }
 
@@ -178,6 +209,7 @@ namespace UI.Core
                 if (v != null && v.ScreenId == screenId)
                 {
                     _transition.InstantHide(v);
+                    OverlayHidden?.Invoke(screenId);
                     Destroy(v.gameObject);
                     break;
                 }
@@ -191,6 +223,8 @@ namespace UI.Core
             ApplyArgsIfAny(p, args);
             _transition.InstantShow(p);
             p.OnOpened.Invoke();
+            PopupShown?.Invoke(p);
+
             _analytics.OnPopupShown(popupId);
             // Popups/autodestroy handled by the popup controller itself (e.g., timer)
             yield break;

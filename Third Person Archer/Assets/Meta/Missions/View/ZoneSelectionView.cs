@@ -15,7 +15,7 @@ public class ZoneSelectionView : MonoBehaviour
         if (DataManager.Instance.TryGetData(out _progress))
         {
             UpdateView(_progress.GetLastUnlockedZoneIndex());
-            _progress.OnZoneChanged.AddListener(() => UpdateView(_progress.GetCurrentZoneIndex()));
+            _progress.OnZoneChanged.AddListener(() => UpdateView(_progress.ZoneIndex));
         }
     }
 
@@ -31,7 +31,7 @@ public class ZoneSelectionView : MonoBehaviour
             _zoneMapObjects[i].SetActive(i == currentIndex);
 
         var zone = _progress.Zone;
-        _zoneNameText.text = zone.Name;
+        _zoneNameText.text = zone.ZoneName;
 
         bool isLocked = !_progress.IsZoneUnlocked(zone);
         _lockedOverlay.SetActive(isLocked);

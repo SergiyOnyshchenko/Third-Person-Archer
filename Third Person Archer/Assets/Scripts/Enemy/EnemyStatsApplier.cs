@@ -60,7 +60,7 @@ public sealed class EnemyStatsApplier : MonoBehaviour
     {
         receiver.SetHealth(config.Health);
         receiver.SetDamage(config.Damage);
-        receiver.SetCoinsDrop(config.CoinsDrop);
-        receiver.SetManaDrop(config.ManaDrop);
+        //receiver.SetCoinsDrop(config.CoinsDrop);
+        //receiver.SetManaDrop(config.ManaDrop);
     }
 }
