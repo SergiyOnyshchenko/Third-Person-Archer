@@ -58,18 +58,20 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
     {
         if (_services == null) return;
 
-        // Highlight if selected
         var selected = _services.Progress.SelectedMissionType;
         if (_highlight != null)
             _highlight.SetActive(selected == _missionType);
 
-        // Locked icon: based on availability for THAT mode
-        // We temporarily evaluate availability by building a context and pretending the selected type is this button’s type.
         var ctx = BuildContextFor(_missionType);
         var avail = _services.Availability.GetAvailability(ctx);
 
+        // Campaign gate is not "locked" — it is "gated".
+        bool showLocked =
+            !avail.CanPlay &&
+            avail.Reason != AvailabilityBlockReason.CampaignDamageTooLow;
+
         if (_lockedIcon != null)
-            _lockedIcon.SetActive(!avail.CanPlay);
+            _lockedIcon.SetActive(showLocked);
     }
 
     private MissionContext BuildContextFor(MissionType type)

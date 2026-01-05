@@ -108,8 +108,8 @@ namespace Actor
 
         private int CalculateDamage()
         {
-            var damageFactor = _projectileRangeConfig.EvaluateDamageFactor(_traveledDistance.Value, _range.BaseValue);
-            float damage = _damage.Value * damageFactor;
+            //var damageFactor = _projectileRangeConfig.EvaluateDamageFactor(_traveledDistance.Value, _range.BaseValue);
+            float damage = _damage.Value;
             return Mathf.RoundToInt(damage);
         }
     }

@@ -23,6 +23,7 @@ namespace Meta.Weapons.UI
         [Header("UI")]
         [SerializeField] private WeaponStatsPanelView _statsPanel;
         [SerializeField] private WeaponPricePanelView _pricePanel;
+        [SerializeField] private WeaponUpgradeLevelView _upgradeLevelView;
         [SerializeField] private WeaponListItemView _itemPrefab;
         [SerializeField] private Transform _itemsRoot;
 
@@ -230,6 +231,8 @@ namespace Meta.Weapons.UI
                 ShowUpgradeUI(def, _selectedInstance);
             }
 
+            UpdateUpgradeLevelUI(def, _selectedInstance, isOwned);
+
             OnWeaponSelected?.Invoke(def);
         }
 
@@ -279,6 +282,21 @@ namespace Meta.Weapons.UI
             _pricePanel.ShowEquippedUpgradable(moneyIcon, cashRequired,
                                                tokenIcon, tokensRequired, tokenOwned,
                                                canUpgrade, canUpgradeWithAd);
+        }
+
+        private void UpdateUpgradeLevelUI(WeaponDef def, WeaponInstance inst, bool isOwned)
+        {
+            if (_upgradeLevelView == null)
+                return;
+
+            // Show only when the weapon is owned and has upgrades.
+            bool visible = isOwned && def != null && def.MaxUpgradeLevel > 0;
+
+            int currentLevel = 0;
+            if (visible && inst != null)
+                currentLevel = inst.UpgradeLevel;
+
+            _upgradeLevelView.SetLevel(currentLevel, def != null ? def.MaxUpgradeLevel : 0, visible);
         }
 
         private Sprite GetCurrencyIcon(CurrencyType currency)

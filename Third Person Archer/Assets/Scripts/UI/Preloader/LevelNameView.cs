@@ -14,9 +14,28 @@ public class LevelNameView : MonoBehaviour
 
     public void SetLevelName()
     {
+        /*
         if (DataManager.Instance.TryGetData(out MissionProgressData missionProgressData))
         {
             string name = missionProgressData.GetMission(missionProgressData.MissionType).Name;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                HideView();
+                return;
+            }
+
+            _textField.text = name;
+        }
+        else
+        {
+            HideView();
+        }
+        */
+
+        if (GameplayRuntime.Instance != null && GameplayRuntime.Instance.LaunchRequest != null)
+        {
+            string name = GameplayRuntime.Instance.LaunchRequest.MissionToLoad.Name;
 
             if (string.IsNullOrEmpty(name))
             {

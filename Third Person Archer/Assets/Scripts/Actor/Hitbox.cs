@@ -22,14 +22,16 @@ namespace Actor
 
         public void DoDamage(int damage)
         {
-            int calculatedDamage = Mathf.RoundToInt(damage * _demageMultiplier);
+            //int calculatedDamage = Mathf.RoundToInt(damage * _demageMultiplier);
+            int calculatedDamage = Mathf.RoundToInt(damage);
             OnDamaged?.Invoke(calculatedDamage);
             OnDamagedEvent?.Invoke(calculatedDamage);
         }
 
         public int GetHealthAfterDamage(int damage)
         {
-            var health = TryDamagedCallback?.Invoke(Mathf.RoundToInt(damage * _demageMultiplier));
+            //var health = TryDamagedCallback?.Invoke(Mathf.RoundToInt(damage * _demageMultiplier));
+            var health = TryDamagedCallback?.Invoke(Mathf.RoundToInt(damage));
 
             if (health == null)
                 return 10;

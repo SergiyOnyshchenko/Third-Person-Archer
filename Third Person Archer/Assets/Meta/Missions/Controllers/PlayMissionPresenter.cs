@@ -75,9 +75,14 @@ public sealed class PlayMissionPresenter : MonoBehaviour
 
         var ctx = _services.Context.BuildSelectedContext();
         var avail = _services.Availability.GetAvailability(ctx);
-        _playButtonView.SetInteractable(avail.CanPlay);
-    }
 
+        bool canClickPlay =
+            avail.CanPlay ||
+            (avail.Reason == AvailabilityBlockReason.CampaignDamageTooLow);
+
+        _playButtonView.SetInteractable(canClickPlay);
+    }
+    
     private void OnPlayClicked()
     {
         if (_services == null)

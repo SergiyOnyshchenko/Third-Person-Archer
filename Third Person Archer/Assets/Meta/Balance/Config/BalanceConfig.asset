@@ -61,40 +61,49 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 1
-        inSlope: 0
-        outSlope: 0.2
+        inSlope: 0.030363409
+        outSlope: 0.030363409
         tangentMode: 0
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.39050895
       - serializedVersion: 3
-        time: 20
-        value: 5
-        inSlope: 0.2
-        outSlope: 0
+        time: 2.7506287
+        value: 1.0636654
+        inSlope: 0.051459335
+        outSlope: 0.051459335
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.33333334
+        outWeight: 0.058876414
+      - serializedVersion: 3
+        time: 20.021008
+        value: 3.9749234
+        inSlope: 0.2498876
+        outSlope: 0.2498876
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.07045603
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     _enemyTypeProfiles:
-    - Type: 0
-      HpMultiplier: 2
-      DamageMultiplier: 1.3
     - Type: 1
-      HpMultiplier: 1
-      DamageMultiplier: 0.75
+      HpMultiplier: 1.1
+      DamageMultiplier: 1.3
     - Type: 2
+      HpMultiplier: 0.8
+      DamageMultiplier: 0.75
+    - Type: 3
       HpMultiplier: 0.5
       DamageMultiplier: 2
     _contractsDifficulty:
-      Base: 1
+      Base: 0.5
       PerStep: 0.05
       RandomSpread: 0
     _sniperDifficulty:
-      Base: 1.2
+      Base: 0.1
       PerStep: 0.05
       RandomSpread: 0
     _weaponClassDifficultyMultipliers:
@@ -103,11 +112,11 @@ MonoBehaviour:
     - 1
     - 1
     - 1
-    CampaignHpFromGate: 8
+    CampaignHpFromGate: 6
     CampaignDamageFromGate: 0.15
-    ContractHpFromGate: 6.5
+    ContractHpFromGate: 1
     ContractDamageFromGate: 0.12
-    SniperHpFromGate: 2.5
+    SniperHpFromGate: 0.01
     SniperDamageFromGate: 0.06
     MultiplayerHpMultiplier: 1
     MultiplayerDamageMultiplier: 1
@@ -275,12 +284,22 @@ MonoBehaviour:
           Base: 5
           PerStep: 5
           RandomSpread: 0
+      - Channel: 0
+        Progression:
+          Base: 50
+          PerStep: 50
+          RandomSpread: 0
     - MissionType: 2
       Entries:
       - Channel: 0
         Progression:
           Base: 200
           PerStep: 100
+          RandomSpread: 0
+      - Channel: 1
+        Progression:
+          Base: 3
+          PerStep: 2
           RandomSpread: 0
     - MissionType: 3
       Entries:

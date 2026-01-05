@@ -40,6 +40,11 @@ public class EnemyManager : MonoBehaviour
         _targets = targets.ToArray();
     }
 
+    public int GetDeadEnemiesCount()
+    {
+        return _targets.Length;
+    }
+
     public float GetDeadEnemiesRatio()
     {
         int deadEnemies = 0;

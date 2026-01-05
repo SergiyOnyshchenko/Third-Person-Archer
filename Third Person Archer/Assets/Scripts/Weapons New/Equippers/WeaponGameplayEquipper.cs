@@ -38,6 +38,11 @@ namespace Game.Weapons
             //actor.GetComponentInChildren<ActorWeaponStatsBridge>(true)
             //     ?.Apply(definition, stats);
 
+            if (actor.TryGetProperty(out Damage damage))
+            {
+                damage.SetValue(Mathf.RoundToInt(stats.Damage));
+            }
+
             if (actor.TryGetProperty(out EquippedWeaponDef equipped))
             {
                 equipped.SetValue(definition);

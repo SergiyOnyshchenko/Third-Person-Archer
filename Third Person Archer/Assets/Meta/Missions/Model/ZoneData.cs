@@ -100,17 +100,7 @@ public class ZoneData : ScriptableObject
     /// </summary>
     public void AdvanceMission(MissionType type)
     {
+        Init();
         GetSegmentByType(type)?.Advance();
     }
-
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (string.IsNullOrWhiteSpace(_id))
-            _id = System.Guid.NewGuid().ToString("N");
-
-        if (string.IsNullOrWhiteSpace(_zoneName))
-            _zoneName = name;
-    }
-#endif
 }

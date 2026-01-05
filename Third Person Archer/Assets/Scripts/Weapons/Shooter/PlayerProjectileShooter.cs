@@ -51,6 +51,10 @@ public class PlayerProjectileShooter : ProjectileShooter
         {
             case ShootType.Direct:
                 Projectile directProjectile = Instantiate(Prefab, _shootPoint.position, _shootPoint.rotation);
+
+                if(_damage != null)
+                    directProjectile.SetDamage(_damage.Value);
+
                 StartCoroutine(Shooting(directProjectile, direction, multiplier, onHited));
                 break;
 
@@ -62,6 +66,9 @@ public class PlayerProjectileShooter : ProjectileShooter
                 float speed = ComputeSpeedFromPull(1f, _profile);
 
                 Projectile arrow = Instantiate(Prefab, origin, Quaternion.LookRotation(dir, Vector3.up));
+
+                if(_damage != null)
+                    arrow.SetDamage(_damage.Value);
 
                 if (_trajectory.PredictEnemyHit(out GameObject enemy, out Vector3 hitPoint))
                     _hitedEnemyPredictCache.InitHit(enemy, hitPoint, arrow.Damage);

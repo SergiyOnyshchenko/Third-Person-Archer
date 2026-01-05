@@ -14,6 +14,7 @@ public abstract class Shooter : MonoBehaviour, IActorIniter
     protected ElementalAttackType _elementalAttackType;
     protected AimInput _aimInput;
     protected ShootError _shootError;
+    protected Damage _damage;
     public Transform ShootPoint => _shootPoint;
 
     public abstract void Shoot(Vector3 direction, float multiplier, UnityAction onHited);
@@ -26,6 +27,7 @@ public abstract class Shooter : MonoBehaviour, IActorIniter
 
         if (actor.TryGetProperty(out _elementalAttackType)) { }
         if (actor.TryGetProperty(out _shootError)) { }
+        if (actor.TryGetProperty(out _damage)) { }
     }
 
     protected void SetTargetHitedEvent()

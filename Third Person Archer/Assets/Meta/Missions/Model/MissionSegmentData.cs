@@ -138,6 +138,12 @@ public class MissionSegmentData
     private void Save()
     {
         if (string.IsNullOrEmpty(_saveKey))
+        {
+            Debug.LogError($"[MissionSegmentData] SaveKey empty => Init() was not called. Type={_type}");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(_saveKey))
             return;
 
         SaveSystem.Save(_saveKey + "_current", _currentIndex);

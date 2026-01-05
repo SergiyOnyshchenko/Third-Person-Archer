@@ -26,6 +26,8 @@ public sealed class GameplayRuntime : MonoBehaviour
     public int ContractsCompletedIndex => _loopProgressData != null ? _loopProgressData.ContractsCompletedIndex : 0;
     public int SniperCompletedIndex => _loopProgressData != null ? _loopProgressData.SniperCompletedIndex : 0;
 
+    public MissionLaunchRequest LaunchRequest { get => _launchRequest; }
+
     private void Awake()
     {
         if (Instance != null && Instance != this)

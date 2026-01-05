@@ -42,13 +42,22 @@ public class ShowStateNextEnemies : MonoBehaviour
 
     private void ShowEnemies(bool value)
     {
-        foreach (var enemy in _enemies)
-            enemy.gameObject.SetActive(value);
+        if (_enemies != null)
+        {
+            foreach (var enemy in _enemies)
+                enemy.gameObject.SetActive(value);
+        }
 
-        foreach (var hostage in _hostages)
-            hostage.gameObject.SetActive(value);
+        if(_hostages != null)
+        {
+            foreach (var hostage in _hostages)
+                hostage.gameObject.SetActive(value);
+        }
 
-        foreach (var additional in _additional)
-            additional.SetActive(value);
+        if (_additional != null)
+        {
+            foreach (var additional in _additional)
+                additional.SetActive(value);
+        }
     }
 }

@@ -48,10 +48,10 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
             _titleText.text = _defaultTitle;
 
         if (_currentDamageText != null)
-            _currentDamageText.text = $"Current: {args.CurrentDamage:0.##}";
+            _currentDamageText.text = $"{args.CurrentDamage:0.##}";
 
         if (_requiredDamageText != null)
-            _requiredDamageText.text = $"Required: {args.RequiredDamage:0.##}";
+            _requiredDamageText.text = $"{args.RequiredDamage:0.##}";
 
         if (_hintText != null)
             _hintText.text = string.Format(_hintFormat, args.WeaponClass.ToString().ToLowerInvariant());

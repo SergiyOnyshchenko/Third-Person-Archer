@@ -22,6 +22,11 @@ public static class VictoryContextFactory
                 indexInsideZone = Mathf.Max(0, segment.CurrentIndex - 1);
         }
 
+        int enemies = 0;
+
+        if(EnemyManager.Instance != null)
+            enemies = EnemyManager.Instance.GetDeadEnemiesCount();
+
         return new VictoryContext
         {
             missionType = ctx.SelectedType,
@@ -29,8 +34,7 @@ public static class VictoryContextFactory
             indexInsideZone = indexInsideZone,
             loopIndex = ctx.LoopIndex,
 
-            // As requested: animation test value
-            enemiesKilled = 10
+            enemiesKilled = enemies
         };
     }
 }

@@ -83,7 +83,12 @@ public sealed class MissionStartService : IMissionStartService
     public MissionStartResult TryStartSelected()
     {
         var ctx = _context.BuildSelectedContext();
-        if (ctx == null || !ctx.IsValid)
+
+        if (ctx == null)
+            return MissionStartResult.Fail(MissionStartFailReason.NoContext);
+
+        // Only Campaign / Boss / Sniper require a concrete Mission
+        if (ctx.SelectedType != MissionType.Contracts && !ctx.IsValid)
             return MissionStartResult.Fail(MissionStartFailReason.NoContext);
 
         var avail = _availability.GetAvailability(ctx);

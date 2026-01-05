@@ -54,7 +54,9 @@ public class Projectile : MonoBehaviour, IActorIniter
         if (actor.TryGetProperty(out _gravity)) { }
 
         if (actor.TryGetProperty(out _damage))
+        {
             _damage.SetValue(_damageValue);
+        }
 
         if (actor.TryGetProperty(out _traveledDistance)) { }
 
@@ -88,7 +90,9 @@ public class Projectile : MonoBehaviour, IActorIniter
     {
         _damageValue = damage;
         if (_damage != null)
-            _damage.SetValue(_damageValue);
+        {
+            _damage.SetValue(damage);
+        }
     }
 
     public void SetElementalType(ElementalType type)

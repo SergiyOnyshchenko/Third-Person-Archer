@@ -480,6 +480,50 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.IKPosition.x
+      value: -9.45676
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.IKPosition.y
+      value: 9.740219
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.IKPosition.z
+      value: -35.154972
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.IKRotation.w
+      value: 0.50064445
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.IKRotation.x
+      value: 0.49971628
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.IKRotation.y
+      value: 0.4965101
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.IKRotation.z
+      value: -0.503107
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.bendModifier
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.bendNormal.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.bendNormal.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      propertyPath: solver.bendNormal.z
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 8653567852169969922, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       propertyPath: _reloadTransiiton
       value: 
@@ -503,7 +547,21 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4524619404350571121, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1163245402}
+    - targetCorrespondingSourceObject: {fileID: 4524619404350571121, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1163245403}
   m_SourcePrefab: {fileID: 100100000, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+--- !u!114 &1044101362 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8410513515020126486, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
+  m_PrefabInstance: {fileID: 1044101361}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163245397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4db3c450680fd4c809d5ad90a2f24e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1062128382 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3693900313738344743, guid: e3fba5be49cfcc645ba753e93874222d, type: 3}
@@ -691,6 +749,21 @@ MonoBehaviour:
       length: 0
       sqrMag: 0
       axis: {x: -1, y: -0, z: -0}
+--- !u!114 &1163245403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163245397}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a4e873892622254692923f4afd2f5f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _limbIK: {fileID: 1044101362}
+  _target: {fileID: 2117947032}
+  _axis: {x: 0, y: 1, z: 0}
 --- !u!1 &1428937683
 GameObject:
   m_ObjectHideFlags: 0

@@ -143,7 +143,7 @@ namespace Actor
         {
             base.SetProjectileSettings(projectile);
 
-            projectile.SetDamage(100);
+            projectile.SetDamage(9999);
         }
     }
 

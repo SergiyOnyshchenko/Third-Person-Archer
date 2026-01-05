@@ -35,6 +35,9 @@ public class EnemiesDiedTransition : StateTransition, IShootingTargetsData
     {
         base.Enter();
 
+        if(_delayAfter == 0)
+            _delayAfter = 1;
+
         if (_checkProcess != null)
             StopCoroutine(_checkProcess);
 
