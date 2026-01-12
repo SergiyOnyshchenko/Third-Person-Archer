@@ -5,6 +5,7 @@ public class BowShootingState : ProcessState, IActorIniter
     private BowController _bowController;
     private AttackInput _attackInput;
     private WeaponPull _weaponPull;
+    private float _pullThreshold = 0.5f;
 
     public void InitActor(ActorController actor)
     {
@@ -42,6 +43,9 @@ public class BowShootingState : ProcessState, IActorIniter
 
     private void PullArrow()
     {
+        if(_weaponPull.Value < _pullThreshold)
+            return;
+
         _bowController.ReleasePull();
         FinishProcess();
     }

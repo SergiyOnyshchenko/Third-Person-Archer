@@ -21,6 +21,7 @@ public class WeaponPull : FloatProperty, IPull
     public void ReleasePull()
     {
         IsPulling = false;
+        SetPullValue(0);
         OnPullRelease?.Invoke();
     }
 

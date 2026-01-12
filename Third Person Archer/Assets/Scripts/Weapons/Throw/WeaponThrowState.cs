@@ -8,6 +8,8 @@ public abstract class WeaponThrowState : ProcessState, IActorIniter
 {
     protected ThrowWeaponController _weaponController;
     private AttackInput _attackInput;
+    private WeaponPull _weaponPull;
+    private float _pullThreshold = 0.5f;
 
     protected abstract void InitWeaponController(ActorController actor);
 
@@ -16,9 +18,12 @@ public abstract class WeaponThrowState : ProcessState, IActorIniter
         if (actor.TryGetInput(out AttackInput attackInput))
             _attackInput = attackInput;
 
+        if (actor.TryGetProperty(out WeaponPull weaponPull))
+            _weaponPull = weaponPull;
+
         InitWeaponController(actor);
     }
-    
+
     public override void Enter()
     {
         base.Enter();
@@ -27,8 +32,8 @@ public abstract class WeaponThrowState : ProcessState, IActorIniter
         _attackInput.OnAttackRelease.AddListener(PullArrow);
     }
 
-    public override void Exit() 
-    { 
+    public override void Exit()
+    {
         base.Exit();
         _attackInput.OnAttackRelease.RemoveListener(PullArrow);
     }
@@ -46,6 +51,9 @@ public abstract class WeaponThrowState : ProcessState, IActorIniter
 
     private void PullArrow()
     {
+        if (_weaponPull.Value < _pullThreshold)
+            return;
+
         _weaponController.ReleasePull();
         DOVirtual.DelayedCall(0.5f, FinishProcess);
     }

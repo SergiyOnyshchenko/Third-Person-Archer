@@ -58,6 +58,20 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
     {
         if (_services == null) return;
 
+        var zone = _services.Progress.CurrentZone;
+
+        // Hide Campaign selector when campaign is done and boss is unlocked
+        if (_missionType == MissionType.Campaign &&
+            zone != null &&
+            zone.IsCampaignComplete() &&
+            zone.IsBossUnlocked())
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
+        gameObject.SetActive(true);
+
         var selected = _services.Progress.SelectedMissionType;
         if (_highlight != null)
             _highlight.SetActive(selected == _missionType);
@@ -65,7 +79,6 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
         var ctx = BuildContextFor(_missionType);
         var avail = _services.Availability.GetAvailability(ctx);
 
-        // Campaign gate is not "locked" — it is "gated".
         bool showLocked =
             !avail.CanPlay &&
             avail.Reason != AvailabilityBlockReason.CampaignDamageTooLow;

@@ -12,7 +12,7 @@ namespace Actor
         [SerializeField] private GameObject _sniperUI;
 
         private ZoomFovMultiplier _zoomFovMult;
-        private float _zoomMult = 3.5f;
+        private float _zoomMult = 4f;
 
         public void InitActor(ActorController actor)
         {

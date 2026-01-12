@@ -12,6 +12,7 @@ namespace Meta.Weapons.UI
     {
         [Header("Refs")]
         [SerializeField] private WeaponCatalog _weaponCatalog;
+        [SerializeField] private MissionProgressData _missionProgressData;
         [SerializeField] private CurrencyVisualLibrary _currencyVisualLibrary;
         [SerializeField] private WeaponClassIconLibrary _weaponClassIconLibrary;
         [SerializeField] private WeaponStatsRangeConfig _statsRangeConfig;
@@ -215,7 +216,10 @@ namespace Meta.Weapons.UI
 
             if (isLocked)
             {
-                string msg = $"Unlocks at campaign level {def.UnlockAfterCampaignLevel}";
+                string formatted = CampaignLevelFormatUtility.FormatCompanyLevelAsZoneCampaign(
+                    _missionProgressData, def.UnlockAfterCampaignLevel);
+
+                string msg = $"Unlocks at {formatted}";
                 _pricePanel.ShowLocked(msg);
             }
             else if (!isOwned)

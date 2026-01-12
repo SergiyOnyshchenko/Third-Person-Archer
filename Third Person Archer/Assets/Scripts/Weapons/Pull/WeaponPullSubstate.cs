@@ -51,20 +51,18 @@ public class WeaponPullSubstate : SubState, IActorIniter
         {
             BeginPull();
         }
-
         else if (!isHolding && _wasHolding)
         {
             ReleasePull();
         }
 
-        // Continuous pulling
         if (isHolding)
         {
             HoldPull();
         }
 
         _wasHolding = isHolding;
-    }
+    } 
 
     private void BeginPull()
     {

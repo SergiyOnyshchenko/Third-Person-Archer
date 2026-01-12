@@ -4,7 +4,6 @@ using DG.Tweening;
 using MoreMountains.Tools;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
 
 public class SoundToggle : MonoBehaviour
 {

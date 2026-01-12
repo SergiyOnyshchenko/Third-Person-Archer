@@ -6,9 +6,9 @@ namespace Actor.Properties
 {
     public class SpawnPoint : Vector3Property, IActorIniter
     {
-        public void InitActor(ActorController actor)
+        public override void InitActor(ActorController actor)
         {
-            _currentValue = actor.transform.position;
+            SetValue(actor.transform.position);
         }
     }
 }
