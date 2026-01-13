@@ -19,15 +19,13 @@ public sealed class MissionCompletionService : IMissionCompletionService
         if (ctx == null || !ctx.IsValid)
             return new MissionCompleteResult(false, new MissionReward(0, null));
 
-        // Only on successful completion we advance + reward.
         if (outcome != MissionOutcome.Completed)
             return new MissionCompleteResult(false, new MissionReward(0, null));
 
-        // Calculate reward first (purely derived from context + counters).
         var reward = _rewards.Calculate(ctx);
 
-        // Apply progress changes.
-        ApplyProgress(ctx);
+        if (!ctx.IsDebugRun)
+            ApplyProgress(ctx);
 
         return new MissionCompleteResult(true, reward);
     }

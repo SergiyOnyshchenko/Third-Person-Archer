@@ -83,7 +83,9 @@ public sealed class GameplayRuntime : MonoBehaviour
         Context = contextService.BuildSelectedContext();
     }
 
-    private static MissionContext BuildContextFromLaunchRequest(MissionLaunchRequest req, MissionProgressData progress)
+    private static MissionContext BuildContextFromLaunchRequest(
+        MissionLaunchRequest req,
+        MissionProgressData progress)
     {
         var zones = progress != null ? progress.AllZones : null;
         ZoneData zone = null;
@@ -95,11 +97,24 @@ public sealed class GameplayRuntime : MonoBehaviour
         }
 
         int globalCampaignIndex = req.GlobalCampaignIndex;
+
         int companyLevel = globalCampaignIndex >= 0
             ? (globalCampaignIndex + 1)
             : (progress != null ? progress.GetCompanyLevel() : -1);
 
-        return new MissionContext(
+        // DEBUG → BALANCE MAPPING
+        bool isDebugRun = req.IsDebugRun;
+
+        MissionType balanceMode = req.Mode;
+        int contractsOverride = -1;
+
+        if (isDebugRun && req.EasyDebugMode && req.Mode == MissionType.Campaign)
+        {
+            balanceMode = MissionType.Contracts;
+            contractsOverride = 0; // ← your chosen rule
+        }
+
+        var ctx = new MissionContext(
             zone: zone,
             zoneIndex: req.ZoneIndex,
             selectedType: req.Mode,
@@ -108,8 +123,21 @@ public sealed class GameplayRuntime : MonoBehaviour
             companyLevel: companyLevel,
             loopIndex: req.LoopIndex,
             balanceLoopIndex: req.BalanceLoopIndex,
-            requiredWeaponClass: req.RequiredWeaponClass
+            requiredWeaponClass: req.RequiredWeaponClass,
+            isDebugRun: isDebugRun,
+            balanceMode: balanceMode,
+            contractsCompletedIndexOverride: contractsOverride
         );
+
+        // 🔍 TEMP DEBUG LOG (keep until verified)
+        Debug.Log(
+            $"[DBG] Context built: selected={ctx.SelectedType}, " +
+            $"balanceMode={ctx.BalanceMode}, " +
+            $"debug={ctx.IsDebugRun}, " +
+            $"contractsOverride={ctx.ContractsCompletedIndexOverride}"
+        );
+
+        return ctx;
     }
 
     public MissionCompleteResult CompleteMission(MissionOutcome outcome)

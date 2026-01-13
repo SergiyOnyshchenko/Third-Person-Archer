@@ -149,36 +149,37 @@ public partial class BalanceConfig : ScriptableObject
         if (ctx.SelectedType == MissionType.Boss)
             return new EnemyModule.EnemyStats(1, 0);
 
+        // --- NEW: effective balance mode (Option A) ---
+        MissionType effectiveType = ctx.BalanceMode;
+
+        int effectiveContractsCompletedIndex =
+            ctx.ContractsCompletedIndexOverride >= 0 ? ctx.ContractsCompletedIndexOverride : contractsCompletedIndex;
+
         int loopIndex = ClampLoopIndex(ctx.BalanceLoopIndex);
 
-        // Gate index anchor:
         int gateIndex =
             ctx.GlobalCampaignIndex >= 0 ? ctx.GlobalCampaignIndex :
             ctx.CompanyLevel > 0 ? (ctx.CompanyLevel - 1) :
             0;
 
-        // Baseline from gates:
         float gateDamage = GetRequiredDamageForCampaign(ctx.RequiredWeaponClass, gateIndex, loopIndex);
 
-        // Difficulty scalar (unified):
-        int progressionIndex = ctx.SelectedType switch
+        int progressionIndex = effectiveType switch
         {
             MissionType.Campaign => Mathf.Max(0, ctx.GlobalCampaignIndex),
-            MissionType.Contracts => Mathf.Max(0, contractsCompletedIndex),
+            MissionType.Contracts => Mathf.Max(0, effectiveContractsCompletedIndex),
             MissionType.Sniper => Mathf.Max(0, sniperCompletedIndex),
             _ => 0
         };
 
-        float difficulty = GetDifficultyScalar(ctx.SelectedType, progressionIndex, ctx.RequiredWeaponClass, loopIndex);
+        float difficulty = GetDifficultyScalar(effectiveType, progressionIndex, ctx.RequiredWeaponClass, loopIndex);
 
-        // Archetype multipliers:
         var profile = GetEnemyProfile(archetype);
         float typeHp = profile != null ? profile.HpMultiplier : 1f;
         float typeDmg = profile != null ? profile.DamageMultiplier : 1f;
 
-        // Mode conversion factors (DRY):
-        float hpFromGate = GetEnemyHpFromGateFactor(ctx.SelectedType);
-        float dmgFromGate = GetEnemyDamageFromGateFactor(ctx.SelectedType);
+        float hpFromGate = GetEnemyHpFromGateFactor(effectiveType);
+        float dmgFromGate = GetEnemyDamageFromGateFactor(effectiveType);
 
         float mpHp = isMultiplayer ? _enemies.MultiplayerHpMultiplier : 1f;
         float mpDmg = isMultiplayer ? _enemies.MultiplayerDamageMultiplier : 1f;

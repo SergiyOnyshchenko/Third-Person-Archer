@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using UnityEngine;
 
 public sealed class MainMenuServices
 {
@@ -11,6 +9,13 @@ public sealed class MainMenuServices
     public IMissionAvailabilityService Availability { get; }
     public IMissionStartService MissionStart { get; }
 
+    public MissionProgressData ProgressData { get; }
+    public MissionLaunchRequest LaunchRequest { get; }
+    public MetaLoopProgressData LoopData { get; }
+
+    public IMissionCatalogService Catalog { get; }
+    public IWeaponRequirementService WeaponRequirement { get; }
+
     public event Action OnMenuStateChanged;
 
     public MainMenuServices(
@@ -18,13 +23,24 @@ public sealed class MainMenuServices
         IMissionContextService context,
         IMissionGateService gate,
         IMissionAvailabilityService availability,
-        IMissionStartService missionStart)
+        IMissionStartService missionStart,
+        MissionProgressData progressData,
+        MissionLaunchRequest launchRequest,
+        MetaLoopProgressData loopData,
+        IMissionCatalogService catalog,
+        IWeaponRequirementService weaponRequirement)
     {
         Progress = progress;
         Context = context;
         Gate = gate;
         Availability = availability;
         MissionStart = missionStart;
+
+        ProgressData = progressData;
+        LaunchRequest = launchRequest;
+        LoopData = loopData;
+        Catalog = catalog;
+        WeaponRequirement = weaponRequirement;
     }
 
     public void NotifyMenuStateChanged()

@@ -119,7 +119,14 @@ public sealed class MainMenuRuntime : MonoBehaviour
             context,
             gate,
             availability,
-            missionStart);
+            missionStart,
+
+            ProgressData,
+            _launchRequest,
+            _loopProgressData,
+            catalog,
+            weaponReq
+        );
     }
 
     private void NotifyStateChanged()
