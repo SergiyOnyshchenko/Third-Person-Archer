@@ -36,7 +36,7 @@ public class ProjectileDirectMoveSubstate : SubState, IActorIniter
     private void Move(Vector3 direction)
     {
         if(_rigidbody != null)
-            _rigidbody.velocity = direction * _speed.Value;
+            _rigidbody.linearVelocity = direction * _speed.Value;
 
         _transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
     }

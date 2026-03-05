@@ -1838,11 +1838,11 @@ namespace BrainFailProductions.PolyFew
 
                 else if (format == TextureFormat.PVRTC_RGB4) { return false; }
 
-                else if (format == TextureFormat.ASTC_RGB_4x4) { return false; }
+                else if (format == TextureFormat.ASTC_4x4) { return false; }
 
-                else if (format == TextureFormat.ASTC_RGB_8x8) { return false; }
+                else if (format == TextureFormat.ASTC_8x8) { return false; }
 
-                else if (format == TextureFormat.ASTC_RGB_12x12) { return false; }
+                else if (format == TextureFormat.ASTC_12x12) { return false; }
 
                 else if (format == TextureFormat.DXT1Crunched) { return false; }
 

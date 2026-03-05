@@ -21,8 +21,8 @@ public class XRayDestructionHelper : MonoBehaviour
     private void ApplySettings(Rigidbody rb)
     {
         rb.mass = _mass;
-        rb.drag = _drag;
-        rb.angularDrag = _angularDrag;
+        rb.linearDamping = _drag;
+        rb.angularDamping = _angularDrag;
         rb.isKinematic = true;
     }
 }

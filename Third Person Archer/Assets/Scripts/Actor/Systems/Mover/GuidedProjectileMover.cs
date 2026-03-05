@@ -43,7 +43,7 @@ namespace Actor
             float pitchRotation = currentPitchSpeed * Time.fixedDeltaTime;
 
             _transform.Rotate(pitchRotation, yawRotation, 0f, Space.Self);
-            _rigidbody.velocity = _transform.forward * _speed.Value * Time.fixedDeltaTime;
+            _rigidbody.linearVelocity = _transform.forward * _speed.Value * Time.fixedDeltaTime;
         }
     }
 }

@@ -51,13 +51,13 @@ namespace Actor
                 foreach (Rigidbody rigidbody in _allRigidbodys)
                 {
                     rigidbody.isKinematic = false;
-                    rigidbody.velocity = Vector3.zero;
+                    rigidbody.linearVelocity = Vector3.zero;
                 }
                 for (int i = 0; i < 7; i++)
                 {
                     foreach (Rigidbody rigidbody in _allRigidbodys)
                     {
-                        rigidbody.velocity = Vector3.zero;
+                        rigidbody.linearVelocity = Vector3.zero;
                     }
                 }
             }
@@ -68,14 +68,14 @@ namespace Actor
             foreach (Rigidbody rigidbody in _allRigidbodys)
             {
                 rigidbody.isKinematic = false;
-                rigidbody.velocity = Vector3.zero;
+                rigidbody.linearVelocity = Vector3.zero;
             }
             for (int i = 0; i < 7; i++)
             {
                 yield return null;
                 foreach (Rigidbody rigidbody in _allRigidbodys)
                 {
-                    rigidbody.velocity = Vector3.zero;
+                    rigidbody.linearVelocity = Vector3.zero;
                 }
             }
         }

@@ -37,7 +37,7 @@ public class ProjectileTrajectoryMoveSubstate : SubState, IActorIniter
     {
         _rigidbody.useGravity = false;
         _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
-        _rigidbody.velocity = _direction.Value;
+        _rigidbody.linearVelocity = _direction.Value;
     }
 
     public void Move()
@@ -50,7 +50,7 @@ public class ProjectileTrajectoryMoveSubstate : SubState, IActorIniter
 
         if (_faceVelocity)
         {
-            Vector3 v = _rigidbody.velocity;
+            Vector3 v = _rigidbody.linearVelocity;
             if (v.sqrMagnitude > (_minSpeedForFacing * _minSpeedForFacing))
             {
                 _transform.rotation = Quaternion.LookRotation(v.normalized, Vector3.up);

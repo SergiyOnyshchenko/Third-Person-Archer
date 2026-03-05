@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 7
+  version: 10
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -36,6 +36,7 @@ Material:
   disabledShaderPasses:
   - DepthOnly
   - SHADOWCASTER
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -88,6 +89,7 @@ Material:
     - _CullMode: 2
     - _Depthpower: 1
     - _DstBlend: 10
+    - _DstBlendAlpha: 10
     - _Emission: 4
     - _Mask: 0
     - _Maskpower: 10
@@ -95,10 +97,12 @@ Material:
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SrcBlend: 5
+    - _SrcBlendAlpha: 1
     - _Surface: 1
     - _Usecenterglow: 0
     - _Usedark: 1
     - _Usedepth: 0
+    - _XRMotionVectorsPass: 1
     - _ZTest: 4
     - _ZWrite: 0
     - _ZWriteControl: 0
@@ -110,3 +114,4 @@ Material:
     - _SpeedMainTexUVNoiseZW: {r: -2, g: 0, b: 0, a: 0}
     - _StartColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
