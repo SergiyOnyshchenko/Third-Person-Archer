@@ -17,10 +17,9 @@ public class ProjectileShooter : Shooter, IActorIniter
         _prefab = projectile;
     }
 
-    public override void Shoot(Vector3 direction, float multiplier, UnityAction onHited)
+    public override void Shoot(Vector3 direction, float multiplier,
+        UnityAction<ActorController> onTargetHited, UnityAction onAnyHit)
     {
-        onHited += SetTargetHitedEvent;
-
         Projectile projectile = Instantiate(Prefab, _shootPoint.position, _shootPoint.rotation);
 
         if (_shootError != null)
@@ -41,6 +40,8 @@ public class ProjectileShooter : Shooter, IActorIniter
             direction = finalDirection.normalized;
         }
 
-        projectile.Shoot(direction, multiplier, onHited);
+        projectile.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+
+        projectile.Shoot(direction, multiplier, onTargetHited, onAnyHit);
     }
 }

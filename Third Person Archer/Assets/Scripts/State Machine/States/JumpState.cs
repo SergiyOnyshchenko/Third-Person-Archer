@@ -8,6 +8,7 @@ using UnityEngine.AI;
 
 public class JumpState : ProcessState, IActorIniter
 {
+    [SerializeField] private AnimationCurve _jumpCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     private Transform _target;
     private JumpInput _input;
     private BodyRotator _rotator;
@@ -19,7 +20,7 @@ public class JumpState : ProcessState, IActorIniter
         if (actor.TryGetInput(out JumpInput input))
             _input = input;
 
-        if(actor.TryGetSystem(out BodyRotator rotator))
+        if (actor.TryGetSystem(out BodyRotator rotator))
             _rotator = rotator;
     }
 
@@ -32,27 +33,19 @@ public class JumpState : ProcessState, IActorIniter
 
     public void Jump(Spline jumpSpline)
     {
-        float value = 0f;
+        float elapsed = 0f;
         float duration = 0.75f;
 
-        var endPosition = jumpSpline.CalculatePosition(0.5f);
-
+        var endPosition = jumpSpline.CalculatePosition(1f);
         _rotator.RotateToInstant(endPosition);
 
-        DOTween.To(() => value, x => value = x, 0.5f, duration/2f)
-        .OnUpdate(() => 
-        {
-            _target.transform.position = jumpSpline.CalculatePosition(value);
-        }).
-        SetEase(Ease.Linear);
-
-        DOTween.To(() => value, x => value = x, 1f, duration/3f)
-        .OnUpdate(() =>
-        {
-            _target.transform.position = jumpSpline.CalculatePosition(value);
-        }).
-        SetEase(Ease.OutSine).
-        SetDelay(duration / 2).
-        OnComplete(FinishProcess);
+        DOTween.To(() => elapsed, x => elapsed = x, 1f, duration)
+            .OnUpdate(() =>
+            {
+                float curvedValue = _jumpCurve.Evaluate(elapsed);
+                _target.transform.position = jumpSpline.CalculatePosition(curvedValue);
+            })
+            .SetEase(Ease.Linear)
+            .OnComplete(FinishProcess);
     }
 }

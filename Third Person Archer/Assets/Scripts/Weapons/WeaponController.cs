@@ -13,6 +13,7 @@ namespace Actor
         private AimInput _aimInput;
         private Shooter _shooter;
         public event Action OnShooted;
+        public event Action<HitInfo> OnHitResult;
 
         private void Start()
         {
@@ -35,9 +36,22 @@ namespace Actor
 
         protected void Shoot(float multiplier, UnityAction targetHited)
         {
-            _shooter.Shoot(_aimInput.GetAimDirection(), multiplier, targetHited);
-            OnShooted?.Invoke();
+            ActorController hitActor = null;
+            bool hitTarget = false;
+            
+            void OnTargetHit(ActorController actor)
+            {
+                hitTarget = true;
+                hitActor = actor;
+                targetHited?.Invoke();
+            }
+
+            void OnAnyHit()
+            {
+                OnHitResult?.Invoke(new HitInfo(hitTarget, hitActor));
+            }
+
+            _shooter.Shoot(_aimInput.GetAimDirection(), multiplier, OnTargetHit, OnAnyHit);
         }
     }
 }
-

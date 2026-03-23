@@ -17,6 +17,7 @@ public sealed class EnemyBalancedStatsApplier : MonoBehaviour
 
     private void Start()
     {
+        _receiver.SetDamage(5);
         Apply();
     }
 
@@ -45,7 +46,7 @@ public sealed class EnemyBalancedStatsApplier : MonoBehaviour
             rt.IsMultiplayer);
 
         _receiver.SetHealth(stats.MaxHp);
-        _receiver.SetDamage(10);
+        _receiver.SetDamage(5);
         //_receiver.SetDamage(stats.Damage);
     }
 }

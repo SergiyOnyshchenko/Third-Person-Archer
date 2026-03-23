@@ -143,6 +143,7 @@ Transform:
   - {fileID: 605429716688003653}
   - {fileID: 8758305862071768234}
   - {fileID: 8690451493946844199}
+  - {fileID: 6904528869594387586}
   m_Father: {fileID: 2263040456482554102}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &159085639497988360
@@ -246,6 +247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentValue: 0
   _value: 100
+  _applyBaseOnInit: 1
 --- !u!1 &319213339245708265
 GameObject:
   m_ObjectHideFlags: 0
@@ -370,6 +372,56 @@ Transform:
   - {fileID: 3502538898617896273}
   m_Father: {fileID: 7465341197210665920}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &491141692007629334
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3419304405479865206}
+  - component: {fileID: 1353662648173867580}
+  m_Layer: 0
+  m_Name: 'Lifetime [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3419304405479865206
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 491141692007629334}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6691349869221117092}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1353662648173867580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 491141692007629334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2205b946c44b945ba75948b122e71d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LifetimeSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &515860561158013323
 GameObject:
   m_ObjectHideFlags: 0
@@ -450,6 +502,57 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentValue: {x: 0, y: 0, z: 0}
   _value: {x: 0, y: 0, z: 0}
+  _applyBaseOnInit: 1
+--- !u!1 &671579935452987204
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6904528869594387586}
+  - component: {fileID: 3533372354279081646}
+  m_Layer: 0
+  m_Name: 'Lifetime [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6904528869594387586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671579935452987204}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4555879774841711751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3533372354279081646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671579935452987204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2205b946c44b945ba75948b122e71d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LifetimeSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &778175702439058048
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,8 +631,64 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3350356219356285532}
+  - {fileID: 8961071026592175698}
   m_Father: {fileID: 452306878489683691}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &925939313519631640
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4442279617567317518}
+  - component: {fileID: 7408558282661014942}
+  m_Layer: 0
+  m_Name: 'OnLifetimeEnded [Transition]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4442279617567317518
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925939313519631640}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2792363922478928294}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7408558282661014942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925939313519631640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5892d3fdbf1364cb66e482a4696f17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LifetimeEndedTransition
+  _nextState: {fileID: 2316698321426283927}
+  _isTransit: 0
+  OnTransotion:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &963549822904103992
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,7 +808,7 @@ GameObject:
   - component: {fileID: 6129208586351216793}
   - component: {fileID: 6537250486735396018}
   m_Layer: 0
-  m_Name: ProjectileTraveledDistance [Substate]
+  m_Name: 'ProjectileTraveledDistance [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -699,7 +858,7 @@ GameObject:
   - component: {fileID: 6718081706285007498}
   - component: {fileID: 3454338697433211198}
   m_Layer: 0
-  m_Name: ProjectileTraveledDistance [Substate]
+  m_Name: 'ProjectileTraveledDistance [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -749,7 +908,7 @@ GameObject:
   - component: {fileID: 605429716688003653}
   - component: {fileID: 5864688990162004524}
   m_Layer: 0
-  m_Name: Move [Substate]
+  m_Name: 'Move [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1104,10 +1263,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1753321294188073216}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -1198,6 +1357,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _startState: {fileID: 4712485254365105746}
   _currentState: {fileID: 0}
+--- !u!1 &2246891824008722080
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5776309055320656717}
+  m_Layer: 0
+  m_Name: XRay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5776309055320656717
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2246891824008722080}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3820073615994074672}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2569755039943301844
 GameObject:
   m_ObjectHideFlags: 0
@@ -1263,7 +1453,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!96 &1235334655695798455
 TrailRenderer:
-  serializedVersion: 3
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1279,6 +1469,11 @@ TrailRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1300,9 +1495,11 @@ TrailRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Time: 0.25
   m_PreviewTimeScale: 1
   m_Parameters:
@@ -1370,7 +1567,6 @@ TrailRenderer:
     shadowBias: 0.5
     generateLightingData: 0
   m_MinVertexDistance: 0.1
-  m_MaskInteraction: 0
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
@@ -1626,7 +1822,7 @@ GameObject:
   - component: {fileID: 8630596602134090954}
   - component: {fileID: 2859357705535782876}
   m_Layer: 0
-  m_Name: Hit [Substate]
+  m_Name: 'Hit [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1676,7 +1872,7 @@ GameObject:
   - component: {fileID: 4983551875439955802}
   - component: {fileID: 4020919104572390440}
   m_Layer: 0
-  m_Name: Set State [Substate]
+  m_Name: 'Set State [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1780,8 +1976,59 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6196982478411419258}
+  - {fileID: 3288722989253346405}
   m_Father: {fileID: 2263040456482554102}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3998879224013380522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 690674382175018869}
+  - component: {fileID: 3802695896262025852}
+  m_Layer: 0
+  m_Name: 'Lifetime [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &690674382175018869
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3998879224013380522}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3245159908352648453}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3802695896262025852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3998879224013380522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2205b946c44b945ba75948b122e71d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LifetimeSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4041227615110748997
 GameObject:
   m_ObjectHideFlags: 0
@@ -1828,6 +2075,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentValue: 0
   _value: 1
+  _applyBaseOnInit: 1
 --- !u!1 &4130389430399001189
 GameObject:
   m_ObjectHideFlags: 0
@@ -1874,6 +2122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentValue: 0
   _value: 0
+  _applyBaseOnInit: 1
 --- !u!1 &4354087522120219579
 GameObject:
   m_ObjectHideFlags: 0
@@ -1924,6 +2173,117 @@ MonoBehaviour:
   _value:
     serializedVersion: 2
     m_Bits: 0
+  _applyBaseOnInit: 1
+--- !u!1 &4554105366574364690
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8961071026592175698}
+  - component: {fileID: 6300809064259688289}
+  m_Layer: 0
+  m_Name: 'OnLifetimeEnded [Transition]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8961071026592175698
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4554105366574364690}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2774388260525008202}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6300809064259688289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4554105366574364690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5892d3fdbf1364cb66e482a4696f17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LifetimeEndedTransition
+  _nextState: {fileID: 2316698321426283927}
+  _isTransit: 0
+  OnTransotion:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &4677482437825850532
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3288722989253346405}
+  - component: {fileID: 9169868083728108609}
+  m_Layer: 0
+  m_Name: 'OnLifetimeEnded [Transition]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3288722989253346405
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4677482437825850532}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5689517720500273220}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9169868083728108609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4677482437825850532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5892d3fdbf1364cb66e482a4696f17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LifetimeEndedTransition
+  _nextState: {fileID: 2316698321426283927}
+  _isTransit: 0
+  OnTransotion:
+    m_PersistentCalls:
+      m_Calls: []
+  OnEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExit:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4769979904534097461
 GameObject:
   m_ObjectHideFlags: 0
@@ -2014,6 +2374,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentValue: 0
   _value: 10
+  _applyBaseOnInit: 1
 --- !u!1 &4875521037942563805
 GameObject:
   m_ObjectHideFlags: 0
@@ -2025,7 +2386,7 @@ GameObject:
   - component: {fileID: 3350356219356285532}
   - component: {fileID: 150693884224700413}
   m_Layer: 0
-  m_Name: OnCollisionEnter [Transition]
+  m_Name: 'OnCollisionEnter [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2080,7 +2441,7 @@ GameObject:
   - component: {fileID: 8500417319720822266}
   - component: {fileID: 5860703428876265053}
   m_Layer: 0
-  m_Name: Destroy Actor [Substate]
+  m_Name: 'Destroy Actor [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2181,6 +2542,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4436310186156536489}
+  - {fileID: 4442279617567317518}
   m_Father: {fileID: 3583858150200802583}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5416626629228070259
@@ -2242,7 +2604,7 @@ GameObject:
   - component: {fileID: 7113675375663947051}
   - component: {fileID: 8077585337008139575}
   m_Layer: 0
-  m_Name: Set State [Substate]
+  m_Name: 'Set State [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2315,6 +2677,7 @@ Transform:
   - {fileID: 8192280517442636359}
   - {fileID: 195875253951729801}
   - {fileID: 6129208586351216793}
+  - {fileID: 690674382175018869}
   m_Father: {fileID: 3583858150200802583}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5793941769427042469
@@ -2328,7 +2691,7 @@ GameObject:
   - component: {fileID: 6196982478411419258}
   - component: {fileID: 8983812959769985997}
   m_Layer: 0
-  m_Name: OnCollisionEnter [Transition]
+  m_Name: 'OnCollisionEnter [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2383,7 +2746,7 @@ GameObject:
   - component: {fileID: 8567047639988527852}
   - component: {fileID: 2682831938592294249}
   m_Layer: 0
-  m_Name: Guide Type [Transition]
+  m_Name: 'Guide Type [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2460,6 +2823,7 @@ Transform:
   - {fileID: 494632044493696864}
   - {fileID: 6313299111870751590}
   - {fileID: 6718081706285007498}
+  - {fileID: 3419304405479865206}
   m_Father: {fileID: 452306878489683691}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5939080723477451139
@@ -2494,6 +2858,8 @@ Transform:
   - {fileID: 4075297414140888666}
   - {fileID: 5291322449533574974}
   - {fileID: 6553406845612680414}
+  - {fileID: 5776309055320656717}
+  - {fileID: 2999696691728342256}
   m_Father: {fileID: 7465341197210665920}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6203363303245979418
@@ -2540,7 +2906,7 @@ GameObject:
   - component: {fileID: 3815478259481917131}
   - component: {fileID: 4871679655439096488}
   m_Layer: 0
-  m_Name: Invoke Feeedbacks [Substate]
+  m_Name: 'Invoke Feeedbacks [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2602,7 +2968,7 @@ GameObject:
   - component: {fileID: 824977759019962763}
   - component: {fileID: 6485220309066595484}
   m_Layer: 0
-  m_Name: Trajectory Type [Transition]
+  m_Name: 'Trajectory Type [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2658,7 +3024,7 @@ GameObject:
   - component: {fileID: 2536646267185586344}
   - component: {fileID: 4862518063066094424}
   m_Layer: 0
-  m_Name: Direct Type [Transition]
+  m_Name: 'Direct Type [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2714,7 +3080,7 @@ GameObject:
   - component: {fileID: 8758305862071768234}
   - component: {fileID: 1208931715628688009}
   m_Layer: 0
-  m_Name: Set State [Substate]
+  m_Name: 'Set State [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2801,6 +3167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentValue: 0
   _value: 0
+  _applyBaseOnInit: 1
 --- !u!1 &6805462948548751941
 GameObject:
   m_ObjectHideFlags: 0
@@ -2812,7 +3179,7 @@ GameObject:
   - component: {fileID: 195875253951729801}
   - component: {fileID: 2618738015364245516}
   m_Layer: 0
-  m_Name: Set State [Substate]
+  m_Name: 'Set State [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7615,7 +7982,7 @@ ParticleSystem:
     vectorLabel1_3: W
 --- !u!199 &2680054057917740398
 ParticleSystemRenderer:
-  serializedVersion: 6
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -7631,6 +7998,11 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -7652,9 +8024,11 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_RenderMode: 0
   m_MeshDistribution: 0
   m_SortMode: 0
@@ -7686,7 +8060,6 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
-  m_MaskInteraction: 0
 --- !u!114 &1884555077475262433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7746,6 +8119,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentValue: 0
   _value: 10
+  _applyBaseOnInit: 1
 --- !u!1 &7183755270921771644
 GameObject:
   m_ObjectHideFlags: 0
@@ -7757,7 +8131,7 @@ GameObject:
   - component: {fileID: 8192280517442636359}
   - component: {fileID: 3693991590477168617}
   m_Layer: 0
-  m_Name: Move [Substate]
+  m_Name: 'Move [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7844,6 +8218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentValue: 0
   _value: 0
+  _applyBaseOnInit: 1
 --- !u!1 &7213820382646950140
 GameObject:
   m_ObjectHideFlags: 0
@@ -7877,6 +8252,54 @@ Transform:
   - {fileID: 1017776240354504901}
   m_Father: {fileID: 7004373675872140471}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7308721240903748110
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2999696691728342256}
+  - component: {fileID: 8247544479803647422}
+  m_Layer: 0
+  m_Name: Lifetime
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2999696691728342256
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7308721240903748110}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3820073615994074672}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8247544479803647422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7308721240903748110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f8f6ffa699ab584c888b3ea04d9d220, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Actor.Lifetime
+  _maxLifetime: 5
+  OnLifetimeEnded:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7416817219865465112
 GameObject:
   m_ObjectHideFlags: 0
@@ -7923,6 +8346,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentValue: 0
   _value: 0
+  _applyBaseOnInit: 1
 --- !u!1 &7449502130047904668
 GameObject:
   m_ObjectHideFlags: 0
@@ -7973,6 +8397,7 @@ MonoBehaviour:
   _value:
     serializedVersion: 2
     m_Bits: 0
+  _applyBaseOnInit: 1
 --- !u!1 &7642008766473814719
 GameObject:
   m_ObjectHideFlags: 0
@@ -8114,7 +8539,7 @@ GameObject:
   - component: {fileID: 6313299111870751590}
   - component: {fileID: 5972195230683219801}
   m_Layer: 0
-  m_Name: Set State [Substate]
+  m_Name: 'Set State [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8422,7 +8847,7 @@ GameObject:
   - component: {fileID: 494632044493696864}
   - component: {fileID: 972711524569967547}
   m_Layer: 0
-  m_Name: Move [Substate]
+  m_Name: 'Move [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8526,7 +8951,7 @@ GameObject:
   - component: {fileID: 4616082763957414114}
   - component: {fileID: 5805436242051341145}
   m_Layer: 0
-  m_Name: Invoke Feeedbacks [Substate]
+  m_Name: 'Invoke Feeedbacks [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8586,6 +9011,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6445516301427456509}
+  - component: {fileID: 5150636960566319895}
+  - component: {fileID: 1149530007139422852}
   m_Layer: 0
   m_Name: View
   m_TagString: Untagged
@@ -8611,6 +9038,30 @@ Transform:
   - {fileID: 6420334961060351805}
   m_Father: {fileID: 7465341197210665920}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5150636960566319895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8605701996803476667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1af169644ae61ac4ca32cabd72faaa38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Actor.XRayController
+--- !u!114 &1149530007139422852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8605701996803476667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1c56e0dce19ff747bd47f92502d10c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::XRayLayer
 --- !u!1 &8876623090740750698
 GameObject:
   m_ObjectHideFlags: 0
@@ -8622,7 +9073,7 @@ GameObject:
   - component: {fileID: 8690451493946844199}
   - component: {fileID: 103661422585910398}
   m_Layer: 0
-  m_Name: ProjectileTraveledDistance [Substate]
+  m_Name: 'ProjectileTraveledDistance [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8885,7 +9336,7 @@ GameObject:
   - component: {fileID: 4436310186156536489}
   - component: {fileID: 8003677761645066215}
   m_Layer: 0
-  m_Name: OnCollisionEnter [Transition]
+  m_Name: 'OnCollisionEnter [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

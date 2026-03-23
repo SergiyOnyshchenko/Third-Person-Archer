@@ -7,18 +7,18 @@ namespace Actor
 {
     public class XRayController : System
     {
-        private XRayInstance[] _instances;
+        private IXRayInstance[] _instances;
 
         private void Awake()
         {
-            _instances = GetComponentsInChildren<XRayInstance>();
+            _instances = GetComponentsInChildren<IXRayInstance>();
         }
 
         public void Show(bool value)
         {
             foreach (var instance in _instances)
             {
-                instance.Show(value);
+                instance.ActivateXRay(value);
             }
         }
     }

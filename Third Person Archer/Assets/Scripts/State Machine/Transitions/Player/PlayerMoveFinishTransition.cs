@@ -17,16 +17,12 @@ public class PlayerMoveFinishTransition : StateTransition, IActorIniter
     public override void Enter()
     {
         base.Enter();
-
-        //DOVirtual.DelayedCall(0.1f, () => _mover.OnMovingFinished.AddListener(DoTransition));
-
         _mover.OnMovingFinished.AddListener(DoTransition);
     }
 
     public override void Exit()
     {
         _mover.OnMovingFinished.RemoveListener(DoTransition);
-
         base.Exit();
     }
 }

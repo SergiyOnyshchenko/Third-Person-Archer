@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using Actor;
-using Cinemachine.Utility;
 using DG.Tweening;
 using UnityEngine;
 
 public class PlayerJumpState : MainState, IActorIniter
 {
     [SerializeField] private Spline _jumpSpline;
+    [SerializeField] private JumpType _jumpType;
+    private float _delay = 0.25f;
     private JumpInput _jumper;
 
     public void InitActor(ActorController actor)
@@ -20,6 +19,6 @@ public class PlayerJumpState : MainState, IActorIniter
     {
         base.Enter();
 
-        DOVirtual.DelayedCall(0.25f, () => _jumper.Jump(_jumpSpline));
+        DOVirtual.DelayedCall(_delay, () => _jumper.Jump(_jumpSpline, _jumpType));
     }
 }

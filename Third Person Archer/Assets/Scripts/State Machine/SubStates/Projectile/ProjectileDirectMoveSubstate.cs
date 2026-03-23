@@ -23,6 +23,22 @@ public class ProjectileDirectMoveSubstate : SubState, IActorIniter
         if (actor.TryGetProperty(out _projectileState)) { }
     }
 
+    public override void Enter()
+    {
+        base.Enter();
+
+        if(_rigidbody != null)
+            _rigidbody.isKinematic = false;
+    }
+
+    public override void Exit()
+    {
+        if(_rigidbody != null)
+            _rigidbody.isKinematic = true;
+
+        base.Exit();
+    }
+
     public void FixedUpdate()
     {
         Vector3 direction = _transform.forward;
@@ -37,6 +53,14 @@ public class ProjectileDirectMoveSubstate : SubState, IActorIniter
     {
         if(_rigidbody != null)
             _rigidbody.linearVelocity = direction * _speed.Value;
+
+        /*
+        if(_rigidbody != null)
+        {
+            Vector3 move = direction.normalized * _speed.Value * Time.fixedDeltaTime;
+            _rigidbody.MovePosition(_rigidbody.position + move);
+        }
+        */
 
         _transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
     }

@@ -96,7 +96,6 @@ namespace Actor
 
         private void ResetCameraSettings()
         {
-            //_camera.transform.SetParent(_actor.transform);
             _camera.Priority = 0;
         }
 
@@ -106,6 +105,11 @@ namespace Actor
 
             float speed = 30f;
             projectile.SetSpeed(speed);
+
+            if (projectile.Actor.TryGetSystem(out XRayController xray))
+            {
+                xray.Show(true);
+            }
         }
     }
 
@@ -137,6 +141,8 @@ namespace Actor
                 _currentFreezeEnemy.ReciveTrigger("TimeUnfreeze", null);
                 _currentFreezeEnemy = null;
             }
+
+            _xRayOverlayCamera.gameObject.SetActive(false);
         }
 
         protected override void SetProjectileSettings(Projectile projectile)
@@ -149,9 +155,12 @@ namespace Actor
 
     public class ProjectileCameraController : Actor.System, IActorIniter
     {
+        [SerializeField] private bool _useXRayView = true;
+        [Space]
         [SerializeField] private ProjectileView _regularView;
         [SerializeField] private XRayProjectileView _xRayView;
         [SerializeField] private CinematicSpeedProfile _cinematicProfile = new CinematicSpeedProfile();
+
         private IEnumerator _cinematicSpeedRoutine;
 
         private ActorController _actor;
@@ -179,20 +188,23 @@ namespace Actor
             {
                 shooter.OnShooted.AddListener(ManageShootedProjectile);
             }
-            
+
             if (actor.TryGetProperty(out _hitedEnemyPredictCache)) { }
         }
 
         private void ManageShootedProjectile(Projectile projectile)
         {
-            _projectile = projectile;
-
-            if (_hitedEnemyPredictCache == null)
-                return;
-
-            if (_hitedEnemyPredictCache.EnemyWillDie && _shootingTargets.Targets.Count == 1)
+            if (_useXRayView)
             {
-                ShootXRayProjectileHandler(projectile, _hitedEnemyPredictCache.Target, _hitedEnemyPredictCache.HitPoint);
+                _projectile = projectile;
+
+                if (_hitedEnemyPredictCache == null)
+                    return;
+
+                if (_hitedEnemyPredictCache.EnemyWillDie && _shootingTargets.Targets.Count == 1)
+                {
+                    ShootXRayProjectileHandler(projectile, _hitedEnemyPredictCache.Target, _hitedEnemyPredictCache.HitPoint);
+                }
             }
         }
 

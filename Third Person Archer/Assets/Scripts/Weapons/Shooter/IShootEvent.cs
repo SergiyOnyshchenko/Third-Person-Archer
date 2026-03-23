@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public interface IShootEvent 
+namespace Actor
 {
-    event Action OnShooted;
+    public interface IShootEvent
+    {
+        event Action OnShooted;
+        event Action<HitInfo> OnHitResult;
+    }
 }

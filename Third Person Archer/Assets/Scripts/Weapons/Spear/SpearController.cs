@@ -55,6 +55,9 @@ public class SpearController : WeaponController, IActorIniter, IPull
         if (_fpv.FpvAnimator.Properties.TryGetProperty(out SpringPower power))
             power.SetValue(8f);
 
+        if (_fpv.FpvAnimator.Properties.TryGetProperty(out SpringDumping dumping))
+            dumping.SetValue(0.75f);
+
         _fpv.FpvAnimator.TrySetAnimator(AnimatorType.Spring);
 
         _spearHolder.ShowWeapon(true);
@@ -98,7 +101,6 @@ public class SpearController : WeaponController, IActorIniter, IPull
         _fpv.FpvAnimator.DoPose(_throwPose);
         DOVirtual.DelayedCall(0.15f, () => _fpv.FpvAnimator.DoPose(_reloadPose));
 
-        // START: tell HUD a reload is in progress for the known duration
         if (_reloadDuration > 0f)
         {
             ReloadSignals.Start(_reloadDuration);
@@ -106,7 +108,6 @@ public class SpearController : WeaponController, IActorIniter, IPull
         }
         else
         {
-            // If duration not set, you can still show a quick flash or skip.
         }
     }
 

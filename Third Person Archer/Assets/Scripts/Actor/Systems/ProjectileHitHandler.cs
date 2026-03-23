@@ -28,7 +28,8 @@ namespace Actor
         private ProjectileLastHitData _hitData;
 
         public UnityEvent OnHited = new UnityEvent();
-        public UnityEvent OnTargetHited = new UnityEvent();
+
+        public UnityEvent<ActorController> OnTargetHited = new UnityEvent<ActorController>();
 
         public void InitActor(ActorController actor)
         {
@@ -39,11 +40,9 @@ namespace Actor
             _collisionTriggerHandler = actor.GetComponent<CollisionTriggerHandler>();
 
             if (actor.TryGetProperty(out _damage)) { }
-
             if (actor.TryGetProperty(out _layerMask)) { }
             if (actor.TryGetProperty(out _hitData)) { }
             if (actor.TryGetProperty(out _elemental)) { }
-
             if (actor.TryGetProperty(out _direction)) { }
             if (actor.TryGetProperty(out _traveledDistance)) { }
             if (actor.TryGetProperty(out _range)) { }
@@ -60,9 +59,12 @@ namespace Actor
 
         private void CollisionHandler(Collision collision)
         {
+            if (_layerMask == null)
+                return;
+
             if ((_layerMask.Value.value & (1 << collision.transform.gameObject.layer)) > 0)
             {
-                _hitData.SetValue(collision);
+                _hitData?.SetValue(collision);
                 Hit(collision);
 
                 if (_destroyAfterHit)
@@ -74,19 +76,38 @@ namespace Actor
         {
             if (_elemental != null && _elemental.Value == ElementalType.NULL)
             {
-                if (collision.collider.TryGetComponent(out IDamageable damager3))
+                if (collision.collider.TryGetComponent(out IDamageable damageable))
                 {
-                    damager3.DoDamage(CalculateDamage());
-                    OnTargetHited?.Invoke();
+                    damageable.DoDamage(CalculateDamage());
+
+                    bool isTarget = true;
+                    if (collision.collider.TryGetComponent(out Hitbox hitbox))
+                        isTarget = hitbox.IsTarget;
+
+                    if (isTarget)
+                    {
+                        if (collision.collider.TryGetComponent(out IActorOwner actorOwner))
+                        {
+                            ActorController actor = actorOwner.Actor;
+                            OnTargetHited?.Invoke(actor);
+                        }
+                    }
                 }
 
-                if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
+                if (_direction != null)
                 {
-                    Vector3 pushDirection = _direction.Value + (Vector3.up * 0.25f);
-
-                    float pushPower = 100f;
-                    if (gameObject.activeInHierarchy)
-                        StartCoroutine(PushWithDelay(rigidbody, pushDirection.normalized + (Vector3.up * 0.6f), pushPower, 0.1f));
+                    if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
+                    {
+                        Vector3 pushDirection = _direction.Value + (Vector3.up * 0.25f);
+                        float pushPower = 100f;
+                        if (gameObject.activeInHierarchy)
+                            StartCoroutine(PushWithDelay(
+                                rigidbody,
+                                pushDirection.normalized + (Vector3.up * 0.6f),
+                                pushPower,
+                                0.1f
+                            ));
+                    }
                 }
             }
 
@@ -100,17 +121,18 @@ namespace Actor
             OnHited?.Invoke();
         }
 
+        private int CalculateDamage()
+        {
+            if (_damage == null)
+                return 0;
+
+            return Mathf.RoundToInt(_damage.Value);
+        }
+
         private IEnumerator PushWithDelay(Rigidbody rigidbody, Vector3 direction, float power, float delay)
         {
             yield return new WaitForSeconds(delay);
             rigidbody.AddForce(direction * power, ForceMode.VelocityChange);
-        }
-
-        private int CalculateDamage()
-        {
-            //var damageFactor = _projectileRangeConfig.EvaluateDamageFactor(_traveledDistance.Value, _range.BaseValue);
-            float damage = _damage.Value;
-            return Mathf.RoundToInt(damage);
         }
     }
 }

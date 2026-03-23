@@ -57,9 +57,6 @@ public class PlayerShootingState : ProcessState, IActorIniter
             ActivateEnemies();
             _attackInput.AllowAttack(true);
 
-            //if (_player.TryGetComponent(out NavMeshAgent agent))
-            //    agent.enabled = false;
-
             if (_lookAtPoint != null && _player.TryGetSystem(out BodyRotator rotator))
                 rotator.RotateToInstant(_lookAtPoint);
         });
@@ -82,12 +79,33 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
     public override void Exit()
     {
-        if (_lookAtPoint != null && _player.TryGetSystem(out BodyRotator rotator))
-            rotator.ResetYRotation();
+        int index = transform.GetSiblingIndex();
+        Transform previousState = transform.parent.GetChild(index + 1);
 
-        _attackInput.AllowAttack(false);
+        if (previousState != null && previousState.TryGetComponent(out PlayerShootingState state))
+        {
+
+        }
+        else
+        {
+            if (_lookAtPoint != null && _player.TryGetSystem(out BodyRotator rotator))
+                rotator.ResetYRotation();
+
+            _attackInput.AllowAttack(false);
+        }
 
         base.Exit();
+    }
+
+    public MainState GetPreviousState()
+    {
+        int currentIndex = transform.GetSiblingIndex();
+
+        if (currentIndex <= 0)
+            return null;
+
+        Transform previousSibling = transform.parent.GetChild(currentIndex - 1);
+        return previousSibling.GetComponent<MainState>();
     }
 
     private void InitShootingData()

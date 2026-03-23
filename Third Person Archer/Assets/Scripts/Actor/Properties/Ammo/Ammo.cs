@@ -27,8 +27,8 @@ namespace Actor.Properties
             if (actor.TryGetSystem(out W controller))
             {
                 _shootEvent = controller;
-                _shootEvent.OnShooted -= Decrease;
-                _shootEvent.OnShooted += Decrease;
+                _shootEvent.OnHitResult -= OnHitResult;
+                _shootEvent.OnHitResult += OnHitResult;
             }
         }
 
@@ -36,8 +36,8 @@ namespace Actor.Properties
         {
             if (_shootEvent != null)
             {
-                _shootEvent.OnShooted -= Decrease;
-                _shootEvent.OnShooted += Decrease;
+                _shootEvent.OnHitResult -= OnHitResult;
+                _shootEvent.OnHitResult += OnHitResult;
             }
         }
 
@@ -45,8 +45,14 @@ namespace Actor.Properties
         {
             if (_shootEvent != null)
             {
-                _shootEvent.OnShooted -= Decrease;
+                _shootEvent.OnHitResult -= OnHitResult;
             }
+        }
+
+        private void OnHitResult(HitInfo hitInfo)
+        {
+            if (!hitInfo.HitTarget)
+                Decrease();
         }
 
         public void SetMaxCount(int count)

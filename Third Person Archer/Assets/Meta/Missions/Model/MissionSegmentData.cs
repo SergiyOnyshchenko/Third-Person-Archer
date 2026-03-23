@@ -91,7 +91,7 @@ public class MissionSegmentData
 
         _currentIndex++;
         if (_currentIndex >= _missions.Count)
-            _currentIndex = _missions.Count - 1; // stop at end (no wrap)
+            _currentIndex = 0; 
 
         Save();
     }

@@ -38,7 +38,6 @@ public class Projectile : MonoBehaviour, IActorIniter
     public UnityEvent OnHited = new UnityEvent();
     public UnityEvent OnTargetHited = new UnityEvent();
 
-
     private void Awake()
     {
         Actor = GetComponent<ActorController>();
@@ -65,17 +64,20 @@ public class Projectile : MonoBehaviour, IActorIniter
         if (actor.TryGetSystem(out _hitPredictor)) { }
     }
 
-    public void Shoot(Vector3 direction, float power, UnityAction onHited)
+    public void Shoot(Vector3 direction, float power, UnityAction<ActorController> onTargetHited, UnityAction onAnyHit)
     {
         _direction.SetValue(direction);
 
         IsShooted = true;
         OnShooted?.Invoke();
 
-        _hitHandler.OnTargetHited.AddListener(onHited);
-        _hitHandler.OnHited = OnHited;
+        if (onTargetHited != null)
+            _hitHandler.OnTargetHited.AddListener(onTargetHited);
 
-        //PreCheckTargetDeath();
+        if (onAnyHit != null)
+            _hitHandler.OnHited.AddListener(onAnyHit);
+
+        _hitHandler.OnHited.AddListener(() => OnHited?.Invoke());
     }
 
     public void SetMoveType(ProjectileMoveType type)
@@ -128,15 +130,15 @@ public class Projectile : MonoBehaviour, IActorIniter
 
     public RaycastHit GetPredictiveHit()
     {
-        if(_hitPredictor == null)
+        if (_hitPredictor == null)
             return new RaycastHit();
-        
+
         return _hitPredictor.GetPredictiveHit();
     }
 
     public bool PreCheckTargetDeath()
     {
-        if(_hitPredictor == null)
+        if (_hitPredictor == null)
             return false;
 
         return _hitPredictor.PreCheckTargetDeath();

@@ -40,7 +40,6 @@ public sealed class MissionCompletionService : IMissionCompletionService
 
             case MissionType.Boss:
                 ctx.Zone.AdvanceMission(MissionType.Boss);
-                // After boss -> move to next zone or next loop.
                 AdvanceToNextZoneOrLoop(ctx.ZoneIndex);
                 break;
 
@@ -49,6 +48,7 @@ public sealed class MissionCompletionService : IMissionCompletionService
                 break;
 
             case MissionType.Sniper:
+                ctx.Zone.AdvanceMission(MissionType.Sniper);
                 _loopData?.IncreaseSniperCompleted();
                 break;
         }

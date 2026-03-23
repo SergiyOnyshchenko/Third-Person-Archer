@@ -35,16 +35,14 @@ public class PlayerProjectileShooter : ProjectileShooter
         if (actor.TryGetProperty(out _enemiesLayermask)) { }
 
         if (actor.TryGetProperty(out _shootTypeOverride))
-        {
             _shootType = _shootTypeOverride.Value;
-        }
 
         if (actor.TryGetSystem(out _trajectory)) { }
     }
 
-    public override void Shoot(Vector3 direction, float multiplier, UnityAction onHited)
+    public override void Shoot(Vector3 direction, float multiplier,
+        UnityAction<ActorController> onTargetHited, UnityAction onAnyHit)
     {
-        onHited += SetTargetHitedEvent;
         _hitedEnemyPredictCache.ResetHit();
 
         switch (_shootType)
@@ -52,10 +50,10 @@ public class PlayerProjectileShooter : ProjectileShooter
             case ShootType.Direct:
                 Projectile directProjectile = Instantiate(Prefab, _shootPoint.position, _shootPoint.rotation);
 
-                if(_damage != null)
+                if (_damage != null)
                     directProjectile.SetDamage(_damage.Value);
 
-                StartCoroutine(Shooting(directProjectile, direction, multiplier, onHited));
+                StartCoroutine(Shooting(directProjectile, direction, multiplier, onTargetHited, onAnyHit));
                 break;
 
             case ShootType.Trajectory:
@@ -67,7 +65,7 @@ public class PlayerProjectileShooter : ProjectileShooter
 
                 Projectile arrow = Instantiate(Prefab, origin, Quaternion.LookRotation(dir, Vector3.up));
 
-                if(_damage != null)
+                if (_damage != null)
                     arrow.SetDamage(_damage.Value);
 
                 if (_trajectory.PredictEnemyHit(out GameObject enemy, out Vector3 hitPoint))
@@ -75,7 +73,7 @@ public class PlayerProjectileShooter : ProjectileShooter
 
                 arrow.SetGravity(_profile.Gravity);
                 arrow.SetMoveType(ProjectileMoveType.Trajectory);
-                arrow.Shoot(dir * speed, _weaponPull.Value, onHited);
+                arrow.Shoot(dir * speed, _weaponPull.Value, onTargetHited, onAnyHit);
                 OnShooted?.Invoke(arrow);
                 break;
         }
@@ -87,18 +85,15 @@ public class PlayerProjectileShooter : ProjectileShooter
         return Mathf.Max(0f, profile.MaxSpeed * factor);
     }
 
-    private IEnumerator Shooting(Projectile arrow, Vector3 direction, float multiplier, UnityAction onHited)
+    private IEnumerator Shooting(Projectile arrow, Vector3 direction, float multiplier,
+        UnityAction<ActorController> onTargetHited, UnityAction onAnyHit)
     {
         RaycastHit hit;
 
         if (Physics.Raycast(_aimInput.GetAimRoot(), direction, out hit, Mathf.Infinity, arrow.HitLayers))
-        {
             direction = (hit.point - _shootPoint.position).normalized;
-        }
         else
-        {
             direction = (PointAlongDirection(_aimInput.GetAimRoot(), direction, 100f) - _shootPoint.position).normalized;
-        }
 
         if (Physics.Raycast(_aimInput.GetAimRoot(), direction, out hit, Mathf.Infinity, _enemiesLayermask.Value))
             _hitedEnemyPredictCache.InitHit(hit.transform.gameObject, hit.point, arrow.Damage);
@@ -129,7 +124,7 @@ public class PlayerProjectileShooter : ProjectileShooter
             arrow.SetElementalType(_elementalAttackType.Value);
 
         arrow.SetMoveType(ProjectileMoveType.Direct);
-        arrow.Shoot(direction, multiplier, onHited);
+        arrow.Shoot(direction, multiplier, onTargetHited, onAnyHit);
 
         OnShooted?.Invoke(arrow);
     }

@@ -17,14 +17,13 @@ public abstract class Shooter : MonoBehaviour, IActorIniter
     protected Damage _damage;
     public Transform ShootPoint => _shootPoint;
 
-    public abstract void Shoot(Vector3 direction, float multiplier, UnityAction onHited);
+    public abstract void Shoot(Vector3 direction, float multiplier,
+        UnityAction<ActorController> onTargetHited, UnityAction onAnyHit);
 
     public virtual void InitActor(ActorController actor)
     {
         if (actor.TryGetInput(out _aimInput)) { }
-
         if (actor.TryGetSystem(out _eventSystem)) { }
-
         if (actor.TryGetProperty(out _elementalAttackType)) { }
         if (actor.TryGetProperty(out _shootError)) { }
         if (actor.TryGetProperty(out _damage)) { }

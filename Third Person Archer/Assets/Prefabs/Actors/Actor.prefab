@@ -152,7 +152,7 @@ GameObject:
   - component: {fileID: 5183153404141966010}
   - component: {fileID: 1453231628289820922}
   m_Layer: 0
-  m_Name: OnDeath [Transition]
+  m_Name: 'OnDeath [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -240,8 +240,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19ed56784c20d2b4ea07ae174872ed41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseValue: 0
+  _currentValue: 0
   _value: 150
+  _applyBaseOnInit: 1
 --- !u!1 &1892966025020292524
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,6 +374,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc3e59627278da84b96faf6d8d7402db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _transformY: {fileID: 0}
 --- !u!1 &4312728854044751539
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,8 +569,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4ce20dd338257b419cc7444fd5e7014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseValue: 0
+  _currentValue: 0
   _value: 1
+  _applyBaseOnInit: 1
 --- !u!1 &5716370975076159683
 GameObject:
   m_ObjectHideFlags: 0
@@ -647,8 +650,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef912079608b39e4d9132b87bd820416, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseValue: 0
+  _currentValue: 0
   _value: 6
+  _applyBaseOnInit: 1
 --- !u!1 &5927403195583901308
 GameObject:
   m_ObjectHideFlags: 0
@@ -725,8 +729,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14d098d01d6003642aa6901c99fb018b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseValue: 0
+  _currentValue: 0
   _value: 4
+  _applyBaseOnInit: 1
 --- !u!1 &6056204899989740844
 GameObject:
   m_ObjectHideFlags: 0
@@ -771,6 +776,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db6785ed9995a844ea04ec198577d67a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _health: 0
   OnDamaged:
     m_PersistentCalls:
       m_Calls: []
@@ -884,7 +890,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 0
 --- !u!1 &6909143610615842624
 GameObject:
   m_ObjectHideFlags: 0
@@ -1027,8 +1033,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca1855f04f652ca40a8b431c467072d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseValue: 10
+  _currentValue: 0
   _value: 10
+  _applyBaseOnInit: 1
 --- !u!1 &7429008087800534388
 GameObject:
   m_ObjectHideFlags: 0
@@ -1073,8 +1080,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e374ba31a3ca6d34c8a51bcf557b23d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseValue: 0
+  _currentValue: 0
   _value: 4
+  _applyBaseOnInit: 1
 --- !u!1 &8075039327890378147
 GameObject:
   m_ObjectHideFlags: 0

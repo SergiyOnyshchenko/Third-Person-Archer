@@ -39,11 +39,9 @@ public class PlayerMoveToPointState : ProcessState, IActorIniter
             return;
         }
 
-        // Snap destination transform onto the NavMesh (or closest point within radius)
         Vector3 desired = _destination.position;
         if (NavMesh.SamplePosition(desired, out NavMeshHit hit, _snapMaxDistance, _areaMask))
         {
-            // Move the marker onto the exact navmesh point so downstream code stays unchanged
             _destination.position = hit.position;
         }
         else
@@ -52,7 +50,6 @@ public class PlayerMoveToPointState : ProcessState, IActorIniter
                 $"[{nameof(PlayerMoveToPointState)}] Couldn't find NavMesh near destination (radius={_snapMaxDistance}). Using original position.");
         }
 
-        // Keep your small delay if needed for initialization ordering
-        DOVirtual.DelayedCall(0.1f, () => _mover.MoveToDestination(_destination));
+        DOVirtual.DelayedCall(0.02f, () => _mover.MoveToDestination(_destination));
     }
 }
