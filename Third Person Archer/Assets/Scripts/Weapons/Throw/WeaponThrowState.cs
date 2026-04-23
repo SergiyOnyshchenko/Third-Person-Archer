@@ -9,7 +9,7 @@ public abstract class WeaponThrowState : ProcessState, IActorIniter
     protected ThrowWeaponController _weaponController;
     private AttackInput _attackInput;
     private WeaponPull _weaponPull;
-    private float _pullThreshold = 0.5f;
+    private float _pullThreshold = 0.02f;
 
     protected abstract void InitWeaponController(ActorController actor);
 
@@ -51,8 +51,8 @@ public abstract class WeaponThrowState : ProcessState, IActorIniter
 
     private void PullArrow()
     {
-        if (_weaponPull.Value < _pullThreshold)
-            return;
+        //if (_weaponPull.Value < _pullThreshold)
+        //    return;
 
         _weaponController.ReleasePull();
         DOVirtual.DelayedCall(0.5f, FinishProcess);

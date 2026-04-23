@@ -56,9 +56,13 @@ public class WeaponPullSubstate : SubState, IActorIniter
             ReleasePull();
         }
 
-        if (isHolding)
+        if (isHolding && _isPulling)
         {
-            HoldPull();
+            HoldPull(_balance.Speed);
+        }
+        else if (_rawPull > 0f)
+        {
+            HoldPull(-_balance.Speed);
         }
 
         _wasHolding = isHolding;
@@ -77,12 +81,9 @@ public class WeaponPullSubstate : SubState, IActorIniter
         _pull.ReleasePull();
     }
 
-    private void HoldPull()
+    private void HoldPull(float speed)
     {
-        if (!_isPulling)
-            return;
-
-        _rawPull += Time.deltaTime * _balance.Speed;
+        _rawPull += Time.deltaTime * speed;
         _rawPull = Mathf.Clamp01(_rawPull);
 
         float curvedValue = _pullCurve.Evaluate(_rawPull);

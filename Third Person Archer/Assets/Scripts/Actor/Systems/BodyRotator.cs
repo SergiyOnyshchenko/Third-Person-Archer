@@ -36,23 +36,24 @@ namespace Actor
 
         public void RotateToInstant(Vector3 lookTarget)
         {
+            // --- Горизонтальный поворот (parent, ось Y) ---
             Vector3 myPosition = _transform.position;
-            myPosition.y = 0;
+            Vector3 direction = lookTarget - myPosition;
+            direction.y = 0;
 
-            Vector3 targetPosition = lookTarget;
-            targetPosition.y = 0;
+            if (direction.sqrMagnitude < 0.0001f) return;
 
-            Quaternion targetRotation = Quaternion.LookRotation(targetPosition - myPosition);
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
 
-            Vector3 myPositionY = _transform.position;
-            myPosition.x = 0;
-            myPosition.z = 0;
+            // --- Вертикальный поворот (child, локальный pitch по X) ---
+            Quaternion targetRotationY = Quaternion.identity;
 
-            Vector3 targetPositionY = lookTarget;
-            targetPosition.x = 0;
-            targetPosition.z = 0;
-
-            Quaternion targetRotationY = Quaternion.LookRotation(targetPositionY - myPositionY);
+            if (_transformY != null)
+            {
+                Vector3 fullDirection = lookTarget - _transformY.position;
+                float pitch = -Mathf.Atan2(fullDirection.y, new Vector2(fullDirection.x, fullDirection.z).magnitude) * Mathf.Rad2Deg;
+                targetRotationY = Quaternion.Euler(pitch, 0f, 0f);
+            }
 
             RotateToInstant(targetRotation, targetRotationY);
         }
@@ -61,25 +62,31 @@ namespace Actor
         {
             StopRotation();
 
-            _transform.DORotateQuaternion(targetRotation, _duration.Value).SetEase(_ease.Value);
+            _transform.DORotateQuaternion(targetRotation, _duration.Value)
+                .SetEase(_ease.Value)
+                .SetTarget(_transform);
 
-            if(_transformY != null)
-                _transformY.DORotateQuaternion(targetRotationY, _duration.Value).SetEase(_ease.Value);
+            if (_transformY != null)
+                _transformY.DOLocalRotateQuaternion(targetRotationY, _duration.Value)
+                    .SetEase(_ease.Value)
+                    .SetTarget(_transformY);
         }
-        
+
         public void ResetYRotation()
         {
             if (_transformY != null)
-                _transformY.DOLocalRotateQuaternion(Quaternion.identity, _duration.Value * 2f).SetEase(_ease.Value);
+            {
+                DOTween.Kill(_transformY);  // ← убиваем перед новым твином
+                _transformY.DOLocalRotateQuaternion(Quaternion.identity, _duration.Value * 2f)
+                    .SetEase(_ease.Value)
+                    .SetTarget(_transformY);
+            }
         }
-
 
         public void StopRotation()
         {
             DOTween.Kill(_transform);
             DOTween.Kill(_transformY);
-
-            DOTween.Kill(this);
         }
     }
 }

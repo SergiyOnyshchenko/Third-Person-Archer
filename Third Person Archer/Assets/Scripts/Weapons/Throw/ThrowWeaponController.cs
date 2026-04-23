@@ -84,9 +84,16 @@ public abstract class ThrowWeaponController : WeaponController, IActorIniter, IP
             return;
 
         SetPullPower(_pullPower + 5f * Time.fixedDeltaTime);
+        UpdatePose();
+    }
 
-        var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
-        PlayAnimation(lerpPose);
+    public void UnHoldPull()
+    {
+        if (!CanAttack())
+            return;
+
+        SetPullPower(_pullPower - 5f * Time.fixedDeltaTime);
+        UpdatePose();
     }
 
     public void ReleasePull()
@@ -108,6 +115,12 @@ public abstract class ThrowWeaponController : WeaponController, IActorIniter, IP
             ReloadSignals.Start(_reloadDuration);
             DG.Tweening.DOVirtual.DelayedCall(_reloadDuration, ReloadSignals.End);
         }
+    }
+
+    public void UpdatePose()
+    {
+        var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
+        PlayAnimation(lerpPose);
     }
 
     private void SetPullPower(float pull)
