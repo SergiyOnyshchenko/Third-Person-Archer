@@ -18,25 +18,23 @@ namespace Actor
         {
             base.Enter();
 
-            _health.OnHealthZero.AddListener(DoTransition);
+            //_health.OnHealthZero.AddListener(DoTransition);
         }
 
         public override void Exit()
         {
-            _health.OnHealthZero.RemoveListener(DoTransition);
+            //_health.OnHealthZero.RemoveListener(DoTransition);
 
             base.Exit();
         }
 
         private void Update()
         {
-            /*
             if (_health == null)
                 return;
 
             if (_health.Value == 0)
                 DoTransition();
-            */
         }
     }
 }

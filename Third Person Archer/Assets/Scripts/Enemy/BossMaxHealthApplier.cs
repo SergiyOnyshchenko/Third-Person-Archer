@@ -3,14 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using Actor;
 using Actor.Properties;
+using DG.Tweening;
+using System;
 
 public class BossMaxHealthApplier : MonoBehaviour
 {
 
     private void Start()
     {
+        DOVirtual.DelayedCall(0.25f, () => ApplyMaxHealth());
+    }
+
+    private void ApplyMaxHealth()
+    {
         var player = FindObjectOfType<Player>();
-        
+
         if (player == null)
             return;
 

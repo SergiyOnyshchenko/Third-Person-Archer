@@ -86,7 +86,9 @@ namespace Actor
         public void StopRotation()
         {
             DOTween.Kill(_transform);
-            DOTween.Kill(_transformY);
+
+            if (_transformY != null)
+                DOTween.Kill(_transformY);
         }
     }
 }

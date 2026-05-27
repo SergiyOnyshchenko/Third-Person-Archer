@@ -21,6 +21,10 @@ public class PlayerShootingState : ProcessState, IActorIniter
     private AttackInput _attackInput;
     private Health _health;
     private ShootingTargets _shootingTargets;
+    private BodyRotator _rotator;
+    private NavMeshAgent _agent;
+    private Tween _enterDelayTween;
+    private bool _previousAgentUpdateRotation;
 
     protected override void Awake()
     {
@@ -44,6 +48,11 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
         if (actor.TryGetSystem(out Health health))
             _health = health;
+
+        if (actor.TryGetSystem(out BodyRotator rotator))
+            _rotator = rotator;
+
+        _agent = actor.GetComponent<NavMeshAgent>();
     }
 
     public override void Enter()
@@ -51,47 +60,54 @@ public class PlayerShootingState : ProcessState, IActorIniter
         base.Enter();
 
         InitShootingData();
+        PrepareManualRotation();
+        RotateToLookAtPoint();
 
-        DOVirtual.DelayedCall(_delay, () =>
+        _enterDelayTween?.Kill();
+
+        _enterDelayTween = DOVirtual.DelayedCall(_delay, () =>
         {
+            if (!enabled)
+                return;
+
             ActivateEnemies();
-            _attackInput.AllowAttack(true);
+            _attackInput?.AllowAttack(true);
 
-            if (_lookAtPoint != null && _player.TryGetSystem(out BodyRotator rotator))
-                rotator.RotateToInstant(_lookAtPoint);
-        });
+            RotateToLookAtPoint();
 
-        ITarget playerTarget = null;
+            ITarget playerTarget = null;
 
-        if (_player.TryGetSystem(out Actor.Target target))
-            playerTarget = target;
+            if (_player.TryGetSystem(out Actor.Target target))
+                playerTarget = target;
 
-        if (_triggerEnemiesOnEnter)
-        {
-            for (int i = 0; i < _enemies.Length; i++)
+            if (_triggerEnemiesOnEnter)
             {
-                PerceptionInput input = _enemies[i].GetComponentInChildren<PerceptionInput>();
-                input.ActivatePerception(new ITarget[] { playerTarget });
-                input.ReciveSound("", 1f, _player.gameObject);
+                for (int i = 0; i < _enemies.Length; i++)
+                {
+                    PerceptionInput input = _enemies[i].GetComponentInChildren<PerceptionInput>();
+                    if (input == null)
+                        continue;
+
+                    input.ActivatePerception(new ITarget[] { playerTarget });
+                    input.ReciveSound("", 1f, _player.gameObject);
+                }
             }
-        }
+        }).SetTarget(this);
     }
 
     public override void Exit()
     {
-        int index = transform.GetSiblingIndex();
-        Transform previousState = transform.parent.GetChild(index + 1);
+        _enterDelayTween?.Kill();
+        _enterDelayTween = null;
 
-        if (previousState != null && previousState.TryGetComponent(out PlayerShootingState state))
+        RestoreAgentRotation();
+
+        if (!IsNextStatePlayerShootingState())
         {
+            if (_rotator != null)
+                _rotator.ResetYRotation();
 
-        }
-        else
-        {
-            if (_lookAtPoint != null && _player.TryGetSystem(out BodyRotator rotator))
-                rotator.ResetYRotation();
-
-            _attackInput.AllowAttack(false);
+            _attackInput?.AllowAttack(false);
         }
 
         base.Exit();
@@ -114,6 +130,44 @@ public class PlayerShootingState : ProcessState, IActorIniter
 
         foreach (var data in shootingData)
             data.InitShootingTargets(_enemies, _hostages);
+    }
+
+    private void PrepareManualRotation()
+    {
+        if (_agent == null)
+            return;
+
+        _previousAgentUpdateRotation = _agent.updateRotation;
+        _agent.updateRotation = false;
+    }
+
+    private void RestoreAgentRotation()
+    {
+        if (_agent == null)
+            return;
+
+        _agent.updateRotation = _previousAgentUpdateRotation;
+    }
+
+    private void RotateToLookAtPoint()
+    {
+        if (_lookAtPoint == null || _rotator == null)
+            return;
+
+        _rotator.RotateToInstant(_lookAtPoint);
+    }
+
+    private bool IsNextStatePlayerShootingState()
+    {
+        if (transform.parent == null)
+            return false;
+
+        int nextIndex = transform.GetSiblingIndex() + 1;
+
+        if (nextIndex >= transform.parent.childCount)
+            return false;
+
+        return transform.parent.GetChild(nextIndex).TryGetComponent(out PlayerShootingState state);
     }
 
     private void ActivateEnemies()
