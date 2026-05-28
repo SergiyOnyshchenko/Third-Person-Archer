@@ -19,7 +19,12 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
 
     [Header("Defaults")]
     [SerializeField] private string _defaultTitle = "Your damage is too low for this mission.";
+
+    [Tooltip("Hint shown when the player CAN upgrade the current weapon to pass. {0} = weapon class name.")]
     [SerializeField] private string _hintFormat = "Upgrade your {0}, or buy a new one.";
+
+    [Tooltip("Hint shown when the current weapon is at max tier and a purchase is required. {0} = weapon class name.")]
+    [SerializeField] private string _forcedPurchaseHintFormat = "Your {0} is fully upgraded. Buy a stronger weapon of the same class.";
 
     private DamageGatePopupArgs _args;
 
@@ -45,7 +50,7 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
         _args = args;
 
         if (_titleText != null)
-            _titleText.text = _defaultTitle;
+            _titleText.text = !string.IsNullOrEmpty(args.CustomTitle) ? args.CustomTitle : _defaultTitle;
 
         if (_currentDamageText != null)
             _currentDamageText.text = $"{args.CurrentDamage:0.##}";
@@ -54,12 +59,22 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
             _requiredDamageText.text = $"{args.RequiredDamage:0.##}";
 
         if (_hintText != null)
-            _hintText.text = string.Format(_hintFormat, args.WeaponClass.ToString().ToLowerInvariant());
+        {
+            string hintTemplate;
+            if (!string.IsNullOrEmpty(args.CustomHint))
+                hintTemplate = args.CustomHint;
+            else if (!args.CanUpgradeToPass)
+                hintTemplate = _forcedPurchaseHintFormat;
+            else
+                hintTemplate = _hintFormat;
+
+            _hintText.text = string.Format(hintTemplate, args.WeaponClass.ToString().ToLowerInvariant());
+        }
     }
 
     private void Close()
     {
-        Destroy(gameObject); // Popups are expected to self-destroy :contentReference[oaicite:3]{index=3}
+        Destroy(gameObject);
     }
 
     private void GoToWeapons()
@@ -78,6 +93,6 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
 
         // Open weapon screen with required class preselected
         var weaponArgs = new WeaponSelectionArgs(_args.WeaponClass, _args.CampaignLevel);
-        nav.Open(_args.WeaponScreenId, weaponArgs, reuseCached: true); // Open full screen 
+        nav.Open(_args.WeaponScreenId, weaponArgs, reuseCached: true);
     }
 }

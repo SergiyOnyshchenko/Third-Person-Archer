@@ -28,31 +28,31 @@ MonoBehaviour:
       BossTokens: 1
       GateDamage: 1
       EconomyCost: 1
-    - CampaignDifficulty: 1.2
+    - CampaignDifficulty: 1.3
       ContractDifficulty: 1
       SniperDifficulty: 1
-      CampaignCash: 1
+      CampaignCash: 1.1
       CampaignTokens: 1
-      ContractCash: 1
-      SniperCash: 1
-      BossCash: 1
+      ContractCash: 1.1
+      SniperCash: 1.1
+      BossCash: 1.1
       ContractTokens: 1
       SniperTokens: 1
       BossTokens: 1
-      GateDamage: 1
+      GateDamage: 1.25
       EconomyCost: 1
-    - CampaignDifficulty: 1.35
+    - CampaignDifficulty: 1.5
       ContractDifficulty: 1
       SniperDifficulty: 1
-      CampaignCash: 1
+      CampaignCash: 1.2
       CampaignTokens: 1
-      ContractCash: 1
-      SniperCash: 1
-      BossCash: 1
+      ContractCash: 1.25
+      SniperCash: 1.25
+      BossCash: 1.25
       ContractTokens: 1
       SniperTokens: 1
       BossTokens: 1
-      GateDamage: 1
+      GateDamage: 1.55
       EconomyCost: 1
   _enemies:
     _campaignDifficultyCurve:
@@ -120,11 +120,36 @@ MonoBehaviour:
     SniperDamageFromGate: 0.06
     MultiplayerHpMultiplier: 1
     MultiplayerDamageMultiplier: 1
+    _weaponHealthProfiles:
+    - WeaponClass: 0
+      MaxShotsVsMelee: 4
+      MaxShotsVsRangedPassive: 3
+      MaxShotsVsRangedActive: 2
+      ApplyToCampaign: 1
+      ApplyToContracts: 0
+    - WeaponClass: 2
+      MaxShotsVsMelee: 2
+      MaxShotsVsRangedPassive: 1
+      MaxShotsVsRangedActive: 1
+      ApplyToCampaign: 1
+      ApplyToContracts: 0
+    - WeaponClass: 3
+      MaxShotsVsMelee: 5
+      MaxShotsVsRangedPassive: 3
+      MaxShotsVsRangedActive: 3
+      ApplyToCampaign: 1
+      ApplyToContracts: 0
+    - WeaponClass: 4
+      MaxShotsVsMelee: 3
+      MaxShotsVsRangedPassive: 2
+      MaxShotsVsRangedActive: 1
+      ApplyToCampaign: 1
+      ApplyToContracts: 0
   _gates:
     _weaponGateProfiles:
     - Class: 0
-      BaseDamage: 10
-      MissionGrowth: 2.5
+      BaseDamage: 25
+      MissionGrowth: 2
       AdditionalCurve:
         serializedVersion: 2
         m_Curve:
@@ -149,7 +174,7 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      DamageCap: 92
+      DamageCap: 150
     - Class: 1
       BaseDamage: 8
       MissionGrowth: 2
@@ -180,7 +205,35 @@ MonoBehaviour:
       DamageCap: 120
     - Class: 2
       BaseDamage: 20
-      MissionGrowth: 3
+      MissionGrowth: 5
+      AdditionalCurve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DamageCap: 300
+    - Class: 3
+      BaseDamage: 10
+      MissionGrowth: 2
       AdditionalCurve:
         serializedVersion: 2
         m_Curve:
@@ -206,37 +259,9 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       DamageCap: 120
-    - Class: 3
-      BaseDamage: 5
-      MissionGrowth: 2
-      AdditionalCurve:
-        serializedVersion: 2
-        m_Curve:
-        - serializedVersion: 3
-          time: 0
-          value: 0
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 34
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        - serializedVersion: 3
-          time: 1
-          value: 1
-          inSlope: 1
-          outSlope: 1
-          tangentMode: 34
-          weightedMode: 0
-          inWeight: 0
-          outWeight: 0
-        m_PreInfinity: 2
-        m_PostInfinity: 2
-        m_RotationOrder: 4
-      DamageCap: 50
     - Class: 4
-      BaseDamage: 12
-      MissionGrowth: 2
+      BaseDamage: 15
+      MissionGrowth: 2.5
       AdditionalCurve:
         serializedVersion: 2
         m_Curve:
@@ -261,57 +286,64 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-      DamageCap: 100
-    _gateComfortFactor: 1.2
+      DamageCap: 150
+    _sniperAccessProfile:
+      BaseDamage: 15
+      MissionGrowth: 3
+      DamageCap: 0
+    _bossAccessProfile:
+      BaseDamage: 28
+      ZoneGrowth: 9
+      DamageCap: 200
   _rewards:
     _profiles:
     - MissionType: 0
       Entries:
       - Channel: 0
         Progression:
-          Base: 100
-          PerStep: 10
+          Base: 70
+          PerStep: 7
           RandomSpread: 0
       - Channel: 1
         Progression:
-          Base: 2
-          PerStep: 2
+          Base: 1
+          PerStep: 0
           RandomSpread: 0
     - MissionType: 1
       Entries:
       - Channel: 2
         Progression:
-          Base: 5
-          PerStep: 5
+          Base: 3
+          PerStep: 1
           RandomSpread: 0
       - Channel: 0
         Progression:
-          Base: 50
-          PerStep: 50
+          Base: 40
+          PerStep: 15
           RandomSpread: 0
     - MissionType: 2
       Entries:
       - Channel: 0
         Progression:
-          Base: 200
-          PerStep: 100
+          Base: 150
+          PerStep: 50
           RandomSpread: 0
       - Channel: 1
         Progression:
-          Base: 3
-          PerStep: 2
+          Base: 2
+          PerStep: 1
           RandomSpread: 0
     - MissionType: 3
       Entries:
       - Channel: 0
         Progression:
-          Base: 400
+          Base: 300
           PerStep: 100
           RandomSpread: 0
       - Channel: 2
         Progression:
-          Base: 10
-          PerStep: 10
+          Base: 3
+          PerStep: 2
           RandomSpread: 0
   _weaponPerformance:
     _multipliers:
@@ -320,44 +352,11 @@ MonoBehaviour:
     - Class: 1
       DamageMultiplier: 0.8
     - Class: 2
-      DamageMultiplier: 2
+      DamageMultiplier: 1.9
     - Class: 3
       DamageMultiplier: 0.5
     - Class: 4
-      DamageMultiplier: 1.25
-  _economyPacing:
-    _default:
-      TargetUpgradesPerCampaignMission: 1
-      PurchaseAffordWindowMissions: 2
-      UpgradeMoneyPressure: 0.5
-      UpgradeBudgetShare: 0.65
-      ExpectedContractsPerCampaign: 5
-      ExpectedSnipersPerCampaign: 3
-    _zoneOverrides:
-    - ZoneIndex: 0
-      Values:
-        TargetUpgradesPerCampaignMission: 3
-        PurchaseAffordWindowMissions: 2
-        UpgradeMoneyPressure: 0.5
-        UpgradeBudgetShare: 0.5
-        ExpectedContractsPerCampaign: 3
-        ExpectedSnipersPerCampaign: 4
-    - ZoneIndex: 1
-      Values:
-        TargetUpgradesPerCampaignMission: 2
-        PurchaseAffordWindowMissions: 4
-        UpgradeMoneyPressure: 0.5
-        UpgradeBudgetShare: 0.5
-        ExpectedContractsPerCampaign: 4
-        ExpectedSnipersPerCampaign: 3
-    - ZoneIndex: 2
-      Values:
-        TargetUpgradesPerCampaignMission: 1
-        PurchaseAffordWindowMissions: 6
-        UpgradeMoneyPressure: 0.5
-        UpgradeBudgetShare: 0.5
-        ExpectedContractsPerCampaign: 6
-        ExpectedSnipersPerCampaign: 4
+      DamageMultiplier: 1.55
   _rounding:
     _minMoney: 10
     _useNiceMoneySteps: 1

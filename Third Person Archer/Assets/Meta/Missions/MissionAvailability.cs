@@ -13,7 +13,13 @@ public enum AvailabilityBlockReason
 
     // Modes
     ContractsLockedByCompanyLevel,
-    SniperLockedByCompanyLevel
+    SniperLockedByCompanyLevel,
+
+    // Sniper access gate
+    SniperDamageTooLow,
+
+    // Boss Crossbow access gate
+    BossCrossbowDamageTooLow,
 }
 
 public sealed class MissionAvailability

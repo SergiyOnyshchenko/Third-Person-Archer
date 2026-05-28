@@ -1,3 +1,4 @@
+using Meta.Weapons;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -76,13 +77,17 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         var ctx = _services.Context.BuildSelectedContext();
         var avail = _services.Availability.GetAvailability(ctx);
 
+        // Allow Play button click when blocked by a gate that shows a popup.
+        // The popup explains what upgrade is needed.
         bool canClickPlay =
             avail.CanPlay ||
-            (avail.Reason == AvailabilityBlockReason.CampaignDamageTooLow);
+            avail.Reason == AvailabilityBlockReason.CampaignDamageTooLow ||
+            avail.Reason == AvailabilityBlockReason.SniperDamageTooLow ||
+            avail.Reason == AvailabilityBlockReason.BossCrossbowDamageTooLow;
 
         _playButtonView.SetInteractable(canClickPlay);
     }
-    
+
     private void OnPlayClicked()
     {
         if (_services == null)
@@ -102,18 +107,30 @@ public sealed class PlayMissionPresenter : MonoBehaviour
 
     private void HandleStartFailure(MissionStartResult result)
     {
-        // Gate popup ONLY for campaign damage too low
-        if (result.Availability != null &&
-            result.Availability.Reason == AvailabilityBlockReason.CampaignDamageTooLow &&
-            result.Gate != null)
+        if (result.Availability == null || result.Gate == null)
         {
-            ShowDamageGatePopup(result.Gate);
+            Debug.LogWarning("Cannot start mission: " + (result.Availability?.Reason.ToString() ?? result.FailReason.ToString()));
             return;
         }
 
-        // Your existing messaging (toast etc.) can stay here if you want.
-        // For now we just log.
-        Debug.LogWarning("Cannot start mission: " + (result.Availability?.Reason.ToString() ?? result.FailReason.ToString()));
+        switch (result.Availability.Reason)
+        {
+            case AvailabilityBlockReason.CampaignDamageTooLow:
+                ShowDamageGatePopup(result.Gate);
+                break;
+
+            case AvailabilityBlockReason.SniperDamageTooLow:
+                ShowSniperGatePopup(result.Gate);
+                break;
+
+            case AvailabilityBlockReason.BossCrossbowDamageTooLow:
+                ShowBossGatePopup(result.Gate);
+                break;
+
+            default:
+                Debug.LogWarning("Cannot start mission: " + result.Availability.Reason);
+                break;
+        }
     }
 
     private void ShowDamageGatePopup(MissionGateResult gate)
@@ -121,7 +138,6 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         if (!ServiceLocator.TryResolve<IUINavigator>(out var nav))
             return;
 
-        // Company level = global campaign index + 1
         var ctx = _services.Context.BuildSelectedContext();
         int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
 
@@ -130,9 +146,62 @@ public sealed class PlayMissionPresenter : MonoBehaviour
             campaignLevel: companyLevel,
             currentDamage: gate.CurrentDamage,
             requiredDamage: gate.RequiredDamage,
-            weaponScreenId: _weaponSelectionScreenId
+            weaponScreenId: _weaponSelectionScreenId,
+            canUpgradeToPass: gate.CanUpgradeToPass
         );
 
-        nav.ShowPopup(_damageGatePopupId, args); // Popup layer 
+        nav.ShowPopup(_damageGatePopupId, args);
+    }
+
+    private void ShowSniperGatePopup(MissionGateResult gate)
+    {
+        if (!ServiceLocator.TryResolve<IUINavigator>(out var nav))
+            return;
+
+        var ctx = _services.Context.BuildSelectedContext();
+        int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
+
+        string hint = gate.CanUpgradeToPass
+            ? "Upgrade your Crossbow to unlock this Sniper mission."
+            : "Your Crossbow is fully upgraded. Buy a stronger Crossbow to continue.";
+
+        var args = new DamageGatePopupArgs(
+            weaponClass: WeaponClass.Crossbow,
+            campaignLevel: companyLevel,
+            currentDamage: gate.CurrentDamage,
+            requiredDamage: gate.RequiredDamage,
+            weaponScreenId: _weaponSelectionScreenId,
+            canUpgradeToPass: gate.CanUpgradeToPass,
+            customTitle: "Sniper access requires a stronger Crossbow",
+            customHint: hint
+        );
+
+        nav.ShowPopup(_damageGatePopupId, args);
+    }
+
+    private void ShowBossGatePopup(MissionGateResult gate)
+    {
+        if (!ServiceLocator.TryResolve<IUINavigator>(out var nav))
+            return;
+
+        var ctx = _services.Context.BuildSelectedContext();
+        int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
+
+        string hint = gate.CanUpgradeToPass
+            ? "Play Sniper missions to earn Crossbow tokens, then upgrade your Crossbow to unlock this Boss mission."
+            : "Your current Crossbow cannot reach the required power. Buy a stronger Crossbow to unlock this Boss mission.";
+
+        var args = new DamageGatePopupArgs(
+            weaponClass: WeaponClass.Crossbow,
+            campaignLevel: companyLevel,
+            currentDamage: gate.CurrentDamage,
+            requiredDamage: gate.RequiredDamage,
+            weaponScreenId: _weaponSelectionScreenId,
+            canUpgradeToPass: gate.CanUpgradeToPass,
+            customTitle: "Boss mission requires a stronger Crossbow",
+            customHint: hint
+        );
+
+        nav.ShowPopup(_damageGatePopupId, args);
     }
 }

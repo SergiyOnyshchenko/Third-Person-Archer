@@ -1,0 +1,39 @@
+scenario,event,class,gate,player_dmg,blocked,action_taken,cash_spent,tokens_spent,cumul_cash_available,notes
+A_minimal,Z1-C1 g0,Bow,0.25,35,NO,,,,170,"Start 100 + g0 reward 70"
+A_minimal,Z1-C2 g1,Shuriken,12,25,NO,,,,247,
+A_minimal,Z1-C3 g2,Bow,29,35,NO,,,,331,
+A_minimal,Z1-C4 g3,Shuriken,16,25,NO,,,,422,
+A_minimal,Z1-C5 g4,Bow,33,35,NO,,,,520,
+A_minimal,Z1-C6 g5,Shuriken,20,25,NO,,,,625,
+A_minimal,Z1-C7 g6,Bow,37,35,BLOCKED,Upgrade Bow1 L0→L1,50,1,575,"FIRST BLOCK — teaching gate. Bow 5BowTok→4 spent. Quick fix!"
+A_minimal,Z1-C7 g6,Bow,37,37,NO,,,,687,"Passes with 37 dmg, +g6 reward = 637+50 saved context"
+A_minimal,Z2-C1 g7,Spear,55,65,NO,,,,806,"Spear1 passes first Spear mission"
+A_minimal,Z2-C2 g8,Shuriken,26,25,BLOCKED,Upgrade Shuriken1 L0→L1,50,1,756,"2nd block. Cheap: 50 cash 1 tok."
+A_minimal,Z2-C2 g8,Shuriken,26,26,NO,,,,882,
+A_minimal,Z2-C3 g9,Bow,43,37,BLOCKED,Upgrade Bow L1→L4,178,3,704,"Spend 54+62+62=178 cash 3 tok for L2→L4. Has tok from Z1."
+A_minimal,Z2-C3 g9,Bow,43,43,NO,,,,837,
+A_minimal,Z2-C4 g10,Spear,70,65,BLOCKED,Upgrade Spear1 L0→L1,70,2,767,"Spear costs more per level. Needs L1=70.5."
+A_minimal,Z2-C4 g10,Spear,70,70.5,NO,,,,907,
+A_minimal,Z2-C5 g11,Shuriken,32,26,BLOCKED,Upgrade Shuriken L1→L7,368,6,539,"Needs L7=32. Very tight on Shuriken tokens — may need 1 Contracts run."
+A_minimal,Z2-C5 g11,Shuriken,32,32,NO,,,,686,
+A_minimal,Z2-C6 g12,Bow,49,43,BLOCKED,Upgrade Bow L4→L7,188,3,498,"L5+L6+L7 cost. Tokens tight — may need Contracts."
+A_minimal,Z2-C6 g12,Bow,49,49,NO,,,,652,
+A_minimal,Z2-C7 g13,Spear,85,70.5,BLOCKED,Upgrade Spear L1→L4,330,6,322,"Needs L4=87. Spear tokens scarce — 1-2 Contracts runs needed."
+A_minimal,Z2-C7 g13,Spear,85,87,NO,,,,483,
+A_minimal,Z2-C8 g14,Shuriken,38,32,BLOCKED,Buy Shuriken2 (purchase),0,650,15,"-483+reward168. FORCED PURCHASE: need 650 cash and 15 tok."
+A_minimal,Z2-C8 g14 note,,,,,,,,,"Player likely needs 1-2 Contracts/Sniper runs to fund Shuriken2 purchase if short on cash."
+A_minimal,Z3-C1 g15,Boomerang,52.5,55,NO,,,,,"Boom1 base=55 passes Z3 first Boom mission"
+A_minimal,Z3-C2 g16,Bow,57,49,BLOCKED,Buy Bow2 (600 cash 14 tok),600,14,,"FORCED Bow2 purchase. g16 needs 57 dmg. Bow1 max=55."
+A_minimal,Z3-C3 g17,Shuriken,44,35,BLOCKED,Upgrade Shuriken2 L0→L6,various,6,,"Shuriken2 at L6=44. Needs grind."
+A_minimal,Z3-C4 g18,Spear,110,87,BLOCKED,Upgrade Spear1 L4→L10,various,6,,"Needs Spear1 max=110. Tokens require Contracts."
+A_minimal,Z3-C5 g19,Boomerang,62.5,55,BLOCKED,Upgrade Boom1 L0→L3,162,3,,"3 upgrades needed. Cheap."
+A_minimal,Z3-C6 g20,Bow,65,57,BLOCKED,Upgrade Bow2 L1→L4,various,3,,"Bow2 L4=65."
+A_minimal,Z3-C7 g21,Shuriken,52,44,BLOCKED,Buy Shuriken3 or upgrade more,varies,varies,,"Shuriken2 max=50 < 52. Needs Shuriken3 purchase."
+A_minimal,Z3-C8 g22,Spear,130,110,BLOCKED,Buy Spear2 (1000 cash 25 tok),1000,25,,"FORCED Spear2. Needs L3 after purchase."
+A_minimal,SUMMARY,,,,,,,,"Total blocks: ~12. Requires 3-4 weapon purchases and multiple Contracts runs. Spear/Boom both now gated.",
+B_efficient,Z1-Z2 preparation,,,,NO,Upgrade Bow L0→L4 after Z1,224,4,,"After Zone 1: has enough cash and tokens for Bow L4. Avoids g6 and g9 blocks."
+B_efficient,Z2-SUMMARY,,,,NO,Proactive upgrades as tokens arrive,,,,"Efficient player avoids most blocks. Still needs Shuriken2 and Bow2 purchases in Zone 3."
+B_efficient,Z3-SUMMARY,,,,NO/1-2 blocks,,,,,Forced purchases at g16 (Bow2) and g22 (Spear2). At least 1-2 Contracts runs needed for tokens.
+C_grinder,ZONE1 grind,,,,,Max Bow1+Shuriken1 before Z2,1360,29,,"Spends ~1360 cash and 29 tokens. Has 637+100start-1360 = negative — must do 1-2 Contracts!"
+C_grinder,CONTRACTS needed,,,,NO,Do Contracts until funded,varies,varies,,"2-3 Contracts runs give enough tokens. Shows that Contracts is now REQUIRED for grinder."
+C_grinder,SUMMARY,,,,FEW blocks,,,,,Grinder never truly stuck but must do Contracts for tokens. Both currencies matter now.

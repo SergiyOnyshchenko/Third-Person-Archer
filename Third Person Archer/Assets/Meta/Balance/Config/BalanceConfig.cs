@@ -10,7 +10,6 @@ public partial class BalanceConfig : ScriptableObject
     [SerializeField] private GateModule _gates = new();
     [SerializeField] private RewardModule _rewards = new();
     [SerializeField] private WeaponClassPerformanceModule _weaponPerformance = new();
-    [SerializeField] private EconomyPacingModule _economyPacing = new();
     [SerializeField] private RoundingModule _rounding = new();
 
     #region Loop API
@@ -62,8 +61,6 @@ public partial class BalanceConfig : ScriptableObject
         }
     }
 
-    // Keep these private: gameplay/runtime must call ONLY GetDifficultyScalar(...)
-
     private float GetCampaignDifficultyScalar(int globalCampaignIndex, int loopIndex)
     {
         float baseValue = _enemies.GetCampaignDifficultyScalar(globalCampaignIndex);
@@ -88,10 +85,6 @@ public partial class BalanceConfig : ScriptableObject
         return ApplyLoopDifficulty(MissionType.Sniper, raw, loopIndex);
     }
 
-    /// <summary>
-    /// Optional: central place for loop difficulty multipliers.
-    /// Keeps the scalar math consistent.
-    /// </summary>
     private float ApplyLoopDifficulty(MissionType type, float raw, int loopIndex)
     {
         var m = GetLoopMultipliers(loopIndex);
@@ -105,9 +98,6 @@ public partial class BalanceConfig : ScriptableObject
         }
     }
 
-    /// <summary>
-    /// Mode→Gate conversion factors (DRY).
-    /// </summary>
     private float GetEnemyHpFromGateFactor(MissionType type)
     {
         switch (type)
@@ -145,11 +135,9 @@ public partial class BalanceConfig : ScriptableObject
         if (ctx == null || !ctx.IsValid)
             return new EnemyModule.EnemyStats(1, 0);
 
-        // Boss missions are excluded from formula balancing.
         if (ctx.SelectedType == MissionType.Boss)
             return new EnemyModule.EnemyStats(1, 0);
 
-        // --- NEW: effective balance mode (Option A) ---
         MissionType effectiveType = ctx.BalanceMode;
 
         int effectiveContractsCompletedIndex =
@@ -187,6 +175,18 @@ public partial class BalanceConfig : ScriptableObject
         int hp = Mathf.Max(1, Mathf.RoundToInt(gateDamage * hpFromGate * difficulty * typeHp * mpHp));
         int dmg = Mathf.Max(0, Mathf.RoundToInt(gateDamage * dmgFromGate * difficulty * typeDmg * mpDmg));
 
+        // Campaign health clamp: prevent bullet-sponge enemies.
+        // maxAllowedHp = gateDamage * maxShots — scales with loop since gateDamage includes loop GateDamage multiplier.
+        if (_enemies.ShouldApplyHealthClamp(ctx.RequiredWeaponClass, effectiveType))
+        {
+            int maxShots = _enemies.GetMaxShotsToKill(ctx.RequiredWeaponClass, archetype);
+            if (maxShots > 0)
+            {
+                int maxAllowedHp = Mathf.Max(1, Mathf.RoundToInt(gateDamage * maxShots));
+                hp = Mathf.Min(hp, maxAllowedHp);
+            }
+        }
+
         return new EnemyModule.EnemyStats(hp, dmg);
     }
 
@@ -197,6 +197,31 @@ public partial class BalanceConfig : ScriptableObject
     public float GetRequiredDamageForCampaign(WeaponClass weaponClass, int globalIndex, int loopIndex)
     {
         float value = _gates.GetRequiredDamageForCampaign(weaponClass, globalIndex);
+        value *= GetLoopMultipliers(loopIndex).GateDamage;
+        return Mathf.Max(0f, value);
+    }
+
+    /// <summary>
+    /// Required Crossbow damage to access Sniper missions at the given tier.
+    /// sniperCompletedIndex = total Sniper missions completed so far.
+    /// GateDamage loop multiplier is applied so higher loops are harder.
+    /// </summary>
+    public float GetRequiredCrossbowDamageForSniper(int sniperCompletedIndex, int loopIndex)
+    {
+        float value = _gates.GetRequiredCrossbowDamageForSniper(sniperCompletedIndex);
+        value *= GetLoopMultipliers(loopIndex).GateDamage;
+        return Mathf.Max(0f, value);
+    }
+
+    /// <summary>
+    /// Required Crossbow damage to access a Boss mission in the given zone.
+    /// bossZoneIndex = 0-based zone index (Zone 1 = 0, Zone 2 = 1).
+    /// GateDamage loop multiplier is applied so higher loops require stronger Crossbow.
+    /// Does NOT affect boss HP/damage gameplay scaling — purely a meta access gate.
+    /// </summary>
+    public float GetRequiredCrossbowDamageForBoss(int bossZoneIndex, int loopIndex)
+    {
+        float value = _gates.GetRequiredCrossbowDamageForBoss(bossZoneIndex);
         value *= GetLoopMultipliers(loopIndex).GateDamage;
         return Mathf.Max(0f, value);
     }
@@ -225,9 +250,7 @@ public partial class BalanceConfig : ScriptableObject
 
     #region Generator helpers
 
-    public float GetGateComfortFactor() => _gates.GateComfortFactor;
     public float GetWeaponClassDamageMultiplier(WeaponClass weaponClass) => _weaponPerformance.GetDamageMultiplier(weaponClass);
-    public EconomyPacingModule EconomyPacing => _economyPacing;
     public RoundingModule Rounding => _rounding;
 
     #endregion

@@ -1,0 +1,37 @@
+scenario,mission,global_index,class_required,gate_required,player_damage,blocked,block_duration_missions,bow_level,shuriken_level,spear_level,boom_level,cumul_cash,cumul_bow_tok,cumul_shuriken_tok,cumul_spear_tok,cumul_boom_tok,notes
+A_minimal,Z1-C1,0,Bow,0.1,35,NO,0,0,0,0,0,100,3,3,6,10,
+A_minimal,Z1-C2,1,Shuriken,7,25,NO,0,0,0,0,0,210,5,7,6,10,
+A_minimal,Z1-C3,2,Bow,15,35,NO,0,0,0,0,0,330,11,7,6,10,
+A_minimal,Z1-C4,3,Shuriken,11,25,NO,0,0,0,0,0,460,11,15,6,10,
+A_minimal,Z1-C5,4,Bow,20,35,NO,0,0,0,0,0,600,21,15,6,10,
+A_minimal,Z1-C6,5,Shuriken,15,25,NO,0,0,0,0,0,750,21,27,6,10,
+A_minimal,Z1-C7,6,Bow,25,35,NO,0,0,0,0,0,910,35,27,6,10,"Zone 1 clear. Has more Bow tokens than Bow1 max cost (14.5)"
+A_minimal,Z2-C1,7,Spear,41,180,NO,0,0,0,0,0,1080,35,27,22,10,
+A_minimal,Z2-C2,8,Shuriken,21,25,NO,0,0,0,0,0,1260,35,45,22,10,
+A_minimal,Z2-C3,9,Bow,32.5,35,NO,0,0,0,0,0,1450,55,45,22,10,
+A_minimal,Z2-C4,10,Spear,50,180,NO,0,0,0,0,0,1650,55,45,44,10,
+A_minimal,Z2-C5,11,Shuriken,27,25,BLOCKED,1,0,0,0,0,1650,55,45,44,10,"FIRST BLOCK. Need 2 Shuriken upgrades (104 cash). Has 1650 cash."
+A_minimal,Z2-C5,11,Shuriken,27,27,NO,0,0,2,0,0,1546,55,43,44,10,"After upgrading Shuriken to L2"
+A_minimal,Z2-C6,12,Bow,40,35,BLOCKED,1,0,2,0,0,1766,81,43,44,10,"BLOCKED. Need 3 more Bow upgrades (162 cash). Has 1766 cash."
+A_minimal,Z2-C6,12,Bow,40,41,NO,0,3,2,0,0,1604,78,43,44,10,"After Bow to L3"
+A_minimal,Z2-C7,13,Spear,59,180,NO,0,3,2,0,0,1834,106,43,72,10,
+A_minimal,Z2-C8,14,Shuriken,33,27,BLOCKED,1,3,2,0,0,1834,106,43,72,10,"BLOCKED again. Need Shuriken L8 (512 cash total from base). Already at L2: need 6 more = ~386 cash."
+A_minimal,Z2-C8,14,Shuriken,33,33,NO,0,3,8,0,0,1448,106,35,72,10,"After Shuriken to L8"
+A_minimal,Z3-C1,15,Boomerang,42,80,NO,0,3,8,0,0,1698,106,35,72,42,
+A_minimal,Z3-C2,16,Bow,50,41,BLOCKED,1,3,8,0,0,1698,106,35,72,42,"BLOCKED. Even maxed Bow1=55. Need 4 more levels: L7(49)=NO L10(55)>50? YES"
+A_minimal,Z3-C2,16,Bow,50,51,NO,0,8,8,0,0,1264,99,35,72,42,"After Bow L8(51). Has 1264 cash left."
+A_minimal,Z3-C3,17,Shuriken,39,33,BLOCKED,1,8,8,0,0,1534,133,79,72,42,"BLOCKED. Need Shuriken2 (purchase 650 cash + 15 tok)"
+A_minimal,Z3-C3,17,Shuriken,39,50,NO,0,8,0,0,0,234,133,64,72,42,"After buying Shuriken2(L0=35<39, need 4 upgrades)+purchase"
+A_minimal,Z3-C4,18,Spear,74,180,NO,0,8,0,0,0,514,161,64,110,42,
+A_minimal,Z3-C5,19,Boomerang,50,80,NO,0,8,0,0,0,804,161,64,110,82,
+A_minimal,Z3-C6,20,Bow,60,51,BLOCKED,1,8,0,0,0,804,161,64,110,82,"BLOCKED. Bow1 max=55<60. Need Bow2 (600 cash)"
+A_minimal,Z3-C6,20,Bow,60,55,BLOCKED,0,10,0,0,0,124,148,64,110,82,"Maxed Bow1=55 still < 60. FORCED to buy Bow2."
+A_minimal,Z3-C7,21,Shuriken,47,50,NO,0,10,0,0,0,454,176,108,110,82,"Shuriken2 L0=35... wait shuriken2=35. Need upgrades."
+A_minimal,Z3-C8,22,Spear,86,180,NO,0,10,0,0,0,774,176,108,156,82,"Spear passes with base weapon - zero friction all game"
+B_efficient,Z1-ALL,0-6,Mixed,varies,varies,NO,0,0,0,0,0,910,35,27,6,10,"Same as minimal through Zone 1 — no blocks"
+B_efficient,Z2-C5,11,Shuriken,27,27,NO,0,0,2,0,0,varies,,,,,,"Efficient player already upgraded Shuriken to L2 after Z1"
+B_efficient,Z2-C6,12,Bow,40,41,NO,0,3,2,0,0,varies,,,,,,"Efficient player already upgraded Bow to L3 after Z1"
+B_efficient,SUMMARY,n/a,n/a,n/a,n/a,NO,0,varies,varies,0,0,,,,,,"Efficient player avoids all blocks with minimal spend. Total extra spend vs minimal: ~200-300 cash, ~5-10 tokens"
+C_grinder,Z1-C7,6,Bow,25,55,NO,0,10,0,0,0,230,20,27,6,10,"Grinder maxes Bow1 before Zone 2: spends 680 cash, 14.5 tokens"
+C_grinder,Z2-C5,11,Shuriken,27,35,NO,0,10,10,0,0,varies,,,,,,"Grinder maxes Shuriken1 before Zone 2 end: no blocks"
+C_grinder,SUMMARY,n/a,n/a,n/a,n/a,NO,0,10,10,0,10,,,,,,"Grinder never blocked at any point. Total upgrades: trivially affordable from Zone1 rewards"

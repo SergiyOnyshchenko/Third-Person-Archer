@@ -52,7 +52,7 @@ public sealed class MainMenuRuntime : MonoBehaviour
         }
 
         // Enforce your 5-slot invariant (safe to call multiple times)
-        _loadoutSnapshot.EnsureAllClassesExist(); // :contentReference[oaicite:3]{index=3}
+        _loadoutSnapshot.EnsureAllClassesExist();
 
         ProgressData = progress;
 
@@ -101,7 +101,7 @@ public sealed class MainMenuRuntime : MonoBehaviour
         var gate = new MissionGateService(_balanceConfig, loadoutStats);
 
         var companyLevel = new CompanyLevelService(progressRead);
-        var availability = new MissionAvailabilityService(gate, _modeUnlockConfig, companyLevel);
+        var availability = new MissionAvailabilityService(gate, _modeUnlockConfig, companyLevel, _loopProgressData);
 
         var contractPool = new ContractPoolService(ProgressData);
 
@@ -112,7 +112,8 @@ public sealed class MainMenuRuntime : MonoBehaviour
             gate,
             weaponReq,
             contractPool,
-            _launchRequest);
+            _launchRequest,
+            _loopProgressData);
 
         Services = new MainMenuServices(
             progressWrite,

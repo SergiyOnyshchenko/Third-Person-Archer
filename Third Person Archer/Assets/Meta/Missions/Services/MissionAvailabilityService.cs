@@ -3,55 +3,19 @@ public sealed class MissionAvailabilityService : IMissionAvailabilityService
     private readonly IMissionGateService _gateService;
     private readonly MetaModeUnlockConfig _modeUnlocks;
     private readonly ICompanyLevelService _companyLevel;
+    private readonly MetaLoopProgressData _loopProgressData;
 
     public MissionAvailabilityService(
         IMissionGateService gateService,
         MetaModeUnlockConfig modeUnlocks,
-        ICompanyLevelService companyLevel)
+        ICompanyLevelService companyLevel,
+        MetaLoopProgressData loopProgressData)
     {
         _gateService = gateService;
         _modeUnlocks = modeUnlocks;
         _companyLevel = companyLevel;
+        _loopProgressData = loopProgressData;
     }
-
-    /*
-        public MissionAvailability GetAvailability(MissionContext ctx)
-        {
-            if (ctx == null || !ctx.IsValid)
-                return MissionAvailability.Blocked(AvailabilityBlockReason.NoMissionSelected);
-
-            int companyLevel = _companyLevel.GetCompanyLevel();
-
-            switch (ctx.SelectedType)
-            {
-                case MissionType.Campaign:
-                {
-                    var gate = _gateService.CheckCampaignGate(ctx);
-                    return gate.Passed
-                        ? MissionAvailability.Allowed()
-                        : MissionAvailability.Blocked(AvailabilityBlockReason.CampaignDamageTooLow);
-                }
-                case MissionType.Boss:
-                    // Boss unlocked = all campaign missions completed in that zone (your ZoneData already has IsBossUnlocked()).
-                    return ctx.Zone.IsBossUnlocked()
-                        ? MissionAvailability.Allowed()
-                        : MissionAvailability.Blocked(AvailabilityBlockReason.BossNotUnlocked);
-
-                case MissionType.Contracts:
-                    return companyLevel >= _modeUnlocks.ContractsUnlockCompanyLevel
-                        ? MissionAvailability.Allowed()
-                        : MissionAvailability.Blocked(AvailabilityBlockReason.ContractsLockedByCompanyLevel);
-
-                case MissionType.Sniper:
-                    return companyLevel >= _modeUnlocks.SniperUnlockCompanyLevel
-                        ? MissionAvailability.Allowed()
-                        : MissionAvailability.Blocked(AvailabilityBlockReason.SniperLockedByCompanyLevel);
-
-                default:
-                    return MissionAvailability.Blocked(AvailabilityBlockReason.NoMissionSelected);
-            }
-        }
-    */
 
     public MissionAvailability GetAvailability(MissionContext ctx)
     {
@@ -77,21 +41,31 @@ public sealed class MissionAvailabilityService : IMissionAvailabilityService
                 if (!ctx.IsValid)
                     return MissionAvailability.Blocked(AvailabilityBlockReason.NoMissionSelected);
 
-                return ctx.Zone.IsBossUnlocked()
+                if (!ctx.Zone.IsBossUnlocked())
+                    return MissionAvailability.Blocked(AvailabilityBlockReason.BossNotUnlocked);
+
+                var bossGate = _gateService.CheckBossGate(ctx);
+                return bossGate.Passed
                     ? MissionAvailability.Allowed()
-                    : MissionAvailability.Blocked(AvailabilityBlockReason.BossNotUnlocked);
+                    : MissionAvailability.Blocked(AvailabilityBlockReason.BossCrossbowDamageTooLow);
 
             case MissionType.Contracts:
-                // Contracts does NOT need a concrete mission selected to be "available".
                 return companyLevel >= _modeUnlocks.ContractsUnlockCompanyLevel
                     ? MissionAvailability.Allowed()
                     : MissionAvailability.Blocked(AvailabilityBlockReason.ContractsLockedByCompanyLevel);
 
             case MissionType.Sniper:
-                // Same here.
-                return companyLevel >= _modeUnlocks.SniperUnlockCompanyLevel
-                    ? MissionAvailability.Allowed()
-                    : MissionAvailability.Blocked(AvailabilityBlockReason.SniperLockedByCompanyLevel);
+                {
+                    if (companyLevel < _modeUnlocks.SniperUnlockCompanyLevel)
+                        return MissionAvailability.Blocked(AvailabilityBlockReason.SniperLockedByCompanyLevel);
+
+                    // Check Crossbow damage access gate for current Sniper tier.
+                    int sniperIndex = _loopProgressData != null ? _loopProgressData.SniperCompletedIndex : 0;
+                    var sniperGate = _gateService.CheckSniperGate(ctx, sniperIndex);
+                    return sniperGate.Passed
+                        ? MissionAvailability.Allowed()
+                        : MissionAvailability.Blocked(AvailabilityBlockReason.SniperDamageTooLow);
+                }
 
             default:
                 return MissionAvailability.Blocked(AvailabilityBlockReason.NoMissionSelected);

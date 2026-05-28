@@ -57,9 +57,8 @@ public sealed class MissionStartService : IMissionStartService
     private readonly IWeaponRequirementService _weaponRequirement;
     private readonly IContractPoolService _contractPool;
     private readonly MissionLaunchRequest _launchRequest;
+    private readonly MetaLoopProgressData _loopProgressData;
 
-    // Contracts: you said weapon types can be random for variety.
-    // Keep it simple: randomize required weapon class for contracts.
     private readonly bool _randomizeContractWeaponClass = true;
 
     public MissionStartService(
@@ -69,7 +68,8 @@ public sealed class MissionStartService : IMissionStartService
         IMissionGateService gate,
         IWeaponRequirementService weaponRequirement,
         IContractPoolService contractPool,
-        MissionLaunchRequest launchRequest)
+        MissionLaunchRequest launchRequest,
+        MetaLoopProgressData loopProgressData = null)
     {
         _progressData = progressData;
         _context = context;
@@ -78,6 +78,7 @@ public sealed class MissionStartService : IMissionStartService
         _weaponRequirement = weaponRequirement;
         _contractPool = contractPool;
         _launchRequest = launchRequest;
+        _loopProgressData = loopProgressData;
     }
 
     public MissionStartResult TryStartSelected()
@@ -94,11 +95,26 @@ public sealed class MissionStartService : IMissionStartService
         var avail = _availability.GetAvailability(ctx);
         if (!avail.CanPlay)
         {
-            // If blocked by damage gate, return gate info for popup.
+            // If blocked by Campaign damage gate, return gate info for popup.
             if (avail.Reason == AvailabilityBlockReason.CampaignDamageTooLow)
             {
                 var gate = _gate.CheckCampaignGate(ctx);
                 return MissionStartResult.Fail(MissionStartFailReason.NotAvailable, avail, gate);
+            }
+
+            // If blocked by Sniper access gate, return gate info for popup.
+            if (avail.Reason == AvailabilityBlockReason.SniperDamageTooLow)
+            {
+                int sniperIndex = _loopProgressData != null ? _loopProgressData.SniperCompletedIndex : 0;
+                var sniperGate = _gate.CheckSniperGate(ctx, sniperIndex);
+                return MissionStartResult.Fail(MissionStartFailReason.NotAvailable, avail, sniperGate);
+            }
+
+            // If blocked by Boss Crossbow gate, return gate info for popup.
+            if (avail.Reason == AvailabilityBlockReason.BossCrossbowDamageTooLow)
+            {
+                var bossGate = _gate.CheckBossGate(ctx);
+                return MissionStartResult.Fail(MissionStartFailReason.NotAvailable, avail, bossGate);
             }
 
             return MissionStartResult.Fail(MissionStartFailReason.NotAvailable, avail);
@@ -121,7 +137,6 @@ public sealed class MissionStartService : IMissionStartService
                 break;
 
             case MissionType.Sniper:
-                // Sniper is special: fixed weapon class is already on MissionData.
                 missionToLoad = ctx.Mission;
                 requiredClass = _weaponRequirement.GetRequiredWeaponClass(missionToLoad, ctx.LoopIndex);
                 break;
@@ -143,7 +158,6 @@ public sealed class MissionStartService : IMissionStartService
         if (missionToLoad == null || missionToLoad.Scene == null || string.IsNullOrEmpty(missionToLoad.Scene.ScenePath))
             return MissionStartResult.Fail(MissionStartFailReason.MissingScene, avail);
 
-        // Store request for gameplay scene.
         int globalIndex = ctx.GlobalCampaignIndex;
         _launchRequest.Set(
             mode: ctx.SelectedType,

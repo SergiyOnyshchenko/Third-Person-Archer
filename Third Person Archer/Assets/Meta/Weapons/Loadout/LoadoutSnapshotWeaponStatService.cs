@@ -19,4 +19,15 @@ public sealed class LoadoutSnapshotWeaponStatService : ILoadoutWeaponStatService
 
         return 0f;
     }
+
+    public float GetEquippedMaxDamage(WeaponClass weaponClass)
+    {
+        if (_snapshot == null)
+            return 0f;
+
+        if (_snapshot.TryGet(weaponClass, out var slot) && slot?.Weapon != null)
+            return slot.Weapon.MaxStats.Damage;
+
+        return 0f;
+    }
 }
