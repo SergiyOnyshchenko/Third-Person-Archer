@@ -14,6 +14,16 @@ public sealed class PlayMissionPresenter : MonoBehaviour
     [Tooltip("Weapon selection screen id from ScreenRegistry.")]
     [SerializeField] private string _weaponSelectionScreenId = "WeaponSelectionScreen";
 
+    // Save keys for one-time tutorial flags
+    private const string FirstCampaignGateKey = "tutorial_first_campaign_gate";
+    private const string FirstBossGateKey = "tutorial_first_boss_gate";
+    private const string FirstForcedPurchaseKey = "tutorial_first_forced_purchase_gate";
+
+    // Loaded once in Init(); written when the tutorial is first shown
+    private bool _firstCampaignGateShown;
+    private bool _firstBossGateShown;
+    private bool _firstForcedPurchaseShown;
+
     private MainMenuServices _services;
     private bool _initialized;
 
@@ -59,6 +69,10 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         _initialized = true;
 
         _services = services;
+
+        _firstCampaignGateShown = SaveSystem.Load(FirstCampaignGateKey, false);
+        _firstBossGateShown = SaveSystem.Load(FirstBossGateKey, false);
+        _firstForcedPurchaseShown = SaveSystem.Load(FirstForcedPurchaseKey, false);
 
         if (_services != null)
             _services.OnMenuStateChanged += Refresh;
@@ -141,13 +155,45 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         var ctx = _services.Context.BuildSelectedContext();
         int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
 
+        string className = gate.RequiredWeaponClass.ToString(); // "Bow", "Shuriken", etc.
+        string hint = gate.CanUpgradeToPass
+            ? $"Upgrade your {className} or buy a stronger one. {className} Tokens can be earned from Campaign missions and Contracts."
+            : $"Your {className} is at its maximum level. Buy a stronger {className}. {className} Tokens can be earned from Campaign missions and Contracts.";
+
+        string tutorialText = null;
+        if (!gate.CanUpgradeToPass && !_firstForcedPurchaseShown)
+        {
+            // Forced purchase tutorial takes priority over the general gate tutorial.
+            _firstForcedPurchaseShown = true;
+            SaveSystem.Save(FirstForcedPurchaseKey, true);
+            // Also mark general gate tutorial shown so it does not appear later on a normal gate.
+            if (!_firstCampaignGateShown)
+            {
+                _firstCampaignGateShown = true;
+                SaveSystem.Save(FirstCampaignGateKey, true);
+            }
+            tutorialText = "TIP: Your weapon is at its maximum level for this class.\n" +
+                           "To pass this gate you need to BUY a higher-tier weapon of the same class.\n" +
+                           "Open the weapon shop and look for a stronger option.";
+        }
+        else if (!_firstCampaignGateShown)
+        {
+            _firstCampaignGateShown = true;
+            SaveSystem.Save(FirstCampaignGateKey, true);
+            tutorialText = "TIP: Gates appear when your weapon damage is too low.\n" +
+                           "Upgrade your weapon or buy a stronger one to continue.\n" +
+                           "Weapon Tokens can be earned from Campaign missions and Contracts.";
+        }
+
         var args = new DamageGatePopupArgs(
             weaponClass: gate.RequiredWeaponClass,
             campaignLevel: companyLevel,
             currentDamage: gate.CurrentDamage,
             requiredDamage: gate.RequiredDamage,
             weaponScreenId: _weaponSelectionScreenId,
-            canUpgradeToPass: gate.CanUpgradeToPass
+            canUpgradeToPass: gate.CanUpgradeToPass,
+            customHint: hint,
+            tutorialText: tutorialText
         );
 
         nav.ShowPopup(_damageGatePopupId, args);
@@ -162,8 +208,8 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
 
         string hint = gate.CanUpgradeToPass
-            ? "Upgrade your Crossbow to unlock this Sniper mission."
-            : "Your Crossbow is fully upgraded. Buy a stronger Crossbow to continue.";
+            ? "Upgrade your Crossbow to access this Sniper mission. Crossbow Tokens can be earned from Sniper missions."
+            : "Your Crossbow is at its maximum level. Buy a stronger Crossbow. Crossbow Tokens can be earned from Sniper missions.";
 
         var args = new DamageGatePopupArgs(
             weaponClass: WeaponClass.Crossbow,
@@ -188,8 +234,18 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
 
         string hint = gate.CanUpgradeToPass
-            ? "Play Sniper missions to earn Crossbow tokens, then upgrade your Crossbow to unlock this Boss mission."
-            : "Your current Crossbow cannot reach the required power. Buy a stronger Crossbow to unlock this Boss mission.";
+            ? "Boss missions require Crossbow Power. Play Sniper missions to earn Crossbow Tokens, upgrade your Crossbow, then return to the Boss."
+            : "Your Crossbow cannot reach the required power. Buy a stronger Crossbow. Crossbow Tokens can be earned from Sniper missions.";
+
+        string tutorialText = null;
+        if (!_firstBossGateShown)
+        {
+            _firstBossGateShown = true;
+            SaveSystem.Save(FirstBossGateKey, true);
+            tutorialText = "TIP: Boss missions require Crossbow Power — not just any weapon.\n" +
+                           "Play Sniper missions to earn Crossbow Tokens.\n" +
+                           "Upgrade your Crossbow, then return to the Boss.";
+        }
 
         var args = new DamageGatePopupArgs(
             weaponClass: WeaponClass.Crossbow,
@@ -199,7 +255,8 @@ public sealed class PlayMissionPresenter : MonoBehaviour
             weaponScreenId: _weaponSelectionScreenId,
             canUpgradeToPass: gate.CanUpgradeToPass,
             customTitle: "Boss mission requires a stronger Crossbow",
-            customHint: hint
+            customHint: hint,
+            tutorialText: tutorialText
         );
 
         nav.ShowPopup(_damageGatePopupId, args);

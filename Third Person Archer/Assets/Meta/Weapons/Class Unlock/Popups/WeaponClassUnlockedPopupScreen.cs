@@ -12,6 +12,7 @@ namespace Meta.Weapons
         [Header("UI")]
         [SerializeField] private TextMeshProUGUI _titleText = null!;
         [SerializeField] private TextMeshProUGUI _nameText = null!;
+        [SerializeField] private TextMeshProUGUI? _bodyText;
         [SerializeField] private Image _iconImage = null!;
         [SerializeField] private Button _closeButton = null!;
         [SerializeField] private Button _goToButton = null!;
@@ -39,6 +40,9 @@ namespace Meta.Weapons
             _iconImage.sprite = (_classIcons != null && _classIcons.TryGet(args.WeaponClass, out var icon))
                 ? icon
                 : null;
+
+            if (_bodyText != null)
+                _bodyText.text = args.BodyText ?? string.Empty;
         }
 
         private void OnClose()

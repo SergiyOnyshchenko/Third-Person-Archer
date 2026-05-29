@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +10,13 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
     [Header("Visuals")]
     [SerializeField] private GameObject _highlight;
     [SerializeField] private GameObject _lockedIcon;
+    [SerializeField] private GameObject _recommendedHint;
 
     [Header("Wiring")]
     [SerializeField] private MissionTypeSelectionPresenter _selectionPresenter;
     private bool _isInitialized;
     private MainMenuServices _services;
+    private Tween _hintTween;
 
     public void Init(MainMenuServices services)
     {
@@ -44,6 +47,8 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
     {
         if (_services != null)
             _services.OnMenuStateChanged -= Refresh;
+
+        _hintTween?.Kill();
     }
 
     private void OnClick()
@@ -66,6 +71,7 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
             zone.IsCampaignComplete() &&
             zone.IsBossUnlocked())
         {
+            SetRecommendedHint(false);
             gameObject.SetActive(false);
             return;
         }
@@ -85,6 +91,34 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
 
         if (_lockedIcon != null)
             _lockedIcon.SetActive(showLocked);
+
+        var recommended = RecommendedMissionHintService.GetRecommendedType(_services);
+        SetRecommendedHint(recommended == _missionType);
+    }
+
+    private void SetRecommendedHint(bool show)
+    {
+        if (_recommendedHint == null) return;
+
+        if (!show)
+        {
+            _hintTween?.Kill();
+            _hintTween = null;
+            _recommendedHint.transform.localScale = Vector3.one;
+            _recommendedHint.SetActive(false);
+            return;
+        }
+
+        _recommendedHint.SetActive(true);
+
+        if (_hintTween != null && _hintTween.IsActive())
+            return;
+
+        _hintTween = _recommendedHint.transform
+            .DOScale(1.2f, 0.6f)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.InOutSine)
+            .SetLink(_recommendedHint);
     }
 
     private MissionContext BuildContextFor(MissionType type)

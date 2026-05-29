@@ -24,6 +24,13 @@ public sealed class DamageGatePopupArgs
     /// <summary>Optional hint override. If null, the popup selects hint based on CanUpgradeToPass.</summary>
     public string CustomHint { get; }
 
+    /// <summary>
+    /// Optional one-time tutorial text shown below the hint.
+    /// Used on the player's first encounter with a gate type to explain the system.
+    /// Null = no tutorial section shown.
+    /// </summary>
+    public string TutorialText { get; }
+
     public DamageGatePopupArgs(
         WeaponClass weaponClass,
         int campaignLevel,
@@ -32,7 +39,8 @@ public sealed class DamageGatePopupArgs
         string weaponScreenId,
         bool canUpgradeToPass = true,
         string customTitle = null,
-        string customHint = null)
+        string customHint = null,
+        string tutorialText = null)
     {
         WeaponClass = weaponClass;
         CampaignLevel = campaignLevel;
@@ -42,5 +50,6 @@ public sealed class DamageGatePopupArgs
         CanUpgradeToPass = canUpgradeToPass;
         CustomTitle = customTitle;
         CustomHint = customHint;
+        TutorialText = tutorialText;
     }
 }

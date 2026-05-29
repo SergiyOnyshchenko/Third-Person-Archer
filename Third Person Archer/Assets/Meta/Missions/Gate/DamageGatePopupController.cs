@@ -17,6 +17,12 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
     [SerializeField] private Button _closeButton;
     [SerializeField] private Button _goButton;
 
+    [Header("Tutorial (one-time, set up in prefab)")]
+    [Tooltip("Root GameObject containing the tutorial section. Hidden when TutorialText is null.")]
+    [SerializeField] private GameObject _tutorialRoot;
+    [Tooltip("TextMeshPro for the tutorial body text.")]
+    [SerializeField] private TextMeshProUGUI _tutorialBodyText;
+
     [Header("Defaults")]
     [SerializeField] private string _defaultTitle = "Your damage is too low for this mission.";
 
@@ -70,6 +76,10 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
 
             _hintText.text = string.Format(hintTemplate, args.WeaponClass.ToString().ToLowerInvariant());
         }
+
+        bool hasTutorial = !string.IsNullOrEmpty(args.TutorialText);
+        if (_tutorialRoot != null) _tutorialRoot.SetActive(hasTutorial);
+        if (_tutorialBodyText != null && hasTutorial) _tutorialBodyText.text = args.TutorialText;
     }
 
     private void Close()

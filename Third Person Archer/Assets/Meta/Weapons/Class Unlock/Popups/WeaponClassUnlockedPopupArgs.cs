@@ -7,5 +7,6 @@ namespace Meta.Weapons
     {
         public string Title;
         public WeaponClass WeaponClass;
+        public string BodyText;
     }
 }

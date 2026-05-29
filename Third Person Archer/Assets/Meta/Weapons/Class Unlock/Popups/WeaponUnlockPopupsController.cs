@@ -15,8 +15,8 @@ namespace Meta.Weapons
         [SerializeField] private WeaponCatalog _weaponCatalog = null!;
 
         [Header("Popup Screen Ids")]
-        [SerializeField] private string _weaponUnlockedPopupId = "WeaponUnlockedPopup";
-        [SerializeField] private string _weaponClassUnlockedPopupId = "WeaponClassUnlockedPopup";
+        [SerializeField] private string _weaponUnlockedPopupId = "weapon_unlocked_popup";
+        [SerializeField] private string _weaponClassUnlockedPopupId = "weapon_class_unlocked_popup";
 
         [Header("Navigation")]
         [SerializeField] private string _weaponSelectionScreenId = "WeaponSelection";
@@ -34,22 +34,50 @@ namespace Meta.Weapons
 
         private void Awake()
         {
-
         }
 
         private void Start()
         {
             _nav = ServiceLocator.Resolve<IUINavigator>();
-
-            // IMPORTANT: created & registered by WeaponsInitializer
             _classUnlocks = ServiceLocator.Resolve<IWeaponClassUnlockService>();
-
-            // Register only the popup flow (UI concern)
             ServiceLocator.Register<IWeaponUnlockPopupFlow>(this);
-
             _progress = SaveSystem.Load(SaveKey, new WeaponUnlockPopupsProgress());
 
-            RebuildAndStart();
+            // Build the pending queue without showing anything yet.
+            if (_classUnlocks is WeaponClassUnlockService concrete)
+                concrete.Refresh();
+            _pendingArgs.Clear();
+            _popupActive = false;
+            BuildQueue();
+
+            if (_pendingArgs.Count == 0)
+                return;
+
+            // Determine priority from the first pending item.
+            int priority = _pendingArgs.Peek() is WeaponClassUnlockedPopupArgs
+                ? StartupPopupPriority.WeaponClassUnlock
+                : StartupPopupPriority.WeaponUnlock;
+
+            if (ServiceLocator.TryResolve<IStartupPopupCoordinator>(out var coord))
+            {
+                // Submit a single request; the coordinator calls ShowNextIfAny when it is
+                // time to start the weapon unlock flow.  Subsequent popups in the flow are
+                // shown by CloseAndContinue → ShowNextIfAny without coordinator involvement,
+                // which is safe because all higher-priority requests have already been shown
+                // by the time WeaponClassUnlock / WeaponUnlock requests are reached.
+                coord.Submit(new StartupPopupRequest
+                {
+                    Priority         = priority,
+                    LogicalId        = "weapon_unlock_flow",
+                    CustomShowAction = ShowNextIfAny
+                    // No OnBeforeShow: mark-as-shown happens inside ShowNextIfAny.
+                });
+            }
+            else
+            {
+                // Fallback: no coordinator in scene — show directly (original behaviour).
+                ShowNextIfAny();
+            }
         }
 
         private void OnDestroy()
@@ -57,10 +85,12 @@ namespace Meta.Weapons
             ServiceLocator.Unregister<IWeaponUnlockPopupFlow>();
         }
 
+        /// <summary>
+        /// Rebuild the pending queue and show the first popup immediately (no coordinator).
+        /// Called externally when weapon state changes mid-session (e.g. after a purchase).
+        /// </summary>
         public void RebuildAndStart()
         {
-            // If your concrete unlock service supports Refresh(), it should be refreshed by mission completion.
-            // BUT we can be defensive here:
             if (_classUnlocks is WeaponClassUnlockService concrete)
                 concrete.Refresh();
 
@@ -73,28 +103,22 @@ namespace Meta.Weapons
 
         private void BuildQueue()
         {
-            // 1) Class popups: only for classes that are not start-unlocked
             EnqueueClassPopupIfNew(WeaponClass.Spear);
             EnqueueClassPopupIfNew(WeaponClass.Boomerang);
 
-            // 2) Weapon popups: only if UnlockAfterCampaignLevel > 0 (your rule)
             int companyLevel = _classUnlocks.CurrentCompanyLevel;
 
             foreach (var def in _weaponCatalog.All)
             {
                 if (def == null) continue;
-
-                if (def.UnlockAfterCampaignLevel <= 0) continue;              // default weapons => no popup
-                if (def.UnlockAfterCampaignLevel > companyLevel) continue;    // not yet reached
-
-                // Only if its class is unlocked (so we don't show hidden content)
+                if (def.UnlockAfterCampaignLevel <= 0) continue;
+                if (def.UnlockAfterCampaignLevel > companyLevel) continue;
                 if (!_classUnlocks.IsClassUnlocked(def.Class)) continue;
-
                 if (_progress.shownWeaponIds.Contains(def.Id)) continue;
 
                 _pendingArgs.Enqueue(new WeaponUnlockedPopupArgs
                 {
-                    Title = "New Weapon Unlocked",
+                    Title    = "New Weapon Unlocked",
                     WeaponId = def.Id
                 });
             }
@@ -109,10 +133,24 @@ namespace Meta.Weapons
 
             _pendingArgs.Enqueue(new WeaponClassUnlockedPopupArgs
             {
-                Title = "New Weapon Class Unlocked",
-                WeaponClass = cls
+                Title       = "New Weapon Class Unlocked",
+                WeaponClass = cls,
+                BodyText    = GetClassIntroBody(cls)
             });
         }
+
+        private static string? GetClassIntroBody(WeaponClass cls) => cls switch
+        {
+            WeaponClass.Spear =>
+                "The Spear is a high-damage weapon built for power — it hits hard and is effective against tough enemies.\n\n" +
+                "Upcoming Campaign missions will check your Spear damage. Upgrade your Spear to keep advancing.\n\n" +
+                "Spear Tokens can be earned from Campaign missions and Contracts.",
+            WeaponClass.Boomerang =>
+                "The Boomerang is a returning weapon — it launches, arcs back, and can hit multiple targets in one throw.\n\n" +
+                "Upcoming Campaign missions will check your Boomerang damage. Upgrade your Boomerang to keep advancing.\n\n" +
+                "Boomerang Tokens can be earned from Campaign missions and Contracts.",
+            _ => null
+        };
 
         private void ShowNextIfAny()
         {
@@ -121,7 +159,6 @@ namespace Meta.Weapons
 
             var args = _pendingArgs.Dequeue();
 
-            // Mark-as-shown when we actually show it (guarantees “once”)
             if (args is WeaponUnlockedPopupArgs w)
             {
                 if (!_progress.shownWeaponIds.Contains(w.WeaponId))
@@ -149,7 +186,6 @@ namespace Meta.Weapons
         public void CloseAndContinue(object popupInstance)
         {
             DestroyPopupInstance(popupInstance);
-
             _popupActive = false;
             ShowNextIfAny();
         }
@@ -158,10 +194,7 @@ namespace Meta.Weapons
         {
             DestroyPopupInstance(popupInstance);
             _popupActive = false;
-
-            // UX choice: navigating should stop popup spam.
             _pendingArgs.Clear();
-
             _nav.Open(_weaponSelectionScreenId, new WeaponSelectionArgs(weaponClass, CurrentCompanyLevel), reuseCached: true);
         }
 
@@ -169,12 +202,10 @@ namespace Meta.Weapons
         {
             DestroyPopupInstance(popupInstance);
             _popupActive = false;
-
             _pendingArgs.Clear();
 
             var def = _weaponCatalog.All.FirstOrDefault(w => w != null && w.Id == weaponId);
-            if (def == null)
-                return;
+            if (def == null) return;
 
             _nav.Open(_weaponSelectionScreenId, new WeaponSelectionArgs(def.Class, CurrentCompanyLevel, def.Id), reuseCached: true);
         }
@@ -183,32 +214,26 @@ namespace Meta.Weapons
         {
             if (popupInstance == null) return;
 
-            // If caller passed a MonoBehaviour (like "this"), destroy its GameObject.
             if (popupInstance is Component c)
             {
                 Object.Destroy(c.gameObject);
                 return;
             }
 
-            // If caller passed a ScreenView, destroy its GameObject too (covers your UI framework).
             if (popupInstance is ScreenView sv)
             {
                 Object.Destroy(sv.gameObject);
                 return;
             }
 
-            // If caller passed the GameObject directly.
             if (popupInstance is GameObject go)
             {
                 Object.Destroy(go);
                 return;
             }
 
-            // Fallback: destroy UnityEngine.Object (best effort).
             if (popupInstance is Object uo)
-            {
                 Object.Destroy(uo);
-            }
         }
     }
 }
