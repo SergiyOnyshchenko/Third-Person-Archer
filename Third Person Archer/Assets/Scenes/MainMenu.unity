@@ -409,7 +409,7 @@ GameObject:
   m_Component:
   - component: {fileID: 442439516}
   - component: {fileID: 442439515}
-  - component: {fileID: 442439514}
+  - component: {fileID: 442439517}
   - component: {fileID: 442439513}
   m_Layer: 0
   m_Name: Celebration
@@ -425,24 +425,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 442439512}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5579b6fa9f401f3458b0e649fc1e6618, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ContractsMilestonePresenter
-  _popupId: celebration_popup
---- !u!114 &442439514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 442439512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58ac588c3daebc14099a3ae1b78379f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BossVictoryPresenter
   _popupId: celebration_popup
 --- !u!114 &442439515
 MonoBehaviour:
@@ -451,7 +438,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 442439512}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b31ddfe81a611b140bbda5d7304fe547, type: 3}
   m_Name: 
@@ -472,6 +459,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1712328041}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &442439517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 442439512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8860d85f92634f43a8535a05ed7f2e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZoneUnlockPresenter
+  _popupId: zone_unlock_popup
+  _zoneIcons:
+  - Zone: {fileID: 11400000, guid: a2827170d1083d34fa6ab41c971528e7, type: 2}
+    Icon: {fileID: 21300000, guid: d2c8601b4d5591242ba3272c0647688d, type: 3}
+  - Zone: {fileID: 11400000, guid: c7bb5b51199e8e94bbf18ba99d4e8c5b, type: 2}
+    Icon: {fileID: 21300000, guid: 63d42d8b75a76d44f81e96ed9d778ede, type: 3}
 --- !u!1 &458361030
 GameObject:
   m_ObjectHideFlags: 0
@@ -4049,7 +4054,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cc31915efce00f48a856a473cb86d13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossIntroPresenter
-  _popupId: celebration_popup
+  _popupId: boss_intro_popup
+  _bossEntries:
+  - Zone: {fileID: 11400000, guid: e386fd916c8c84c40878da27915c3bdf, type: 2}
+    Title: BOSS IS WAITING!
+    Body: A colossal red dragon descends upon ancient Japan, turning the sky into
+      fire and smoke. Draw your bow, stand your ground, and prove that even legends
+      can bleed!
+    Image: {fileID: 21300000, guid: 92ad02463628a0c4aa39c5121b3542cb, type: 3}
+  - Zone: {fileID: 11400000, guid: a2827170d1083d34fa6ab41c971528e7, type: 2}
+    Title: BOSS IS WAITING!
+    Body: The frozen North trembles under the steps of a monstrous giant. Face him
+      with your bow and bring down the titan before he crushes everything in his
+      path!
+    Image: {fileID: 21300000, guid: 5db8b35279b0ea94c80620e4366509bc, type: 3}
 --- !u!114 &2101476110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4062,8 +4080,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84f7e9a3b522d0749996c014b2eb9a81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SniperUnlockPresenter
-  _popupId: celebration_popup
-  _sniperUnlockCompanyLevel: 5
+  _popupId: mission_type_unlock_popup
+  _modeUnlockConfig: {fileID: 11400000, guid: 028804deddafbb044bf3a3eaa32df778, type: 2}
+  _icon: {fileID: 21300000, guid: 72718cde716ec7d46a51c2a2c7fce1b0, type: 3}
 --- !u!114 &2101476111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4076,8 +4095,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4060690b77c1c60498fec60b54d377fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ContractsUnlockPresenter
-  _popupId: celebration_popup
-  _contractsUnlockCompanyLevel: 5
+  _popupId: mission_type_unlock_popup
+  _modeUnlockConfig: {fileID: 11400000, guid: 028804deddafbb044bf3a3eaa32df778, type: 2}
+  _icon: {fileID: 21300000, guid: 912dfdf72432d0741b07a77a1fa74588, type: 3}
 --- !u!4 &2101476112
 Transform:
   m_ObjectHideFlags: 0

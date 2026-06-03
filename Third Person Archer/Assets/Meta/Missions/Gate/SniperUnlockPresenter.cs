@@ -9,15 +9,13 @@ using UnityEngine;
 /// and only while the map screen is active.
 ///
 /// Setup: Add this MonoBehaviour to the main menu scene.
-/// Set _popupId = "celebration_popup" and _sniperUnlockCompanyLevel to match
-/// the value set in MetaModeUnlockConfig (default: 5).
+/// Assign _modeUnlockConfig to the same MetaModeUnlockConfig asset used by MainMenuRuntime.
 /// </summary>
 public sealed class SniperUnlockPresenter : MonoBehaviour
 {
-    [SerializeField] private string _popupId = "celebration_popup";
-
-    [Tooltip("Must match MetaModeUnlockConfig.SniperUnlockCompanyLevel.")]
-    [SerializeField] private int _sniperUnlockCompanyLevel = 5;
+    [SerializeField] private string _popupId = "mission_type_unlock_popup";
+    [SerializeField] private MetaModeUnlockConfig _modeUnlockConfig;
+    [SerializeField] private Sprite _icon;
 
     private const string SaveKey = "sniper_unlock_popup_shown";
 
@@ -50,22 +48,24 @@ public sealed class SniperUnlockPresenter : MonoBehaviour
         if (SaveSystem.Load(SaveKey, false))
             return;
 
+        if (_modeUnlockConfig == null)
+        {
+            Debug.LogError("SniperUnlockPresenter: _modeUnlockConfig is not assigned.", this);
+            return;
+        }
+
         int companyLevel = services.ProgressData.GetCompanyLevel();
-        if (companyLevel < _sniperUnlockCompanyLevel)
+        if (companyLevel < _modeUnlockConfig.SniperUnlockCompanyLevel)
             return;
 
+        const string title = "Sniper Unlocked!";
         const string body =
-            "Sniper missions use the Crossbow — one precise shot to eliminate each target.\n\n" +
-            "The Sniper gameplay is different from Campaign: take your time, aim carefully, " +
-            "and make every shot count.\n\n" +
-            "Rewards: Cash and Crossbow Tokens.\n\n" +
-            "Crossbow Tokens are essential for upgrading your Crossbow — which you will need to " +
-            "unlock access to Sniper tiers and pass Boss Crossbow gates.";
+            "Precision missions using the Crossbow.\n" +
+            "One shot per enemy — aim carefully.\n" +
+            "Rewards Cash and Crossbow Tokens.\n" +
+            "Upgrade your Crossbow to unlock Sniper tiers and pass Boss gates.";
 
-        var args = new CelebrationPopupArgs(
-            title: "Sniper Unlocked!",
-            body: body
-        );
+        var args = new MissionTypeUnlockPopupArgs(title, body, _icon);
 
         if (ServiceLocator.TryResolve<IStartupPopupCoordinator>(out var coord))
         {

@@ -9,15 +9,13 @@ using UnityEngine;
 /// and only while the map screen is active.
 ///
 /// Setup: Add this MonoBehaviour to the main menu scene.
-/// Set _popupId = "celebration_popup" and _contractsUnlockCompanyLevel to match
-/// the value set in MetaModeUnlockConfig (default: 5).
+/// Assign _modeUnlockConfig to the same MetaModeUnlockConfig asset used by MainMenuRuntime.
 /// </summary>
 public sealed class ContractsUnlockPresenter : MonoBehaviour
 {
-    [SerializeField] private string _popupId = "celebration_popup";
-
-    [Tooltip("Must match MetaModeUnlockConfig.ContractsUnlockCompanyLevel.")]
-    [SerializeField] private int _contractsUnlockCompanyLevel = 5;
+    [SerializeField] private string _popupId = "mission_type_unlock_popup";
+    [SerializeField] private MetaModeUnlockConfig _modeUnlockConfig;
+    [SerializeField] private Sprite _icon;
 
     private const string SaveKey = "contracts_unlock_popup_shown";
 
@@ -50,21 +48,23 @@ public sealed class ContractsUnlockPresenter : MonoBehaviour
         if (SaveSystem.Load(SaveKey, false))
             return;
 
+        if (_modeUnlockConfig == null)
+        {
+            Debug.LogError("ContractsUnlockPresenter: _modeUnlockConfig is not assigned.", this);
+            return;
+        }
+
         int companyLevel = services.ProgressData.GetCompanyLevel();
-        if (companyLevel < _contractsUnlockCompanyLevel)
+        if (companyLevel < _modeUnlockConfig.ContractsUnlockCompanyLevel)
             return;
 
+        const string title = "Contracts Unlocked!";
         const string body =
-            "Contracts are repeatable grind missions.\n\n" +
-            "Run any Campaign mission you have already completed. " +
-            "Every Contract run rewards tokens for ALL weapon classes — not just one.\n\n" +
-            "Rewards: Cash and tokens for every weapon class.\n\n" +
-            "Use Contracts regularly to keep your weapons upgraded and stay ahead of campaign gates.";
+            "Repeatable missions — replay any completed Campaign level.\n" +
+            "Each run earns Cash and weapon Tokens.\n" +
+            "Use them to upgrade weapons and stay ahead of gates.";
 
-        var args = new CelebrationPopupArgs(
-            title: "Contracts Unlocked!",
-            body: body
-        );
+        var args = new MissionTypeUnlockPopupArgs(title, body, _icon);
 
         if (ServiceLocator.TryResolve<IStartupPopupCoordinator>(out var coord))
         {

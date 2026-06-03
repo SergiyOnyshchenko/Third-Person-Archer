@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UI.Core;
 using UnityEngine;
 
@@ -5,17 +6,29 @@ using UnityEngine;
 /// Shows a one-time intro popup the first time the player selects the Boss tab
 /// after a Boss mission has become available in a zone.
 ///
-/// Fires on tab selection (not startup) to avoid same-session collision with
-/// ZoneCompletePresenter (Phase B) which fires automatically when Campaign is done.
+/// Fires on tab selection (not startup) — intentionally avoids stacking with
+/// ZoneCompletePresenter / ZoneUnlockPresenter which fire on map open.
 ///
-/// Reuses CelebrationPopupController via the "CelebrationPopup" registry ID.
+/// Per-zone title, body, and boss image are configured in Inspector via _bossEntries.
+/// Uses MissionTypeUnlockPopupController (boss_intro_popup registry ID).
 ///
 /// Setup: Add this MonoBehaviour to the main menu scene.
-/// Set _popupId = "CelebrationPopup".
+/// Populate _bossEntries with one entry per zone that has a boss.
 /// </summary>
 public sealed class BossIntroPresenter : MonoBehaviour
 {
-    [SerializeField] private string _popupId = "CelebrationPopup";
+    [System.Serializable]
+    private struct BossIntroEntry
+    {
+        public ZoneData Zone;
+        public string   Title;
+        [TextArea(2, 5)]
+        public string   Body;
+        public Sprite   Image;
+    }
+
+    [SerializeField] private string _popupId = "boss_intro_popup";
+    [SerializeField] private List<BossIntroEntry> _bossEntries = new();
 
     private MainMenuServices _services;
     private bool _initialized;
@@ -66,37 +79,39 @@ public sealed class BossIntroPresenter : MonoBehaviour
 
     private void OnMissionTypeChanged()
     {
-        if (_services == null)
-            return;
-
-        if (_services.ProgressData.MissionType != MissionType.Boss)
-            return;
+        if (_services == null) return;
+        if (_services.ProgressData.MissionType != MissionType.Boss) return;
 
         var zone = _services.ProgressData.Zone;
-        if (zone == null || !zone.IsBossUnlocked())
-            return;
+        if (zone == null || !zone.IsBossUnlocked()) return;
 
         string saveKey = $"boss_intro_popup_shown_{zone.ID}";
-        if (SaveSystem.Load(saveKey, false))
-            return;
+        if (SaveSystem.Load(saveKey, false)) return;
 
+        // Flag saved before show — popup fires on explicit user action (tab select),
+        // so we record it immediately to avoid re-triggering on fast re-navigation.
         SaveSystem.Save(saveKey, true);
 
-        string zoneName = !string.IsNullOrEmpty(zone.ZoneName) ? zone.ZoneName : "this zone";
+        BossIntroEntry entry = FindEntry(zone);
 
-        string body =
-            $"The Boss is the final challenge of {zoneName}.\n\n" +
-            "Defeating the Boss opens the next zone and gives a large reward.\n\n" +
-            "Boss missions require Crossbow Power — not just any weapon. " +
-            "Play Sniper missions to earn Crossbow Tokens and prepare your Crossbow before you challenge the Boss.\n\n" +
-            "When ready, select the Boss tab and hit Play.";
+        string title = !string.IsNullOrEmpty(entry.Title)
+            ? entry.Title
+            : "Boss Challenge!";
 
-        var args = new CelebrationPopupArgs(
-            title: "Boss Mission!",
-            body: body
-        );
+        string body = !string.IsNullOrEmpty(entry.Body)
+            ? entry.Body
+            : "Defeat the Boss to unlock the next zone.";
+
+        var args = new MissionTypeUnlockPopupArgs(title, body, entry.Image);
 
         if (ServiceLocator.TryResolve<IUINavigator>(out var nav))
             nav.ShowPopup(_popupId, args);
+    }
+
+    private BossIntroEntry FindEntry(ZoneData zone)
+    {
+        foreach (var entry in _bossEntries)
+            if (entry.Zone == zone) return entry;
+        return default;
     }
 }

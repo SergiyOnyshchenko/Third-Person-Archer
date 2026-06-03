@@ -11,7 +11,7 @@ namespace UI.Screens
     public sealed class ToastController : MonoBehaviour, IReceivesArgs<ToastArgs>
     {
         [SerializeField] private TextMeshProUGUI _text = null!;
-        [SerializeField] private float _defaultDuration = 2f;
+        [SerializeField] private float _defaultDuration = 5f;
         private float _duration;
 
         private void OnEnable() => StartCoroutine(AutoClose());

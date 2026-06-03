@@ -7,8 +7,8 @@ public static class StartupPopupPriority
     /// <summary>Full-game loop transition (Zone 3 campaign complete). Shown once ever.</summary>
     public const int LoopTransition     = 10;
 
-    /// <summary>Boss defeated in a zone — next zone or loop announcement.</summary>
-    public const int BossVictory        = 20;
+    /// <summary>A new zone became available (previous zone boss defeated).</summary>
+    public const int ZoneUnlock         = 20;
 
     /// <summary>All Campaign missions in a zone completed.</summary>
     public const int ZoneComplete       = 30;
