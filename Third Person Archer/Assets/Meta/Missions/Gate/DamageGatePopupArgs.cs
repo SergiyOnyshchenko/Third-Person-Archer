@@ -1,35 +1,49 @@
 using System;
 using Meta.Weapons;
+using Meta.Weapons.UI;
+
+public enum GatePopupAction
+{
+    OpenWeapons,    // open WeaponSelectionScreen (default)
+    PlayContracts,  // direct-start a Contracts mission
+    PlaySniper,     // direct-start a Sniper mission
+}
 
 [Serializable]
 public sealed class DamageGatePopupArgs
 {
     public WeaponClass WeaponClass { get; }
-    public int CampaignLevel { get; } // company level (global campaign index + 1)
+    public int CampaignLevel { get; }
 
     public float CurrentDamage { get; }
     public float RequiredDamage { get; }
 
-    public string WeaponScreenId { get; } // screen id in your ScreenRegistry
+    public string WeaponScreenId { get; }
 
-    /// <summary>
-    /// True if the player can upgrade the current weapon to reach RequiredDamage.
-    /// False = current weapon is at its maximum tier; player must buy a new one.
-    /// </summary>
+    /// <summary>True if the equipped weapon can be upgraded to reach RequiredDamage.</summary>
     public bool CanUpgradeToPass { get; }
 
-    /// <summary>Optional title override. If null, the popup uses its serialized default.</summary>
+    // ── Action routing (Phase 4) ──────────────────────────────────────────────
+    public GatePopupAction Action { get; }
+
+    /// <summary>Weapon to pre-select when Action = OpenWeapons. Null = default (equipped).</summary>
+    public string PreselectWeaponId { get; }
+
+    /// <summary>Button highlight when Action = OpenWeapons.</summary>
+    public WeaponHighlightMode HighlightMode { get; }
+
+    // ── Legacy fields kept for backward compatibility; no longer used by PlayMissionPresenter ──
+
+    /// <summary>Unused since Phase 4. Kept so serialized assets remain valid.</summary>
     public string CustomTitle { get; }
 
-    /// <summary>Optional hint override. If null, the popup selects hint based on CanUpgradeToPass.</summary>
+    /// <summary>Unused since Phase 4.</summary>
     public string CustomHint { get; }
 
-    /// <summary>
-    /// Optional one-time tutorial text shown below the hint.
-    /// Used on the player's first encounter with a gate type to explain the system.
-    /// Null = no tutorial section shown.
-    /// </summary>
+    /// <summary>Unused since Phase 4. Tutorial block is no longer shown.</summary>
     public string TutorialText { get; }
+
+    // ── Primary constructor (Phase 4) ─────────────────────────────────────────
 
     public DamageGatePopupArgs(
         WeaponClass weaponClass,
@@ -37,19 +51,19 @@ public sealed class DamageGatePopupArgs
         float currentDamage,
         float requiredDamage,
         string weaponScreenId,
+        GatePopupAction action,
         bool canUpgradeToPass = true,
-        string customTitle = null,
-        string customHint = null,
-        string tutorialText = null)
+        string preselectWeaponId = null,
+        WeaponHighlightMode highlightMode = WeaponHighlightMode.None)
     {
         WeaponClass = weaponClass;
         CampaignLevel = campaignLevel;
         CurrentDamage = currentDamage;
         RequiredDamage = requiredDamage;
         WeaponScreenId = weaponScreenId;
+        Action = action;
         CanUpgradeToPass = canUpgradeToPass;
-        CustomTitle = customTitle;
-        CustomHint = customHint;
-        TutorialText = tutorialText;
+        PreselectWeaponId = preselectWeaponId;
+        HighlightMode = highlightMode;
     }
 }

@@ -15,6 +15,7 @@ public sealed class MainMenuServices
 
     public IMissionCatalogService Catalog { get; }
     public IWeaponRequirementService WeaponRequirement { get; }
+    public NextStepRecommendationService NextStep { get; }
 
     public event Action OnMenuStateChanged;
 
@@ -28,7 +29,8 @@ public sealed class MainMenuServices
         MissionLaunchRequest launchRequest,
         MetaLoopProgressData loopData,
         IMissionCatalogService catalog,
-        IWeaponRequirementService weaponRequirement)
+        IWeaponRequirementService weaponRequirement,
+        NextStepRecommendationService nextStep = null)
     {
         Progress = progress;
         Context = context;
@@ -41,6 +43,7 @@ public sealed class MainMenuServices
         LoopData = loopData;
         Catalog = catalog;
         WeaponRequirement = weaponRequirement;
+        NextStep = nextStep;
     }
 
     public void NotifyMenuStateChanged()

@@ -17,4 +17,12 @@ public interface IStartupPopupCoordinator
     /// If the coordinator is unavailable (not in scene), the request is silently dropped.
     /// </summary>
     void Submit(StartupPopupRequest request);
+
+    /// <summary>
+    /// True when no popup is currently open, none is in the process of being shown,
+    /// and the pending queue is empty.
+    /// Use this before performing a direct nav.Open() so the action does not race
+    /// with a higher-priority popup that is about to appear.
+    /// </summary>
+    bool IsIdle { get; }
 }

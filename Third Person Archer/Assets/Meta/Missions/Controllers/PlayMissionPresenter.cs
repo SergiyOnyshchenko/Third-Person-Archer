@@ -1,4 +1,5 @@
 using Meta.Weapons;
+using Meta.Weapons.UI;
 using UI.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,16 +14,6 @@ public sealed class PlayMissionPresenter : MonoBehaviour
 
     [Tooltip("Weapon selection screen id from ScreenRegistry.")]
     [SerializeField] private string _weaponSelectionScreenId = "WeaponSelectionScreen";
-
-    // Save keys for one-time tutorial flags
-    private const string FirstCampaignGateKey = "tutorial_first_campaign_gate";
-    private const string FirstBossGateKey = "tutorial_first_boss_gate";
-    private const string FirstForcedPurchaseKey = "tutorial_first_forced_purchase_gate";
-
-    // Loaded once in Init(); written when the tutorial is first shown
-    private bool _firstCampaignGateShown;
-    private bool _firstBossGateShown;
-    private bool _firstForcedPurchaseShown;
 
     private MainMenuServices _services;
     private bool _initialized;
@@ -70,10 +61,6 @@ public sealed class PlayMissionPresenter : MonoBehaviour
 
         _services = services;
 
-        _firstCampaignGateShown = SaveSystem.Load(FirstCampaignGateKey, false);
-        _firstBossGateShown = SaveSystem.Load(FirstBossGateKey, false);
-        _firstForcedPurchaseShown = SaveSystem.Load(FirstForcedPurchaseKey, false);
-
         if (_services != null)
             _services.OnMenuStateChanged += Refresh;
 
@@ -91,8 +78,6 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         var ctx = _services.Context.BuildSelectedContext();
         var avail = _services.Availability.GetAvailability(ctx);
 
-        // Allow Play button click when blocked by a gate that shows a popup.
-        // The popup explains what upgrade is needed.
         bool canClickPlay =
             avail.CanPlay ||
             avail.Reason == AvailabilityBlockReason.CampaignDamageTooLow ||
@@ -104,8 +89,7 @@ public sealed class PlayMissionPresenter : MonoBehaviour
 
     private void OnPlayClicked()
     {
-        if (_services == null)
-            return;
+        if (_services == null) return;
 
         var result = _services.MissionStart.TryStartSelected();
 
@@ -130,7 +114,7 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         switch (result.Availability.Reason)
         {
             case AvailabilityBlockReason.CampaignDamageTooLow:
-                ShowDamageGatePopup(result.Gate);
+                ShowDamageGatePopup(result.Gate, isCrossbow: false);
                 break;
 
             case AvailabilityBlockReason.SniperDamageTooLow:
@@ -138,7 +122,7 @@ public sealed class PlayMissionPresenter : MonoBehaviour
                 break;
 
             case AvailabilityBlockReason.BossCrossbowDamageTooLow:
-                ShowBossGatePopup(result.Gate);
+                ShowDamageGatePopup(result.Gate, isCrossbow: true);
                 break;
 
             default:
@@ -147,118 +131,79 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         }
     }
 
-    private void ShowDamageGatePopup(MissionGateResult gate)
+    // ── Campaign gate (normal weapons) and Boss gate (Crossbow) ──────────────
+
+    private void ShowDamageGatePopup(MissionGateResult gate, bool isCrossbow)
     {
-        if (!ServiceLocator.TryResolve<IUINavigator>(out var nav))
-            return;
+        if (!ServiceLocator.TryResolve<IUINavigator>(out var nav)) return;
 
         var ctx = _services.Context.BuildSelectedContext();
         int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
 
-        string className = gate.RequiredWeaponClass.ToString(); // "Bow", "Shuriken", etc.
-        string hint = gate.CanUpgradeToPass
-            ? $"Upgrade your {className} or buy a stronger one. {className} Tokens can be earned from Campaign missions and Contracts."
-            : $"Your {className} is at its maximum level. Buy a stronger {className}. {className} Tokens can be earned from Campaign missions and Contracts.";
-
-        string tutorialText = null;
-        if (!gate.CanUpgradeToPass && !_firstForcedPurchaseShown)
-        {
-            // Forced purchase tutorial takes priority over the general gate tutorial.
-            _firstForcedPurchaseShown = true;
-            SaveSystem.Save(FirstForcedPurchaseKey, true);
-            // Also mark general gate tutorial shown so it does not appear later on a normal gate.
-            if (!_firstCampaignGateShown)
-            {
-                _firstCampaignGateShown = true;
-                SaveSystem.Save(FirstCampaignGateKey, true);
-            }
-            tutorialText = "TIP: Your weapon is at its maximum level for this class.\n" +
-                           "To pass this gate you need to BUY a higher-tier weapon of the same class.\n" +
-                           "Open the weapon shop and look for a stronger option.";
-        }
-        else if (!_firstCampaignGateShown)
-        {
-            _firstCampaignGateShown = true;
-            SaveSystem.Save(FirstCampaignGateKey, true);
-            tutorialText = "TIP: Gates appear when your weapon damage is too low.\n" +
-                           "Upgrade your weapon or buy a stronger one to continue.\n" +
-                           "Weapon Tokens can be earned from Campaign missions and Contracts.";
-        }
+        // Ask the recommendation service what action makes most sense right now.
+        var rec = _services.NextStep?.Evaluate() ?? NextStepRecommendation.None;
+        var (action, preselectId, highlightMode) = RecommendationToAction(rec);
 
         var args = new DamageGatePopupArgs(
-            weaponClass: gate.RequiredWeaponClass,
-            campaignLevel: companyLevel,
-            currentDamage: gate.CurrentDamage,
-            requiredDamage: gate.RequiredDamage,
-            weaponScreenId: _weaponSelectionScreenId,
-            canUpgradeToPass: gate.CanUpgradeToPass,
-            customHint: hint,
-            tutorialText: tutorialText
-        );
+            weaponClass:       gate.RequiredWeaponClass,
+            campaignLevel:     companyLevel,
+            currentDamage:     gate.CurrentDamage,
+            requiredDamage:    gate.RequiredDamage,
+            weaponScreenId:    _weaponSelectionScreenId,
+            action:            action,
+            canUpgradeToPass:  gate.CanUpgradeToPass,
+            preselectWeaponId: preselectId,
+            highlightMode:     highlightMode);
 
         nav.ShowPopup(_damageGatePopupId, args);
     }
+
+    // ── Sniper access gate (always Crossbow, always OpenWeapons) ─────────────
 
     private void ShowSniperGatePopup(MissionGateResult gate)
     {
-        if (!ServiceLocator.TryResolve<IUINavigator>(out var nav))
-            return;
+        if (!ServiceLocator.TryResolve<IUINavigator>(out var nav)) return;
 
         var ctx = _services.Context.BuildSelectedContext();
         int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
 
-        string hint = gate.CanUpgradeToPass
-            ? "Upgrade your Crossbow to access this Sniper mission. Crossbow Tokens can be earned from Sniper missions."
-            : "Your Crossbow is at its maximum level. Buy a stronger Crossbow. Crossbow Tokens can be earned from Sniper missions.";
+        // For Sniper access the player must strengthen their Crossbow — always OpenWeapons.
+        var highlightMode = gate.CanUpgradeToPass
+            ? WeaponHighlightMode.Upgrade
+            : WeaponHighlightMode.Buy;
 
         var args = new DamageGatePopupArgs(
-            weaponClass: WeaponClass.Crossbow,
-            campaignLevel: companyLevel,
-            currentDamage: gate.CurrentDamage,
-            requiredDamage: gate.RequiredDamage,
-            weaponScreenId: _weaponSelectionScreenId,
-            canUpgradeToPass: gate.CanUpgradeToPass,
-            customTitle: "Sniper access requires a stronger Crossbow",
-            customHint: hint
-        );
+            weaponClass:       WeaponClass.Crossbow,
+            campaignLevel:     companyLevel,
+            currentDamage:     gate.CurrentDamage,
+            requiredDamage:    gate.RequiredDamage,
+            weaponScreenId:    _weaponSelectionScreenId,
+            action:            GatePopupAction.OpenWeapons,
+            canUpgradeToPass:  gate.CanUpgradeToPass,
+            preselectWeaponId: null,
+            highlightMode:     highlightMode);
 
         nav.ShowPopup(_damageGatePopupId, args);
     }
 
-    private void ShowBossGatePopup(MissionGateResult gate)
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private static (GatePopupAction action, string preselectId, WeaponHighlightMode highlight)
+        RecommendationToAction(NextStepRecommendation rec)
     {
-        if (!ServiceLocator.TryResolve<IUINavigator>(out var nav))
-            return;
-
-        var ctx = _services.Context.BuildSelectedContext();
-        int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
-
-        string hint = gate.CanUpgradeToPass
-            ? "Boss missions require Crossbow Power. Play Sniper missions to earn Crossbow Tokens, upgrade your Crossbow, then return to the Boss."
-            : "Your Crossbow cannot reach the required power. Buy a stronger Crossbow. Crossbow Tokens can be earned from Sniper missions.";
-
-        string tutorialText = null;
-        if (!_firstBossGateShown)
+        return rec.Type switch
         {
-            _firstBossGateShown = true;
-            SaveSystem.Save(FirstBossGateKey, true);
-            tutorialText = "TIP: Boss missions require Crossbow Power — not just any weapon.\n" +
-                           "Play Sniper missions to earn Crossbow Tokens.\n" +
-                           "Upgrade your Crossbow, then return to the Boss.";
-        }
-
-        var args = new DamageGatePopupArgs(
-            weaponClass: WeaponClass.Crossbow,
-            campaignLevel: companyLevel,
-            currentDamage: gate.CurrentDamage,
-            requiredDamage: gate.RequiredDamage,
-            weaponScreenId: _weaponSelectionScreenId,
-            canUpgradeToPass: gate.CanUpgradeToPass,
-            customTitle: "Boss mission requires a stronger Crossbow",
-            customHint: hint,
-            tutorialText: tutorialText
-        );
-
-        nav.ShowPopup(_damageGatePopupId, args);
+            NextStepRecommendationType.UpgradeWeapon =>
+                (GatePopupAction.OpenWeapons, rec.TargetWeaponId, WeaponHighlightMode.Upgrade),
+            NextStepRecommendationType.BuyWeapon =>
+                (GatePopupAction.OpenWeapons, rec.TargetWeaponId, WeaponHighlightMode.Buy),
+            NextStepRecommendationType.PlayContracts =>
+                (GatePopupAction.PlayContracts, null, WeaponHighlightMode.None),
+            NextStepRecommendationType.PlaySniper =>
+                (GatePopupAction.PlaySniper, null, WeaponHighlightMode.None),
+            _ =>
+                // None or unrecognised: fall back to weapon screen, no highlight.
+                (GatePopupAction.OpenWeapons, null, WeaponHighlightMode.None),
+        };
     }
 }

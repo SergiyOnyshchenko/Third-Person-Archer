@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -134,6 +135,45 @@ namespace Meta.Weapons.UI
                 _upgradeTokenView.SetToken(tokenIcon, tokenRequired, tokenOwned);
             }
         }
+
+        // ── Highlight pulse ──────────────────────────────────────────────────
+
+        private Tween _pulseTween;
+
+        public void PulseUpgradeButton()
+        {
+            if (_upgradeButton != null && _upgradeButton.gameObject.activeInHierarchy)
+                StartPulse(_upgradeButton.transform);
+        }
+
+        public void PulseBuyButton()
+        {
+            if (_purchaseButton != null && _purchaseButton.gameObject.activeInHierarchy)
+                StartPulse(_purchaseButton.transform);
+        }
+
+        public void StopPulse()
+        {
+            if (_pulseTween != null)
+            {
+                _pulseTween.Kill(complete: true);
+                _pulseTween = null;
+            }
+        }
+
+        private void StartPulse(Transform target)
+        {
+            StopPulse();
+            target.localScale = Vector3.one;
+            _pulseTween = target.DOScale(1.05f, 0.5f)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine);
+        }
+
+        private void OnDisable() => StopPulse();
+        private void OnDestroy() => StopPulse();
+
+        // ─────────────────────────────────────────────────────────────────────
 
         private void SetAllButtonsActive(bool active)
         {

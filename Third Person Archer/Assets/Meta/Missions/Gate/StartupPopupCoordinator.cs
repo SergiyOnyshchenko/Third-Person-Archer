@@ -118,6 +118,8 @@ public sealed class StartupPopupCoordinator : MonoBehaviour, IStartupPopupCoordi
     // IStartupPopupCoordinator
     // -------------------------------------------------------------------------
 
+    public bool IsIdle => !_popupActive && !_awaitingPopupShown && _pending.Count == 0;
+
     public void Submit(StartupPopupRequest request)
     {
         if (request == null) return;

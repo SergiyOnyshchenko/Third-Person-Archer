@@ -27,4 +27,10 @@ public static class StartupPopupPriority
 
     /// <summary>Repeating Contracts completion milestone (1 / 5 / 10 / 20).</summary>
     public const int ContractsMilestone = 80;
+
+    /// <summary>
+    /// Repeating post-mission next-step guidance (Weapon Too Weak / Not Enough Resources).
+    /// Shown after all one-time celebration popups so it does not interrupt milestone rewards.
+    /// </summary>
+    public const int NextStepGuidance = 90;
 }

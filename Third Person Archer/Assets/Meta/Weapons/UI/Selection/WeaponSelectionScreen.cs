@@ -43,6 +43,8 @@ namespace Meta.Weapons.UI
         private WeaponDef _selectedDef;
         private WeaponInstance _selectedInstance;
         private string _pendingPreselectWeaponId;
+        private WeaponHighlightMode _highlightMode;
+        private string _highlightTargetWeaponId;
 
         private readonly List<WeaponListItemView> _spawnedItems = new();
         public UnityEvent<WeaponDef> OnWeaponSelected = new UnityEvent<WeaponDef>();
@@ -89,6 +91,8 @@ namespace Meta.Weapons.UI
         {
             _pendingPreselectWeaponId = args.PreselectWeaponId;
             _currentCampaignLevel = args.CampaignLevel;
+            _highlightMode = args.HighlightMode;
+            _highlightTargetWeaponId = args.PreselectWeaponId;
             ShowForClass(args.WeaponClass, args.CampaignLevel);
         }
 
@@ -168,6 +172,10 @@ namespace Meta.Weapons.UI
 
         private void OnItemClicked(WeaponDef def)
         {
+            // Manual selection clears guidance highlight.
+            if (def != null && def.Id != _highlightTargetWeaponId)
+                _highlightMode = WeaponHighlightMode.None;
+
             SelectWeapon(def);
         }
 
@@ -237,7 +245,27 @@ namespace Meta.Weapons.UI
 
             UpdateUpgradeLevelUI(def, _selectedInstance, isOwned);
 
+            ApplyHighlight();
+
             OnWeaponSelected?.Invoke(def);
+        }
+
+        private void ApplyHighlight()
+        {
+            if (_pricePanel == null) return;
+
+            switch (_highlightMode)
+            {
+                case WeaponHighlightMode.Upgrade:
+                    _pricePanel.PulseUpgradeButton();
+                    break;
+                case WeaponHighlightMode.Buy:
+                    _pricePanel.PulseBuyButton();
+                    break;
+                default:
+                    _pricePanel.StopPulse();
+                    break;
+            }
         }
 
         private void ShowPurchaseUI(WeaponDef def)
@@ -341,6 +369,8 @@ namespace Meta.Weapons.UI
         {
             if (_selectedDef == null) return;
 
+            _highlightMode = WeaponHighlightMode.None;
+
             var def = _selectedDef;
             var state = _weaponRepo.Load();
             var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id);
@@ -382,6 +412,7 @@ namespace Meta.Weapons.UI
 
             if (_upgradeService.TryUpgradeWithCurrencies(_selectedDef.Id))
             {
+                _highlightMode = WeaponHighlightMode.None;
                 SelectWeapon(_selectedDef);
             }
         }
@@ -392,6 +423,7 @@ namespace Meta.Weapons.UI
 
             if (_upgradeService.TryUpgradeWithAd(_selectedDef.Id))
             {
+                _highlightMode = WeaponHighlightMode.None;
                 SelectWeapon(_selectedDef);
             }
         }

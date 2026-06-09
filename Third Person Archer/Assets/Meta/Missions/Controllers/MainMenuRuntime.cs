@@ -115,6 +115,15 @@ public sealed class MainMenuRuntime : MonoBehaviour
             _launchRequest,
             _loopProgressData);
 
+        var nextStep = new NextStepRecommendationService(
+            availability,
+            gate,
+            context,
+            progressRead,
+            catalog,
+            weaponReq,
+            _loadoutSnapshot);
+
         Services = new MainMenuServices(
             progressWrite,
             context,
@@ -126,7 +135,8 @@ public sealed class MainMenuRuntime : MonoBehaviour
             _launchRequest,
             _loopProgressData,
             catalog,
-            weaponReq
+            weaponReq,
+            nextStep
         );
     }
 
