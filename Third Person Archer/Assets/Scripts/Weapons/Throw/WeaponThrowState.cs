@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Actor;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Events;
 
 public abstract class WeaponThrowState : ProcessState, IActorIniter
 {
@@ -10,6 +11,8 @@ public abstract class WeaponThrowState : ProcessState, IActorIniter
     private AttackInput _attackInput;
     private WeaponPull _weaponPull;
     private float _pullThreshold = 0.02f;
+
+    public UnityEvent OnThrow = new UnityEvent();
 
     protected abstract void InitWeaponController(ActorController actor);
 
@@ -55,6 +58,8 @@ public abstract class WeaponThrowState : ProcessState, IActorIniter
         //    return;
 
         _weaponController.ReleasePull();
+        OnThrow?.Invoke();
+
         DOVirtual.DelayedCall(0.5f, FinishProcess);
     }
 }

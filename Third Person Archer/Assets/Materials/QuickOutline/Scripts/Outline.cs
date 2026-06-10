@@ -48,6 +48,14 @@ public class Outline : MonoBehaviour {
     }
   }
 
+  public bool Priority {
+    get { return priority; }
+    set {
+      priority = value;
+      needsUpdate = true;
+    }
+  }
+
   [Serializable]
   private class ListVector3 {
     public List<Vector3> data;
@@ -61,6 +69,9 @@ public class Outline : MonoBehaviour {
 
   [SerializeField, Range(0f, 10f)]
   private float outlineWidth = 2f;
+
+  [SerializeField, Tooltip("When enabled, this outline uses a separate stencil bit and renders on top of non-priority outlines.")]
+  private bool priority = false;
 
   [Header("Optional")]
 
@@ -273,6 +284,16 @@ public class Outline : MonoBehaviour {
 
     // Apply properties according to mode
     outlineFillMaterial.SetColor("_OutlineColor", outlineColor);
+
+    // Priority outlines use stencil bit 2; normal outlines use bit 1
+    float stencilRef = priority ? 2f : 1f;
+    float stencilMask = priority ? 2f : 1f;
+    outlineMaskMaterial.SetFloat("_StencilRef", stencilRef);
+    outlineMaskMaterial.SetFloat("_StencilReadMask", stencilMask);
+    outlineMaskMaterial.SetFloat("_StencilWriteMask", stencilMask);
+    outlineFillMaterial.SetFloat("_StencilRef", stencilRef);
+    outlineFillMaterial.SetFloat("_StencilReadMask", stencilMask);
+    outlineFillMaterial.SetFloat("_StencilWriteMask", stencilMask);
 
     switch (outlineMode) {
       case Mode.OutlineAll:

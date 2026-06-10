@@ -9,6 +9,7 @@ namespace Actor
         public float Horizontal { get; protected set; }
         public float Vertical { get; protected set; }
         public bool IsFrozen { get; protected set; }
+        public float SensitivityMultiplier { get; set; } = 1f;
 
         public void Activate (bool value)
         {

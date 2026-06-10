@@ -21,13 +21,23 @@ namespace Actor
         [SerializeField] private float _aimRayDistance = 200f;
         [SerializeField] private LayerMask _aimCollisionMask;
         [SerializeField] private float _minSpawnSeparation = 0.05f;
+        [Header("Enemy Preview")]
+        [SerializeField, Min(0f)] private float _enemyDetectionSphereRadius = 0.25f;
+        [SerializeField] private LayerMask _enemyDetectionMask;
+        [SerializeField, Range(0f, 1f)] private float _enemyAimSlowFactor = 0.35f;
         private bool _wasDrawing;
+        private bool _wasTargetingEnemy;
+#if UNITY_EDITOR
+        private Vector3 _lastEnemyDetectionPoint;
+        private bool _hasEnemyDetectionPoint;
+#endif
         private Transform _shootPoint;
         private TrajectoryProfile _profile;
         private TrajectoryPreviewView _previewView;
         private WeaponPull _weaponPull;
         private ProjectileEnemiesLayermask _enemyLayermask;
         private ITrajectoryPredictor _predictor;
+        private FpvInput _fpvInput;
         public ITrajectoryPredictor Predictor => _predictor;
 
         public void InitActor(ActorController actor)
@@ -36,6 +46,7 @@ namespace Actor
 
             if (actor.TryGetProperty(out _weaponPull)) { }
             if (actor.TryGetProperty(out _enemyLayermask)) { }
+            actor.TryGetInput(out _fpvInput);
         }
 
         public void InitPredictor(TrajectoryProfile profile, Transform shootPoint)
@@ -77,19 +88,23 @@ namespace Actor
                 };
 
                 var prediction = _predictor.Predict(in predictParams);
-                _previewView.Render(in prediction);
+                bool targetsEnemy = CheckEnemyNearTrajectoryEnd(in prediction);
+                _previewView.Render(in prediction, targetsEnemy);
                 _wasDrawing = true;
+                ApplyAimSlow(targetsEnemy);
             }
             else
             {
                 _previewView.Clear();
                 _wasDrawing = false;
+                ApplyAimSlow(false);
             }
         }
 
         public void Reset()
         {
             _previewView.Clear();
+            ApplyAimSlow(false);
         }
 
         public bool PredictEnemyHit(out GameObject enemy, out Vector3 hitPoint)
@@ -143,6 +158,45 @@ namespace Actor
 
             return ray.GetPoint(depth);
         }
+
+        private void ApplyAimSlow(bool targetsEnemy)
+        {
+            if (_fpvInput == null || targetsEnemy == _wasTargetingEnemy) return;
+            _wasTargetingEnemy = targetsEnemy;
+            _fpvInput.SensitivityMultiplier = targetsEnemy ? _enemyAimSlowFactor : 1f;
+        }
+
+        private bool CheckEnemyNearTrajectoryEnd(in TrajectoryPrediction prediction)
+        {
+            if (_enemyDetectionSphereRadius <= 0f ||
+                _enemyDetectionMask.value == 0 ||
+                prediction.Points == null ||
+                prediction.PointCount <= 0)
+            {
+                return false;
+            }
+
+            Vector3 endPoint = prediction.Points[prediction.PointCount - 1];
+
+#if UNITY_EDITOR
+            //_lastEnemyDetectionPoint = endPoint;
+            //_hasEnemyDetectionPoint = true;
+#endif
+
+            return Physics.CheckSphere(
+                endPoint,
+                _enemyDetectionSphereRadius,
+                _enemyDetectionMask,
+                QueryTriggerInteraction.Collide);
+        }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            if (!_hasEnemyDetectionPoint || _enemyDetectionSphereRadius <= 0f) return;
+            Gizmos.DrawWireSphere(_lastEnemyDetectionPoint, _enemyDetectionSphereRadius);
+        }
+#endif
 
         public Vector3 ComputeAimDirection(Vector3 spawnPos)
         {

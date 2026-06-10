@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using Actor;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SpearThrowState : ProcessState, IActorIniter
 {
     private SpearController _spearController;
     private AttackInput _attackInput;
+
+    public UnityEvent OnThrow = new UnityEvent();
 
     public void InitActor(ActorController actor)
     {
@@ -46,6 +49,8 @@ public class SpearThrowState : ProcessState, IActorIniter
     private void PullArrow()
     {
         _spearController.ReleasePull();
+        OnThrow?.Invoke();
+
         DOVirtual.DelayedCall(0.5f, FinishProcess);
     }
 }

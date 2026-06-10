@@ -11800,6 +11800,21 @@ MonoBehaviour:
   OnProcessFinished:
     m_PersistentCalls:
       m_Calls: []
+  OnThrow:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6420336015513018618}
+        m_TargetAssemblyTypeName: TrajectoryPredictSubstate, Assembly-CSharp
+        m_MethodName: Exit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &9141641985634922196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13879,6 +13894,21 @@ MonoBehaviour:
   OnProcessFinished:
     m_PersistentCalls:
       m_Calls: []
+  OnThrow:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6626680677262559531}
+        m_TargetAssemblyTypeName: TrajectoryPredictSubstate, Assembly-CSharp
+        m_MethodName: Exit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1955371948637795169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15101,6 +15131,21 @@ MonoBehaviour:
   OnProcessFinished:
     m_PersistentCalls:
       m_Calls: []
+  OnThrow:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6571861885787336172}
+        m_TargetAssemblyTypeName: TrajectoryPredictSubstate, Assembly-CSharp
+        m_MethodName: Exit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &3563891347140092731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16269,6 +16314,7 @@ GameObject:
   - component: {fileID: 7225707762516131738}
   - component: {fileID: 4628661939064354097}
   - component: {fileID: 6137881288542844179}
+  - component: {fileID: 1754150408512534024}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -16348,6 +16394,25 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1754150408512534024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4573835462939071712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Outline
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 4
+  priority: 1
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &4656367215640329874
 GameObject:
   m_ObjectHideFlags: 0
@@ -16781,7 +16846,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.32403705, y: 0.32403705, z: 0.32403705}
+  m_LocalScale: {x: 0.16000317, y: 0.16000317, z: 0.16000317}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2459998954272952118}
@@ -20066,6 +20131,7 @@ GameObject:
   - component: {fileID: 4713301300225742691}
   - component: {fileID: 8882339451838022251}
   - component: {fileID: 3888873257921776726}
+  - component: {fileID: 7371169100461181720}
   m_Layer: 0
   m_Name: Trajectory
   m_TagString: Untagged
@@ -20102,6 +20168,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _line: {fileID: 3888873257921776726}
   _impactMarkerInstance: {fileID: 2526486896263632656}
+  _impactMarkerRenderer: {fileID: 6137881288542844179}
+  _lineOutline: {fileID: 7371169100461181720}
+  _impactOutline: {fileID: 1754150408512534024}
+  _normal:
+    LineMaterial: {fileID: 2100000, guid: e355fdce9bdb6af4abc98452c0b026c4, type: 2}
+    ImpactMaterial: {fileID: 2100000, guid: e355fdce9bdb6af4abc98452c0b026c4, type: 2}
+    LineOutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    ImpactOutlineColor: {r: 0, g: 0, b: 0, a: 1}
+  _enemy:
+    LineMaterial: {fileID: 2100000, guid: d7e7b2ae20e6ba845becf4fecac0b440, type: 2}
+    ImpactMaterial: {fileID: 2100000, guid: d7e7b2ae20e6ba845becf4fecac0b440, type: 2}
+    LineOutlineColor: {r: 1, g: 1, b: 1, a: 1}
+    ImpactOutlineColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!120 &3888873257921776726
 LineRenderer:
   serializedVersion: 3
@@ -20219,6 +20298,25 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &7371169100461181720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5995542189726157979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Outline
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 4
+  priority: 1
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &6016010681724487804
 GameObject:
   m_ObjectHideFlags: 0
@@ -20529,7 +20627,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8734798919599963981
 Transform:
   m_ObjectHideFlags: 0
@@ -21143,8 +21241,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6207839790334305227}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.16632889, y: -0.09715147, z: 0.016469805, w: 0.9811346}
-  m_LocalPosition: {x: 0.5, y: 2, z: -2.5}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.6000004, z: -0.010000229}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -21182,9 +21280,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 60
-  field of view: 60.000004
+  near clip plane: 0.01
+  far clip plane: 50
+  field of view: 42.995667
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -24235,6 +24333,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 393
   _minSpawnSeparation: 0.05
+  _enemyDetectionSphereRadius: 0.25
+  _enemyDetectionMask:
+    serializedVersion: 2
+    m_Bits: 128
+  _enemyAimSlowFactor: 0.125
 --- !u!1 &7136674671857338530
 GameObject:
   m_ObjectHideFlags: 0
@@ -30908,6 +31011,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 0.7785215, g: 0.99607843, b: 0.6862745, a: 1}
   outlineWidth: 5
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -33954,6 +34058,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 0.99607843, g: 0.83715385, b: 0.6862745, a: 1}
   outlineWidth: 5
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -34094,6 +34199,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
   outlineWidth: 2
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -34897,6 +35003,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
   outlineWidth: 5
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -34920,6 +35027,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
   outlineWidth: 5
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -35151,6 +35259,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
   outlineWidth: 2
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -35402,6 +35511,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
   outlineWidth: 2
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -36155,6 +36265,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 0.99607843, g: 0.96862745, b: 0.6862745, a: 1}
   outlineWidth: 5
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -39634,6 +39745,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
   outlineWidth: 5
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -39946,6 +40058,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 0.99607843, g: 0.96862745, b: 0.6862745, a: 1}
   outlineWidth: 5
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -40632,6 +40745,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 0.99607843, g: 0.8091326, b: 0.6862745, a: 1}
   outlineWidth: 5
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []

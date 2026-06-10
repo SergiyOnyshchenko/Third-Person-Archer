@@ -17,7 +17,7 @@ namespace Actor
         {
             //if (IsFrozen)
             //    return;
-
+            
             Horizontal = 0;
             Vertical = 0;
 
@@ -43,7 +43,7 @@ namespace Actor
                     case TouchPhase.Stationary:
                         if (_lastTouchPositions.TryGetValue(fingerId, out Vector2 lastPos))
                         {
-                            Vector2 delta = (pos - lastPos) * _localSensitivity;
+                            Vector2 delta = (pos - lastPos) * (_localSensitivity * SensitivityMultiplier);
                             Horizontal += delta.x;
                             Vertical += delta.y;
                             _lastTouchPositions[fingerId] = pos;
@@ -72,7 +72,7 @@ namespace Actor
             {
                 if (MousePosition.x <= Screen.width * 0.5f && _lastTouchPositions.TryGetValue(-1, out Vector2 lastMousePos))
                 {
-                    Vector2 delta = (MousePosition - lastMousePos) * _localSensitivity;
+                    Vector2 delta = (MousePosition - lastMousePos) * (_localSensitivity * SensitivityMultiplier);
                     Horizontal += delta.x;
                     Vertical += delta.y;
                     _lastTouchPositions[-1] = MousePosition;
