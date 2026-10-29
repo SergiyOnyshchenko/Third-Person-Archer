@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Heroic mode on the map: zone arrows (every zone is open after the campaign: Heroic levels,
-/// unfinished Sniper, boss replays) and a "HEROIC n/m" badge for the shown zone.
+/// boss replays) and a "HEROIC n/m" badge for the shown zone.
 /// Before Heroic the arrows stay hidden (only the current zone is playable).
 /// </summary>
 public sealed class ZoneBrowseView : MonoBehaviour

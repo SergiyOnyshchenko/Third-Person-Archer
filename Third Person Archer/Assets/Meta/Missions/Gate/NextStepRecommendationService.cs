@@ -9,12 +9,8 @@ using Meta.Weapons;
 /// Decision priority (stops at the first applicable result):
 /// 1. Affordable upgrade on the equipped weapon        → UpgradeWeapon
 /// 2. Affordable purchase of a stronger in-class weapon → BuyWeapon
-/// 3. Crossbow gate + Sniper is unlocked/playable      → PlaySniper
-/// 4. Normal gate  + Contracts is unlocked/playable    → PlayContracts
-/// 5. Everything else                                  → None
-///
-/// Crossbow gate + Sniper locked → None (per designer rule: no guidance when grind
-/// path is unavailable for Crossbow gates).
+/// 3. A cleared level of the class exists               → ReplayLevel (gold + its essence)
+/// 4. Everything else                                  → None
 ///
 /// Context access:
 /// - Weapon services (catalog, repository) are read lazily via WeaponsInitializer.Instance
@@ -139,45 +135,18 @@ public sealed class NextStepRecommendationService
                 isCrossbowPath: isCrossbow);
         }
 
-        // 3 / 4. Guide the player to the appropriate resource grind.
-        if (isCrossbow)
+        // 3. Replay a cleared level of the class: gold + essence of exactly that class.
+        var progress = MissionProgressData.Active;
+        if (progress != null && progress.TryFindReplayLevel(weaponClass, out _, out _))
         {
-            // Designer rule: if Sniper is locked when Crossbow gate is blocking,
-            // return None rather than redirecting somewhere unhelpful.
-            var sniperCtx  = BuildContextFor(baseCtx, MissionType.Sniper);
-            var sniperAvail = sniperCtx != null
-                ? _availability.GetAvailability(sniperCtx)
-                : null;
-
-            if (sniperAvail != null && sniperAvail.CanPlay)
-            {
-                return new NextStepRecommendation(
-                    NextStepRecommendationType.PlaySniper,
-                    weaponClass, currentDmg, requiredDmg,
-                    targetMissionType: MissionType.Sniper,
-                    isCrossbowPath: true);
-            }
-
-            return NextStepRecommendation.None;
+            return new NextStepRecommendation(
+                NextStepRecommendationType.ReplayLevel,
+                weaponClass, currentDmg, requiredDmg,
+                targetMissionType: MissionType.Contracts,
+                isCrossbowPath: isCrossbow);
         }
-        else
-        {
-            var contractsCtx  = BuildContextFor(baseCtx, MissionType.Contracts);
-            var contractsAvail = contractsCtx != null
-                ? _availability.GetAvailability(contractsCtx)
-                : null;
 
-            if (contractsAvail != null && contractsAvail.CanPlay)
-            {
-                return new NextStepRecommendation(
-                    NextStepRecommendationType.PlayContracts,
-                    weaponClass, currentDmg, requiredDmg,
-                    targetMissionType: MissionType.Contracts,
-                    isCrossbowPath: false);
-            }
-
-            return NextStepRecommendation.None;
-        }
+        return NextStepRecommendation.None;
     }
 
     // -------------------------------------------------------------------------
@@ -189,17 +158,13 @@ public sealed class NextStepRecommendationService
     {
         var mission = _progress.GetMission(type);
 
-        // Non-Contracts types need a concrete mission to be valid.
-        if (type != MissionType.Contracts && mission == null)
+        if (mission == null)
             return null;
 
         int globalIndex   = _catalog.GetGlobalCampaignIndexOrMinusOne(mission);
         int companyLevel  = globalIndex >= 0 ? globalIndex + 1 : -1;
 
-        // Null mission guard: GetRequiredWeaponClass may throw on null.
-        var weaponClass = mission != null
-            ? _weaponRequirement.GetRequiredWeaponClass(mission)
-            : default;
+        var weaponClass = _weaponRequirement.GetRequiredWeaponClass(mission);
 
         return new MissionContext(
             baseCtx.Zone, baseCtx.ZoneIndex,
@@ -214,7 +179,7 @@ public sealed class NextStepRecommendationService
         if (baseCtx.GlobalCampaignIndex >= 0)
             return baseCtx.GlobalCampaignIndex;
 
-        // baseCtx is not a Campaign context (e.g. Contracts/Boss selected).
+        // baseCtx is not a Campaign context (e.g. Boss selected) or a Sniper level.
         // Derive from the next campaign mission instead.
         var campaignMission = _progress.GetMission(MissionType.Campaign);
         return _catalog.GetGlobalCampaignIndexOrMinusOne(campaignMission);

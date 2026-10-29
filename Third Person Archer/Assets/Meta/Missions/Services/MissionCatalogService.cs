@@ -36,7 +36,8 @@ public sealed class MissionCatalogService : IMissionCatalogService
             for (int mi = 0; mi < missions.Count; mi++)
             {
                 var mission = missions[mi];
-                if (mission == null) continue;
+                // Sniper levels on the path are not part of the campaign index (rewards, company level).
+                if (mission == null || mission.IsSniper) continue;
 
                 // Deduplicate defensively.
                 if (_globalIndexByMission.ContainsKey(mission))

@@ -101,20 +101,13 @@ public sealed class MainMenuRuntime : MonoBehaviour
         var companyLevel = new CompanyLevelService(progressRead);
         var availability = new MissionAvailabilityService(gate, _modeUnlockConfig, companyLevel, _loopProgressData);
 
-        if (!DataManager.Instance.TryGetData(out GuildData guildData) || guildData == null)
-            Debug.LogError("MainMenuRuntime: GuildData not found in DataManager (add it to GameData.prefab).");
-
-        var contractBoard = guildData != null
-            ? new ContractBoardService(guildData, _balanceConfig, ProgressData, loadoutStats)
-            : null;
-
         var missionStart = new MissionStartService(
             ProgressData,
             context,
             availability,
             gate,
             weaponReq,
-            contractBoard,
+            loadoutStats,
             _launchRequest,
             _loopProgressData);
 
@@ -142,7 +135,6 @@ public sealed class MainMenuRuntime : MonoBehaviour
             catalog,
             weaponReq,
             nextStep,
-            contractBoard,
             _balanceConfig,
             rewards
         );

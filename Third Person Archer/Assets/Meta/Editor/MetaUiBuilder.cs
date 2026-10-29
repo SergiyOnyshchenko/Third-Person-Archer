@@ -10,8 +10,8 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Builds the phase-5 meta UI into existing prefabs (idempotent: removes what it built before).
-/// Map Screen: campaign path per zone, mission panel, gold chip, landmark badges, Play subtitle, Arsenal red dot.
-/// Level Win: victory progress segment (class essence, guild reputation).
+/// Map Screen: one path per zone (Campaign + Sniper levels), mission panel, gold chip, Play subtitle, Arsenal red dot.
+/// Level Win: victory progress segment (class essence).
 /// </summary>
 public static class MetaUiBuilder
 {
@@ -23,12 +23,12 @@ public static class MetaUiBuilder
     private static readonly Color Ink = new Color(0.27f, 0.15f, 0.06f);
     private static readonly Color InkSoft = new Color(0.42f, 0.27f, 0.12f);
 
-    // Campaign node positions per zone (map-center space, 1810x709 visible area).
+    // Path node positions per zone (map-center space, 1810x709 visible area): Campaign + Sniper levels, ~150 apart.
     private static readonly Vector2[][] ZonePoints =
     {
-        new[] { new Vector2(-700, -57), new Vector2(-470, -60), new Vector2(-250, 40), new Vector2(-90, -40), new Vector2(50, -120), new Vector2(170, -30), new Vector2(290, 60) },
-        new[] { new Vector2(-780, 40), new Vector2(-640, -60), new Vector2(-450, -120), new Vector2(-220, -250), new Vector2(-40, -220), new Vector2(110, -170), new Vector2(300, -200), new Vector2(470, -110) },
-        new[] { new Vector2(-800, -120), new Vector2(-660, -10), new Vector2(-470, -90), new Vector2(-300, -170), new Vector2(-130, -220), new Vector2(60, -150), new Vector2(260, -230), new Vector2(450, -60) },
+        new[] { new Vector2(-720, -50), new Vector2(-570, -40), new Vector2(-420, -70), new Vector2(-260, 30), new Vector2(-110, -40), new Vector2(30, -130), new Vector2(160, -40), new Vector2(310, -150), new Vector2(470, -120), new Vector2(500, 30), new Vector2(350, 40) },
+        new[] { new Vector2(-780, 40), new Vector2(-640, -60), new Vector2(-480, -130), new Vector2(-330, -210), new Vector2(-180, -250), new Vector2(-30, -200), new Vector2(110, -150), new Vector2(230, -50), new Vector2(330, 80), new Vector2(360, 230), new Vector2(500, 140), new Vector2(600, 10), new Vector2(520, -120) },
+        new[] { new Vector2(-800, -120), new Vector2(-660, -10), new Vector2(-500, -80), new Vector2(-350, -150), new Vector2(-200, -200), new Vector2(-40, -160), new Vector2(110, -160), new Vector2(250, -230), new Vector2(400, -150), new Vector2(450, -10), new Vector2(560, 100), new Vector2(640, -30), new Vector2(760, -120) },
     };
 
     [MenuItem("Tools/Meta/Build Phase 5 UI")]
@@ -64,19 +64,10 @@ public static class MetaUiBuilder
 
                 foreach (var sel in map.GetComponentsInChildren<MissionSelectorButtonPresenter>(true))
                 {
+                    // Only the Boss landmark is left (Sniper levels are path nodes, the Guild Board is gone).
                     var so = new SerializedObject(sel);
                     so.FindProperty("_panel").objectReferenceValue = panel;
-                    var type = (MissionType)so.FindProperty("_missionType").enumValueIndex;
-
                     DestroyChild(sel.transform, "Badge");
-                    if (type == MissionType.Sniper || type == MissionType.Contracts)
-                    {
-                        var badge = Chip(sel.transform, "Badge", new Vector2(0, -142), new Vector2(type == MissionType.Contracts ? 330 : 140, 50));
-                        var text = Label(badge, "Text", "", 28, Color.white, TextAlignmentOptions.Center, outline: true);
-                        Stretch(text.rectTransform, 10, 4);
-                        so.FindProperty("_badgeRoot").objectReferenceValue = badge.gameObject;
-                        so.FindProperty("_badgeText").objectReferenceValue = text;
-                    }
                     so.ApplyModifiedPropertiesWithoutUndo();
                 }
             }
@@ -369,47 +360,13 @@ public static class MetaUiBuilder
         marker.gameObject.AddComponent<Image>().color = Ink;
         var powerText = Label(track.rectTransform, "Value", "32 / 40", 30, Color.white, TextAlignmentOptions.Center, outline: true);
         Stretch(powerText.rectTransform, 0, 0);
-        var dmgCaption = Label(panel, "Damage Caption", "DAMAGE", 22, InkSoft, TextAlignmentOptions.Left, outline: false);
+        var dmgCaption = Label(panel, "Power Caption", "POWER", 22, InkSoft, TextAlignmentOptions.Left, outline: false);
         TopPlace(dmgCaption.rectTransform, -290, new Vector2(420, 30));
         dmgCaption.rectTransform.anchoredPosition = new Vector2(70, -292);
 
-        var status = Label(panel, "Status", "Strong! Every enemy falls to one shot.", 29, Ink, TextAlignmentOptions.Center, outline: false);
+        var status = Label(panel, "Status", "Ready! Your weapon is strong enough.", 29, Ink, TextAlignmentOptions.Center, outline: false);
         TopPlace(status.rectTransform, -366, new Vector2(600, 84));
         status.enableWordWrapping = true;
-
-        // Enemies
-        var rosterRoot = Rect(panel, "Roster", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -540), new Vector2(600, 230));
-        var header = Rect(rosterRoot, "Header", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, -20), new Vector2(0, 40));
-        var hName = Label(header, "Enemy", "ENEMY", 24, InkSoft, TextAlignmentOptions.Left, outline: false);
-        ColumnPlace(hName.rectTransform, 0f, 0.44f);
-        var hBody = Label(header, "Body", "BODY", 24, InkSoft, TextAlignmentOptions.Center, outline: false);
-        ColumnPlace(hBody.rectTransform, 0.44f, 0.72f);
-        var hHead = Label(header, "Head", "HEAD", 24, InkSoft, TextAlignmentOptions.Center, outline: false);
-        ColumnPlace(hHead.rectTransform, 0.72f, 1f);
-
-        var rows = new List<EnemyShotsRowView>();
-        for (int i = 0; i < 3; i++)
-        {
-            var row = Rect(rosterRoot, $"Row {i + 1}", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, -72 - i * 54), new Vector2(0, 48));
-            var rowBg = row.gameObject.AddComponent<Image>();
-            rowBg.sprite = Sprite(Art + "ui_bar_track.png");
-            rowBg.type = Image.Type.Sliced;
-            rowBg.color = new Color(1, 1, 1, 0.85f);
-            var n = Label(row, "Name", "Brawler", 28, Color.white, TextAlignmentOptions.Left, outline: true);
-            ColumnPlace(n.rectTransform, 0f, 0.44f); n.rectTransform.offsetMin += new Vector2(22, 0);
-            var b = Label(row, "Body", "1 shot", 28, MissionPreviewUtility.Green, TextAlignmentOptions.Center, outline: true);
-            ColumnPlace(b.rectTransform, 0.44f, 0.72f);
-            var h = Label(row, "Head", "1 shot", 28, MissionPreviewUtility.Green, TextAlignmentOptions.Center, outline: true);
-            ColumnPlace(h.rectTransform, 0.72f, 1f);
-
-            var rv = row.gameObject.AddComponent<EnemyShotsRowView>();
-            var rso = new SerializedObject(rv);
-            rso.FindProperty("_name").objectReferenceValue = n;
-            rso.FindProperty("_body").objectReferenceValue = b;
-            rso.FindProperty("_head").objectReferenceValue = h;
-            rso.ApplyModifiedPropertiesWithoutUndo();
-            rows.Add(rv);
-        }
 
         var description = Label(panel, "Description", "", 30, Ink, TextAlignmentOptions.Center, outline: false);
         TopPlace(description.rectTransform, -500, new Vector2(580, 160));
@@ -432,8 +389,8 @@ public static class MetaUiBuilder
         // Actions
         var upgrade = KitButton(panel, "Upgrade Button", "btn_rectangle_01_n_blue", "UPGRADE", new Vector2(-150, 86), new Vector2(280, 120), 38);
         var playBtn = KitButton(panel, "Play Button", "btn_rectangle_01_n_green", "PLAY", new Vector2(150, 86), new Vector2(300, 128), 50);
-        var guild = KitButton(panel, "Guild Button", "btn_rectangle_01_n_yellow", "GUILD BOARD", new Vector2(150, 86), new Vector2(330, 128), 38);
-        foreach (var b in new[] { upgrade, playBtn, guild })
+        var replay = KitButton(panel, "Replay Button", "btn_rectangle_01_n_yellow", "REPLAY", new Vector2(150, 86), new Vector2(300, 128), 44);
+        foreach (var b in new[] { upgrade, playBtn, replay })
         {
             var r = (RectTransform)b.transform;
             r.anchorMin = r.anchorMax = new Vector2(0.5f, 0);
@@ -455,10 +412,6 @@ public static class MetaUiBuilder
         so.FindProperty("_powerMinMarker").objectReferenceValue = marker;
         so.FindProperty("_powerText").objectReferenceValue = powerText;
         so.FindProperty("_statusText").objectReferenceValue = status;
-        so.FindProperty("_rosterRoot").objectReferenceValue = rosterRoot.gameObject;
-        var rowsProp = so.FindProperty("_rosterRows");
-        rowsProp.arraySize = rows.Count;
-        for (int i = 0; i < rows.Count; i++) rowsProp.GetArrayElementAtIndex(i).objectReferenceValue = rows[i];
         so.FindProperty("_descriptionText").objectReferenceValue = description;
         so.FindProperty("_rewardRoot").objectReferenceValue = reward.gameObject;
         so.FindProperty("_goldText").objectReferenceValue = goldText;
@@ -469,7 +422,7 @@ public static class MetaUiBuilder
         so.FindProperty("_playButton").objectReferenceValue = playBtn;
         so.FindProperty("_upgradeButton").objectReferenceValue = upgrade;
         so.FindProperty("_upgradeLabel").objectReferenceValue = upgrade.GetComponentInChildren<TMP_Text>(true);
-        so.FindProperty("_guildButton").objectReferenceValue = guild;
+        so.FindProperty("_replayButton").objectReferenceValue = replay;
         so.FindProperty("_classIcons").objectReferenceValue = ClassIcons();
         so.FindProperty("_currencyVisuals").objectReferenceValue = CurrencyVisuals();
         so.ApplyModifiedPropertiesWithoutUndo();
@@ -547,22 +500,19 @@ public static class MetaUiBuilder
     }
 
     // ═════════════════════════════════════════════════════════════════════════
-    // Tails: arsenal on one screen (class tabs), Guild Board restyle
+    // Tails: arsenal on one screen (class tabs)
     // ═════════════════════════════════════════════════════════════════════════
-
-    private const string GuildPrefab = "Assets/Scripts/UI New/Prefabs/Guild Board Screen.prefab";
 
     private static readonly WeaponClass[] TabOrder =
         { WeaponClass.Crossbow, WeaponClass.Bow, WeaponClass.Shuriken, WeaponClass.Spear, WeaponClass.Boomerang };
 
-    [MenuItem("Tools/Meta/Build Tails (Arsenal tabs, Guild Board)")]
+    [MenuItem("Tools/Meta/Build Tails (Arsenal tabs, Map)")]
     public static void BuildTails()
     {
         BuildArsenalTabs();
-        BuildGuildBoard();
         BuildMapScreen();
         AssetDatabase.SaveAssets();
-        Debug.Log("MetaUiBuilder: arsenal tabs and Guild Board built.");
+        Debug.Log("MetaUiBuilder: arsenal tabs and map built.");
     }
 
     /// <summary>
@@ -679,80 +629,6 @@ public static class MetaUiBuilder
         }
     }
 
-    /// <summary>
-    /// Guild Board as a wooden board with three pinned parchment notes (layout and bindings unchanged,
-    /// only the look). Idempotent: sprites/colors are set, the pins are rebuilt.
-    /// </summary>
-    private static void BuildGuildBoard()
-    {
-        var root = PrefabUtility.LoadPrefabContents(GuildPrefab);
-        try
-        {
-            var panel = root.transform.Find("Panel");
-            if (panel == null)
-            {
-                Debug.LogWarning("MetaUiBuilder: Guild Board panel not found.");
-                return;
-            }
-
-            var board = panel.Find("Background").GetComponent<Image>();
-            board.sprite = Sprite(Art + "ui_wood_chip.png");
-            board.type = Image.Type.Sliced;
-            board.pixelsPerUnitMultiplier = 0.35f; // thicker wooden frame at this size
-            board.color = new Color(0.86f, 0.74f, 0.62f);
-
-            var rep = panel.Find("Reputation Bar");
-            var repTrack = rep.GetComponent<Image>();
-            repTrack.sprite = Sprite(Art + "ui_bar_track.png");
-            repTrack.type = Image.Type.Sliced;
-            var repFill = rep.Find("Fill").GetComponent<Image>();
-            repFill.sprite = Sprite(Art + "ui_bar_fill.png");
-            repFill.type = Image.Type.Filled; // GuildBoardScreen drives fillAmount
-            repFill.fillMethod = Image.FillMethod.Horizontal;
-            repFill.fillOrigin = 0;
-            repFill.color = new Color(1f, 0.78f, 0.3f);
-
-            var cards = panel.Find("Cards");
-            foreach (Transform card in cards)
-            {
-                var paper = card.GetComponent<Image>();
-                paper.sprite = Sprite(Art + "ui_parchment_panel.png");
-                paper.type = Image.Type.Sliced;
-                paper.pixelsPerUnitMultiplier = 1.6f;
-                paper.color = Color.white;
-
-                SetInk(card, "Zone", InkSoft, 30);
-                SetInk(card, "Mission", Ink, 40);
-                SetInk(card, "Order", new Color(0.16f, 0.45f, 0.12f), 32);
-                SetInk(card, "Reward", Ink, 26);
-
-                // Pinned note: a red pin at the top and a slight tilt.
-                DestroyChild(card, "Pin");
-                var pin = Img(card, "Pin", Art + "map_path_dot.png", Vector2.zero, new Vector2(40, 40), MissionPreviewUtility.Red);
-                TopAnchor(pin.rectTransform, new Vector2(0, 14));
-                var shine = Img(pin.rectTransform, "Shine", Art + "map_path_dot.png", new Vector2(-6, 6), new Vector2(12, 12), new Color(1f, 1f, 1f, 0.7f));
-                shine.raycastTarget = false;
-                float tilt = card.name.EndsWith("1") ? 1.5f : card.name.EndsWith("3") ? -1.5f : 0f;
-                card.localRotation = Quaternion.Euler(0, 0, tilt);
-            }
-
-            PrefabUtility.SaveAsPrefabAsset(root, GuildPrefab);
-        }
-        finally
-        {
-            PrefabUtility.UnloadPrefabContents(root);
-        }
-    }
-
-    private static void SetInk(Transform parent, string child, Color color, float size)
-    {
-        var t = parent.Find(child)?.GetComponent<TextMeshProUGUI>();
-        if (t == null) return;
-        t.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(Kit + "Fonts/Alata-Regular SDF.asset");
-        t.color = color;
-        t.fontSize = size;
-    }
-
     // ═════════════════════════════════════════════════════════════════════════
     // Victory screen
     // ═════════════════════════════════════════════════════════════════════════
@@ -803,24 +679,6 @@ public static class MetaUiBuilder
             Place(stampText.rectTransform, Vector2.zero, new Vector2(170, 92));
             stamp.localRotation = Quaternion.Euler(0, 0, -8f);
 
-            // Guild block
-            var guildRoot = Rect(seg, "Guild", new Vector2(0.5f, 1), new Vector2(0.5f, 1), new Vector2(0, -164), new Vector2(760, 64));
-            var rank = Label(guildRoot, "Rank", "GUILD RANK 2", 28, MissionPreviewUtility.Gold, TextAlignmentOptions.Left, outline: true);
-            Place(rank.rectTransform, new Vector2(-250, 0), new Vector2(260, 44));
-            var repTrack = Img(guildRoot, "Bar", Art + "ui_bar_track.png", new Vector2(70, 0), new Vector2(330, 36), Color.white);
-            repTrack.type = Image.Type.Sliced;
-            var repFill = Img(repTrack.rectTransform, "Fill", Art + "ui_bar_fill.png", Vector2.zero, Vector2.zero, MissionPreviewUtility.Gold);
-            Stretch(repFill.rectTransform, 4, 4);
-            repFill.type = Image.Type.Filled; repFill.fillMethod = Image.FillMethod.Horizontal; repFill.fillAmount = 0.4f;
-            var repText = Label(guildRoot, "Gain", "+10 reputation", 24, Color.white, TextAlignmentOptions.Left, outline: true);
-            Place(repText.rectTransform, new Vector2(325, 0), new Vector2(190, 40));
-            var rankUp = Rect(guildRoot, "Rank Up", Half, Half, new Vector2(320, 0), new Vector2(190, 54));
-            var ruBg = rankUp.gameObject.AddComponent<Image>();
-            ruBg.sprite = Sprite(Kit + "Sprites/Component/Button/btn_rectangle_01_n_yellow.png");
-            ruBg.type = Image.Type.Sliced;
-            var ruText = Label(rankUp, "Text", "RANK UP!", 28, Ink, TextAlignmentOptions.Center, outline: false);
-            Stretch(ruText.rectTransform, 0, 0);
-
             var view = seg.gameObject.AddComponent<VictoryProgressSegment>();
             var so = new SerializedObject(view);
             so.FindProperty("_rootGroup").objectReferenceValue = group;
@@ -833,11 +691,6 @@ public static class MetaUiBuilder
             so.FindProperty("_classHint").objectReferenceValue = hint;
             so.FindProperty("_readyStamp").objectReferenceValue = stamp.gameObject;
             so.FindProperty("_readyRays").objectReferenceValue = rays.rectTransform;
-            so.FindProperty("_guildRoot").objectReferenceValue = guildRoot.gameObject;
-            so.FindProperty("_rankText").objectReferenceValue = rank;
-            so.FindProperty("_repFill").objectReferenceValue = repFill;
-            so.FindProperty("_repText").objectReferenceValue = repText;
-            so.FindProperty("_rankUpStamp").objectReferenceValue = rankUp.gameObject;
             so.FindProperty("_classIcons").objectReferenceValue = ClassIcons();
             so.ApplyModifiedPropertiesWithoutUndo();
 

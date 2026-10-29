@@ -32,7 +32,7 @@ public partial class BalanceConfig
         [Tooltip("Heroic Campaign reward index = global campaign index + this (rewards continue the campaign curve).")]
         [Min(0)] [SerializeField] private int _rewardIndexOffset = 23;
 
-        [Tooltip("Guild Board after the campaign: contract reward profile index = level zone + this " +
+        [Tooltip("Replays after the campaign: replay reward profile index = level zone + this " +
                  "(contract enemies use the Heroic tier too).")]
         [Min(0)] [SerializeField] private int _contractZoneOffset = 3;
 

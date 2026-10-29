@@ -22,8 +22,6 @@ public sealed class MissionAvailabilityService : IMissionAvailabilityService
         if (ctx == null)
             return MissionAvailability.Blocked(AvailabilityBlockReason.NoMissionSelected);
 
-        int companyLevel = _companyLevel.GetCompanyLevel();
-
         switch (ctx.SelectedType)
         {
             case MissionType.Campaign:
@@ -50,22 +48,12 @@ public sealed class MissionAvailabilityService : IMissionAvailabilityService
                     : MissionAvailability.Blocked(AvailabilityBlockReason.BossCrossbowDamageTooLow);
 
             case MissionType.Contracts:
-                return companyLevel >= _modeUnlocks.ContractsUnlockCompanyLevel
+                // Replay of a cleared level: always open (the level was beaten once already).
+                return ctx.IsValid
                     ? MissionAvailability.Allowed()
-                    : MissionAvailability.Blocked(AvailabilityBlockReason.ContractsLockedByCompanyLevel);
+                    : MissionAvailability.Blocked(AvailabilityBlockReason.NoMissionSelected);
 
-            case MissionType.Sniper:
-                {
-                    if (companyLevel < _modeUnlocks.SniperUnlockCompanyLevel)
-                        return MissionAvailability.Blocked(AvailabilityBlockReason.SniperLockedByCompanyLevel);
-
-                    // Check Crossbow damage access gate for current Sniper tier.
-                    var sniperGate = _gateService.CheckSniperGate(ctx);
-                    return sniperGate.Passed
-                        ? MissionAvailability.Allowed()
-                        : MissionAvailability.Blocked(AvailabilityBlockReason.SniperDamageTooLow);
-                }
-
+            // Sniper levels live on the Campaign path (soft gate there); there is no separate Sniper mode.
             default:
                 return MissionAvailability.Blocked(AvailabilityBlockReason.NoMissionSelected);
         }

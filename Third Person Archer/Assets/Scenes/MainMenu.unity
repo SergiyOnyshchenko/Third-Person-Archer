@@ -3504,6 +3504,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StartupPopupCoordinator
   _mapScreenId: map
+  _maxPopupsPerVisit: 1
+  _settleFrames: 3
 --- !u!4 &1712328041
 Transform:
   m_ObjectHideFlags: 0
@@ -4038,8 +4040,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2101476112}
-  - component: {fileID: 2101476111}
-  - component: {fileID: 2101476110}
   - component: {fileID: 2101476109}
   m_Layer: 0
   m_Name: Unlock
@@ -4074,36 +4074,6 @@ MonoBehaviour:
       with your bow and bring down the titan before he crushes everything in his
       path!
     Image: {fileID: 21300000, guid: 5db8b35279b0ea94c80620e4366509bc, type: 3}
---- !u!114 &2101476110
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2101476107}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84f7e9a3b522d0749996c014b2eb9a81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SniperUnlockPresenter
-  _popupId: mission_type_unlock_popup
-  _modeUnlockConfig: {fileID: 11400000, guid: 028804deddafbb044bf3a3eaa32df778, type: 2}
-  _icon: {fileID: 21300000, guid: 72718cde716ec7d46a51c2a2c7fce1b0, type: 3}
---- !u!114 &2101476111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2101476107}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4060690b77c1c60498fec60b54d377fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ContractsUnlockPresenter
-  _popupId: mission_type_unlock_popup
-  _modeUnlockConfig: {fileID: 11400000, guid: 028804deddafbb044bf3a3eaa32df778, type: 2}
-  _icon: {fileID: 21300000, guid: 912dfdf72432d0741b07a77a1fa74588, type: 3}
 --- !u!4 &2101476112
 Transform:
   m_ObjectHideFlags: 0

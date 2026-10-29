@@ -11,13 +11,6 @@ public enum AvailabilityBlockReason
     // Boss
     BossNotUnlocked,
 
-    // Modes
-    ContractsLockedByCompanyLevel,
-    SniperLockedByCompanyLevel,
-
-    // Sniper access gate
-    SniperDamageTooLow,
-
     // Boss Crossbow access gate
     BossCrossbowDamageTooLow,
 }

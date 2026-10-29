@@ -69,7 +69,7 @@ public sealed class PlayMissionPresenter : MonoBehaviour
 
         // One tap = the next step: start each menu visit on the recommended mode.
         var recommended = RecommendedMissionHintService.GetRecommendedType(_services);
-        if (recommended.HasValue && recommended.Value != MissionType.Contracts)
+        if (recommended.HasValue)
             _services.Progress.SelectMissionType(recommended.Value);
 
         Refresh();
@@ -86,7 +86,6 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         bool canClickPlay =
             avail.CanPlay ||
             avail.Reason == AvailabilityBlockReason.CampaignDamageTooLow ||
-            avail.Reason == AvailabilityBlockReason.SniperDamageTooLow ||
             avail.Reason == AvailabilityBlockReason.BossCrossbowDamageTooLow;
 
         _playButtonView.SetInteractable(canClickPlay);
@@ -103,10 +102,8 @@ public sealed class PlayMissionPresenter : MonoBehaviour
 
         return ctx.SelectedType switch
         {
-            MissionType.Campaign => $"{(ctx.IsHeroic ? "Heroic" : "Level")} {index + 1} · {ctx.RequiredWeaponClass}",
-            MissionType.Sniper => $"Sniper {index + 1} · Crossbow",
+            MissionType.Campaign => $"{(ctx.IsHeroic ? "Heroic" : "Level")} {index + 1} · {(ctx.Mission.IsSniper ? "Sniper" : ctx.RequiredWeaponClass.ToString())}",
             MissionType.Boss => "Boss fight!",
-            MissionType.Contracts => "Guild Board",
             _ => ""
         };
     }
@@ -129,8 +126,6 @@ public sealed class PlayMissionPresenter : MonoBehaviour
                 return ctx.IsValid ? _services.Gate.CheckCampaignGate(ctx) : null;
             case MissionType.Boss:
                 return ctx.IsValid && ctx.Zone.IsBossUnlocked() ? _services.Gate.CheckBossGate(ctx) : null;
-            case MissionType.Sniper:
-                return _services.Gate.CheckSniperGate(ctx);
             default:
                 return null;
         }
@@ -142,12 +137,6 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         if (_services == null) return;
 
         var result = _services.MissionStart.TryStartSelected();
-
-        if (result.FailReason == MissionStartFailReason.ContractsUseGuildBoard)
-        {
-            GuildBoardNavigation.Open();
-            return;
-        }
 
         if (!result.Started)
         {
@@ -173,10 +162,6 @@ public sealed class PlayMissionPresenter : MonoBehaviour
                 ShowDamageGatePopup(result.Gate, isCrossbow: false);
                 break;
 
-            case AvailabilityBlockReason.SniperDamageTooLow:
-                ShowSniperGatePopup(result.Gate);
-                break;
-
             case AvailabilityBlockReason.BossCrossbowDamageTooLow:
                 ShowDamageGatePopup(result.Gate, isCrossbow: true);
                 break;
@@ -194,7 +179,7 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         if (!ServiceLocator.TryResolve<IUINavigator>(out var nav)) return;
 
         var ctx = _services.Context.BuildSelectedContext();
-        int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
+        int companyLevel = _services.ProgressData.GetCompanyLevel();
 
         // Ask the recommendation service what action makes most sense right now.
         var rec = _services.NextStep?.Evaluate() ?? NextStepRecommendation.None;
@@ -214,34 +199,6 @@ public sealed class PlayMissionPresenter : MonoBehaviour
         nav.ShowPopup(_damageGatePopupId, args);
     }
 
-    // ── Sniper access gate (always Crossbow, always OpenWeapons) ─────────────
-
-    private void ShowSniperGatePopup(MissionGateResult gate)
-    {
-        if (!ServiceLocator.TryResolve<IUINavigator>(out var nav)) return;
-
-        var ctx = _services.Context.BuildSelectedContext();
-        int companyLevel = (ctx != null && ctx.IsValid) ? (ctx.GlobalCampaignIndex + 1) : 1;
-
-        // For Sniper access the player must strengthen their Crossbow — always OpenWeapons.
-        var highlightMode = gate.CanUpgradeToPass
-            ? WeaponHighlightMode.Upgrade
-            : WeaponHighlightMode.Buy;
-
-        var args = new DamageGatePopupArgs(
-            weaponClass:       WeaponClass.Crossbow,
-            campaignLevel:     companyLevel,
-            currentDamage:     gate.CurrentDamage,
-            requiredDamage:    gate.RequiredDamage,
-            weaponScreenId:    _weaponSelectionScreenId,
-            action:            GatePopupAction.OpenWeapons,
-            canUpgradeToPass:  gate.CanUpgradeToPass,
-            preselectWeaponId: null,
-            highlightMode:     highlightMode);
-
-        nav.ShowPopup(_damageGatePopupId, args);
-    }
-
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static (GatePopupAction action, string preselectId, WeaponHighlightMode highlight)
@@ -253,10 +210,8 @@ public sealed class PlayMissionPresenter : MonoBehaviour
                 (GatePopupAction.OpenWeapons, rec.TargetWeaponId, WeaponHighlightMode.Upgrade),
             NextStepRecommendationType.BuyWeapon =>
                 (GatePopupAction.OpenWeapons, rec.TargetWeaponId, WeaponHighlightMode.Buy),
-            NextStepRecommendationType.PlayContracts =>
-                (GatePopupAction.PlayContracts, null, WeaponHighlightMode.None),
-            NextStepRecommendationType.PlaySniper =>
-                (GatePopupAction.PlaySniper, null, WeaponHighlightMode.None),
+            NextStepRecommendationType.ReplayLevel =>
+                (GatePopupAction.ReplayLevel, null, WeaponHighlightMode.None),
             _ =>
                 // None or unrecognised: fall back to weapon screen, no highlight.
                 (GatePopupAction.OpenWeapons, null, WeaponHighlightMode.None),

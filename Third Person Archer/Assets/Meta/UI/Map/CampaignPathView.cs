@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Campaign levels of one zone drawn as a dotted trail of medallions on the zone map.
+/// Path of one zone (Campaign levels + Sniper levels) drawn as a dotted trail of medallions on the zone map.
 /// Node positions are the children of <see cref="_pointsRoot"/> (edit them in the prefab).
 /// Tapping a node opens the mission panel for that level.
 /// </summary>
@@ -157,6 +157,9 @@ public sealed class CampaignPathView : MonoBehaviour
 
             Sprite icon = null;
             Color? status = null;
+            if (mission.IsSniper && _classIcons != null)
+                _classIcons.TryGet(WeaponClass.Crossbow, out icon);
+
             if (isCurrent)
             {
                 var ctx = BuildContext(zone, mission);
@@ -166,7 +169,7 @@ public sealed class CampaignPathView : MonoBehaviour
                 if (gate != null) status = MissionPreviewUtility.GetStatusColor(gate.Status);
             }
 
-            _nodes[i].Bind(state, i + 1, icon, status, heroic);
+            _nodes[i].Bind(state, i + 1, icon, status, heroic, iconAlways: mission.IsSniper);
         }
 
         // Segment i goes from node i to node i+1 (or to the tail): gold once node i is completed.

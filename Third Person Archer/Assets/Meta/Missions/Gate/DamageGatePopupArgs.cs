@@ -5,8 +5,7 @@ using Meta.Weapons.UI;
 public enum GatePopupAction
 {
     OpenWeapons,    // open WeaponSelectionScreen (default)
-    PlayContracts,  // direct-start a Contracts mission
-    PlaySniper,     // direct-start a Sniper mission
+    ReplayLevel,    // replay the last cleared level of the class (gold + its essence)
 }
 
 [Serializable]

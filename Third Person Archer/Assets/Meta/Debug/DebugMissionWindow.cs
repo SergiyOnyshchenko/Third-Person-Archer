@@ -351,12 +351,6 @@ public sealed class DebugMissionWindow : MonoBehaviour
 
         GUILayout.Space(_rowSpacing * 0.4f);
 
-        _sniperFoldout = DrawFoldout("SNIPER", _sniperFoldout, fullWidth: false);
-        if (_sniperFoldout)
-            DrawSegmentButtons(zone, zoneIndex, MissionType.Sniper, catalog, weaponRequirement, launchRequest, loopData);
-
-        GUILayout.Space(_rowSpacing * 0.4f);
-
         _bossFoldout = DrawFoldout("BOSS", _bossFoldout, fullWidth: false);
         if (_bossFoldout)
             DrawSegmentButtons(zone, zoneIndex, MissionType.Boss, catalog, weaponRequirement, launchRequest, loopData);

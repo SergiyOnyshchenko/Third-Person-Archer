@@ -5,12 +5,13 @@ using Meta.Weapons.UI;
 using TMPro;
 using UI.Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
 /// Parchment panel that slides in from the right when a map node or landmark is tapped:
-/// weapon of the level, "your damage / R" bar with the 1–2 shot status, enemy roster
-/// (body/head shots), reward, and Play / Upgrade / Guild Board actions.
+/// weapon of the level, "your power / recommended" bar with a status line, reward,
+/// and Play / Upgrade / Replay (cleared levels: gold + essence) actions.
 /// </summary>
 public sealed class MissionPanelView : MonoBehaviour
 {
@@ -35,9 +36,7 @@ public sealed class MissionPanelView : MonoBehaviour
     [SerializeField] private TMP_Text _powerText;
     [SerializeField] private TMP_Text _statusText;
 
-    [Header("Enemies")]
-    [SerializeField] private GameObject _rosterRoot;
-    [SerializeField] private EnemyShotsRowView[] _rosterRows;
+    [Header("Description")]
     [SerializeField] private TMP_Text _descriptionText;
 
     [Header("Reward")]
@@ -52,7 +51,8 @@ public sealed class MissionPanelView : MonoBehaviour
     [SerializeField] private Button _playButton;
     [SerializeField] private Button _upgradeButton;
     [SerializeField] private TMP_Text _upgradeLabel;
-    [SerializeField] private Button _guildButton;
+    [FormerlySerializedAs("_guildButton")]
+    [SerializeField] private Button _replayButton;
 
     [Header("Wiring")]
     [SerializeField] private PlayMissionPresenter _playPresenter;
@@ -71,6 +71,8 @@ public sealed class MissionPanelView : MonoBehaviour
     private MissionContext _ctx;
     private MissionGateResult _gate;
     private bool _heroic;
+    private MissionData _mission;
+    private int _zoneIndex;
 
     public bool IsOpen => _root != null && _root.activeSelf;
 
@@ -83,7 +85,7 @@ public sealed class MissionPanelView : MonoBehaviour
         _closeButton?.onClick.AddListener(Hide);
         _playButton?.onClick.AddListener(OnPlayClicked);
         _upgradeButton?.onClick.AddListener(OnUpgradeClicked);
-        _guildButton?.onClick.AddListener(OnGuildClicked);
+        _replayButton?.onClick.AddListener(OnReplayClicked);
     }
 
     private bool EnsureServices()
@@ -115,12 +117,13 @@ public sealed class MissionPanelView : MonoBehaviour
         var state = isCurrent ? PanelState.Playable : done ? PanelState.Completed : PanelState.Locked;
         _heroic = heroic;
 
-        Present(MissionType.Campaign, mission, state,
-            title: heroic ? $"HEROIC {indexInZone + 1}" : $"LEVEL {indexInZone + 1}",
-            subtitle: $"{zone.ZoneName} · {mission.Name}");
+        string title = heroic ? $"HEROIC {indexInZone + 1}" : $"LEVEL {indexInZone + 1}";
+        if (mission.IsSniper) title += " · SNIPER";
+
+        Present(MissionType.Campaign, mission, state, title, subtitle: $"{zone.ZoneName} · {mission.Name}");
     }
 
-    /// <summary>Sniper / Boss landmark: the segment's current mission.</summary>
+    /// <summary>Boss landmark: the segment's current mission.</summary>
     public void ShowMode(MissionType type)
     {
         if (!EnsureServices()) return;
@@ -129,22 +132,8 @@ public sealed class MissionPanelView : MonoBehaviour
         var mission = segment?.GetCurrentMission();
         if (mission == null) return;
 
-        string title = type switch
-        {
-            MissionType.Sniper => $"SNIPER {IndexOf(segment, mission) + 1}/{segment.Missions.Count}",
-            MissionType.Boss => "BOSS",
-            _ => type.ToString().ToUpperInvariant()
-        };
-
         _heroic = false;
-        Present(type, mission, PanelState.Playable, title, mission.Name);
-    }
-
-    private static int IndexOf(MissionSegmentData segment, MissionData mission)
-    {
-        for (int i = 0; i < segment.Missions.Count; i++)
-            if (segment.Missions[i] == mission) return i;
-        return 0;
+        Present(type, mission, PanelState.Playable, type == MissionType.Boss ? "BOSS" : type.ToString().ToUpperInvariant(), mission.Name);
     }
 
     // ── Render ───────────────────────────────────────────────────────────────
@@ -152,7 +141,9 @@ public sealed class MissionPanelView : MonoBehaviour
     private void Present(MissionType type, MissionData mission, PanelState state, string title, string subtitle)
     {
         _type = type;
+        _mission = mission;
         _ctx = _services.BuildContextFor(type, mission);
+        _zoneIndex = _ctx.ZoneIndex;
         _gate = GetGate(type, _ctx);
 
         var cls = _ctx.RequiredWeaponClass;
@@ -195,48 +186,33 @@ public sealed class MissionPanelView : MonoBehaviour
             {
                 PanelState.Completed => _heroic
                     ? $"<color={MissionPreviewUtility.Hex(MissionPreviewUtility.GetInkStatusColor(MissionGateStatus.Green))}>Heroic cleared!</color> The zone starts over after its last level."
-                    : $"<color={MissionPreviewUtility.Hex(MissionPreviewUtility.GetInkStatusColor(MissionGateStatus.Green))}>Completed!</color> Replay it on the Guild Board for gold and essence.",
+                    : $"<color={MissionPreviewUtility.Hex(MissionPreviewUtility.GetInkStatusColor(MissionGateStatus.Green))}>Completed!</color> Replay it for gold and {cls} essence.",
                 PanelState.Locked => lockedReason,
                 _ => (_heroic ? HeroicPrefix : "") + GetStatusLine(type, _gate)
             };
 
-        // Enemies
-        bool roster = type == MissionType.Campaign && _gate != null && _rosterRows != null;
-        if (_rosterRoot != null) _rosterRoot.SetActive(roster);
-        if (roster)
-        {
-            int r = Mathf.Max(1, Mathf.FloorToInt(_gate.RecommendedDamage));
-            int dmg = Mathf.FloorToInt(_gate.CurrentDamage);
-            for (int i = 0; i < _rosterRows.Length; i++)
-            {
-                bool has = i < MissionPreviewUtility.RosterTypes.Length;
-                _rosterRows[i].gameObject.SetActive(has);
-                if (has) _rosterRows[i].Bind(MissionPreviewUtility.GetShots(_services.Balance, r, dmg, MissionPreviewUtility.RosterTypes[i]));
-            }
-        }
-
         if (_descriptionText != null)
         {
-            _descriptionText.gameObject.SetActive(!roster);
-            _descriptionText.text = type switch
-            {
-                MissionType.Sniper => "Long-range Crossbow hunt. The best source of Crossbow essence.",
-                MissionType.Boss => "Defeat the boss with your Crossbow to open the next zone.",
-                _ => mission.Description
-            };
+            _descriptionText.text = type == MissionType.Boss
+                ? "Defeat the boss with your Crossbow to open the next zone."
+                : mission.IsSniper
+                    ? "Sniper level: take your Crossbow up high and pick them off from afar."
+                    : mission.Description;
+            _descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(_descriptionText.text));
         }
 
-        // Reward
-        bool showReward = state != PanelState.Completed && _services.Rewards != null;
+        // Reward (cleared level: what a replay pays)
+        bool replay = state == PanelState.Completed && type == MissionType.Campaign;
+        bool showReward = state != PanelState.Locked && _services.Rewards != null;
         if (_rewardRoot != null) _rewardRoot.SetActive(showReward);
-        if (showReward) RenderReward(_services.Rewards.Calculate(_ctx));
+        if (showReward) RenderReward(_services.Rewards.Calculate(replay ? BuildReplayContext() : _ctx));
 
         // Actions
         bool playable = state == PanelState.Playable && _gate != null && _gate.Status != MissionGateStatus.Red;
         bool needsPower = state != PanelState.Completed && _gate != null && _gate.Status != MissionGateStatus.Green;
 
         if (_playButton != null) _playButton.gameObject.SetActive(playable);
-        if (_guildButton != null) _guildButton.gameObject.SetActive(state == PanelState.Completed && _services.ContractBoard != null);
+        if (_replayButton != null) _replayButton.gameObject.SetActive(replay);
         if (_upgradeButton != null) _upgradeButton.gameObject.SetActive(needsPower);
         if (_upgradeLabel != null)
             _upgradeLabel.text = _gate != null && !_gate.CanUpgradeToPass ? $"NEW {cls.ToString().ToUpperInvariant()}" : "UPGRADE";
@@ -270,7 +246,6 @@ public sealed class MissionPanelView : MonoBehaviour
         return type switch
         {
             MissionType.Campaign => _services.Gate.CheckCampaignGate(ctx),
-            MissionType.Sniper => _services.Gate.CheckSniperGate(ctx),
             MissionType.Boss => _services.Gate.CheckBossGate(ctx),
             _ => null
         };
@@ -279,8 +254,6 @@ public sealed class MissionPanelView : MonoBehaviour
     private static string GetLockedReason(MissionAvailability avail) => avail.Reason switch
     {
         AvailabilityBlockReason.BossNotUnlocked => "Finish every Campaign level of this zone to face the boss.",
-        AvailabilityBlockReason.SniperLockedByCompanyLevel => "Opens later in the Campaign. Keep going!",
-        AvailabilityBlockReason.ContractsLockedByCompanyLevel => "Opens later in the Campaign. Keep going!",
         AvailabilityBlockReason.NoMissionSelected => "Nothing to play here yet.",
         _ => null
     };
@@ -298,9 +271,9 @@ public sealed class MissionPanelView : MonoBehaviour
 
         return gate.Status switch
         {
-            MissionGateStatus.Green => $"<color={hex}>Strong!</color> Every enemy falls to one shot.",
-            MissionGateStatus.Yellow => $"<color={hex}>Playable.</color> Some enemies take 2 body shots: aim for the head!",
-            _ => $"<color={hex}>Too weak:</color> reach {gate.RequiredDamage:0} damage to start."
+            MissionGateStatus.Green => $"<color={hex}>Ready!</color> Your weapon is strong enough.",
+            MissionGateStatus.Yellow => $"<color={hex}>Tough fight.</color> Upgrade, or aim for the head!",
+            _ => $"<color={hex}>Too weak:</color> reach {gate.RequiredDamage:0} power to start."
         };
     }
 
@@ -319,14 +292,6 @@ public sealed class MissionPanelView : MonoBehaviour
         if (_dim != null) _anim.Join(_dim.DOFade(0.55f, 0.25f));
         if (_panel != null) _anim.Join(_panel.DOAnchorPos(_shownPosition, 0.45f).SetEase(Ease.OutBack, 0.8f));
         if (_powerFill != null) _anim.Insert(0.3f, _powerFill.DOFillAmount(powerTarget, 0.6f).SetEase(Ease.OutCubic));
-
-        if (_rosterRows != null && _rosterRoot != null && _rosterRoot.activeSelf)
-            for (int i = 0; i < _rosterRows.Length; i++)
-            {
-                var row = _rosterRows[i].transform;
-                row.localScale = new Vector3(1f, 0f, 1f);
-                _anim.Insert(0.35f + i * 0.08f, row.DOScaleY(1f, 0.25f).SetEase(Ease.OutBack));
-            }
 
         if (_playButton != null && _playButton.gameObject.activeSelf)
         {
@@ -371,9 +336,23 @@ public sealed class MissionPanelView : MonoBehaviour
         nav.Open(_weaponScreenId, new WeaponSelectionArgs(_ctx.RequiredWeaponClass, companyLevel, null, highlight), reuseCached: true);
     }
 
-    private void OnGuildClicked()
+    /// <summary>Replay of a cleared level: no path progress, pays gold + essence of the level's class.</summary>
+    private MissionContext BuildReplayContext() =>
+        new MissionContext(_ctx.Zone, _zoneIndex, MissionType.Contracts, _mission, -1,
+            _services.ProgressData.GetCompanyLevel(), _ctx.RequiredWeaponClass);
+
+    private void OnReplayClicked()
     {
+        if (_services == null || _mission == null) return;
+
+        var result = _services.MissionStart.TryStartReplay(_mission, _zoneIndex);
+        if (!result.Started)
+        {
+            Debug.LogWarning("Cannot replay: " + (result.Availability?.Reason.ToString() ?? result.FailReason.ToString()));
+            return;
+        }
+
         _root.SetActive(false);
-        GuildBoardNavigation.Open();
+        ScenesLoader.Instance.LoadScene(result.MissionToLoad.Scene.ScenePath);
     }
 }

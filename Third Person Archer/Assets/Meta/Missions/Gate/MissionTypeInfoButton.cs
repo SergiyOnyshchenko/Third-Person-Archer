@@ -15,7 +15,7 @@ using UnityEngine.UI;
 /// Setup:
 /// 1. Add a Button GameObject near each mission type tab in the main menu scene.
 /// 2. Attach this component.
-/// 3. Set _missionType to the matching MissionType (Campaign, Contracts, Sniper, Boss).
+/// 3. Set _missionType to the matching MissionType (Campaign, Boss).
 /// 4. Wire _button, or leave null — GetComponent&lt;Button&gt;() is used as fallback.
 /// 5. Ensure "MissionInfoPopup" is registered in !ScreenRegistry Popups.asset
 ///    pointing to the Mission Info Popup Screen prefab.
@@ -58,44 +58,17 @@ public sealed class MissionTypeInfoButton : MonoBehaviour
             case MissionType.Campaign:
                 return new MissionInfoPopupArgs(
                     title: "Campaign",
-                    description: "Story mode. Progress through zones and unlock Boss fights at the end of each zone.",
+                    description: "Story mode: one path per zone, with Crossbow sniper levels along the way. Beat the Boss at the end of each zone.",
                     rewardTypes: new[]
                     {
                         CurrencyType.Cash,
                         CurrencyType.BowToken,
+                        CurrencyType.CrossbowToken,
                         CurrencyType.SpearToken,
                         CurrencyType.ShurikenToken,
                         CurrencyType.BoomerangToken,
                     },
                     rewardNote: "Token type matches the mission's weapon class"
-                );
-
-            case MissionType.Contracts:
-                return new MissionInfoPopupArgs(
-                    title: "Contracts",
-                    description: "Guild Board: replay cleared Campaign levels with any weapon. Gold and essence for the class you play, guild reputation and rank rewards.",
-                    rewardTypes: new[]
-                    {
-                        CurrencyType.Cash,
-                        CurrencyType.BowToken,
-                        CurrencyType.CrossbowToken,
-                        CurrencyType.SpearToken,
-                        CurrencyType.ShurikenToken,
-                        CurrencyType.BoomerangToken,
-                    },
-                    rewardNote: "Essence of the class you play (order class: bonus)"
-                );
-
-            case MissionType.Sniper:
-                return new MissionInfoPopupArgs(
-                    title: "Sniper",
-                    description: "Crossbow one-shot missions. Earn Crossbow Tokens to upgrade your Crossbow and unlock Boss gates.",
-                    rewardTypes: new[]
-                    {
-                        CurrencyType.Cash,
-                        CurrencyType.CrossbowToken,
-                    },
-                    rewardNote: "Best source of Crossbow Tokens"
                 );
 
             case MissionType.Boss:

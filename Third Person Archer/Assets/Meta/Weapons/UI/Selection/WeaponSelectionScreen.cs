@@ -329,8 +329,8 @@ namespace Meta.Weapons.UI
         }
 
         /// <summary>
-        /// Next uncompleted Campaign level of this class in the current zone: how many body shots
-        /// the toughest enemy takes now and whether the next upgrade makes it one shot.
+        /// Next uncompleted Campaign level of this class in the current zone: recommended power vs
+        /// the class's power now, and whether the next upgrade gets there.
         /// </summary>
         private void RenderMatchup(float damage, WeaponDef power, int classLevel)
         {
@@ -363,25 +363,24 @@ namespace Meta.Weapons.UI
 
             int r = Mathf.Max(1, Mathf.FloorToInt(gate.RecommendedDamage));
             int dmg = Mathf.FloorToInt(damage);
-            var toughest = MissionPreviewUtility.GetShots(services.Balance, r, dmg, MissionPreviewUtility.RosterTypes[0]);
 
             string level = services.ProgressData.IsHeroicUnlocked() ? "Heroic" : "Level";
             string head = $"{zone.ZoneName} · {level} {targetIndex + 1}: ";
             string green = MissionPreviewUtility.Hex(MissionPreviewUtility.Green);
             string yellow = MissionPreviewUtility.Hex(MissionPreviewUtility.Yellow);
 
-            if (toughest.BodyShots <= 1)
+            if (dmg >= r)
             {
-                _matchupText.text = head + $"<color={green}>every enemy 1 shot</color>";
+                _matchupText.text = head + $"<color={green}>ready!</color>";
                 return;
             }
 
-            string text = head + $"{MissionPreviewUtility.GetEnemyName(toughest.Type)} <color={yellow}>{toughest.BodyShots} shots</color> · {r} dmg = 1 shot";
+            string text = head + $"power <color={yellow}>{dmg} / {r}</color>";
 
             if (power != null && _upgradeService.CanUpgrade(power.Id))
             {
                 int next = Mathf.FloorToInt(_progression.GetTierStats(power, classLevel + 1).Damage);
-                if (next >= r) text += $"\n<color={green}>Next upgrade makes it 1 shot!</color>";
+                if (next >= r) text += $"\n<color={green}>Next upgrade gets you there!</color>";
             }
 
             _matchupText.text = text;

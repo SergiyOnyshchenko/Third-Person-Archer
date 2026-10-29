@@ -60,10 +60,7 @@ public sealed class GameplayRuntime : MonoBehaviour
     {
         var progressWrite = new MissionProgressWriteAdapter(ProgressData);
         Rewards = new MissionRewardService(_balanceConfig, _loopProgressData);
-
-        GuildData guild = null;
-        DataManager.Instance?.TryGetData(out guild);
-        Completion = new MissionCompletionService(progressWrite, _loopProgressData, Rewards, guild, _balanceConfig);
+        Completion = new MissionCompletionService(progressWrite, _loopProgressData, Rewards);
     }
 
     private void BuildContext()

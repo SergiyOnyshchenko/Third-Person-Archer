@@ -11,7 +11,7 @@ public enum MapNodeState
     Locked,
 }
 
-/// <summary>One Campaign level on the zone map: medallion, number, class of the level, state effects.</summary>
+/// <summary>One level on the zone path: medallion, number (Sniper levels: crossbow icon), class of the level, state effects.</summary>
 public sealed class MapNodeView : MonoBehaviour
 {
     [SerializeField] private Button _button;
@@ -59,7 +59,8 @@ public sealed class MapNodeView : MonoBehaviour
         if (_state == MapNodeState.Current) StartPulse();
     }
 
-    public void Bind(MapNodeState state, int number, Sprite classIcon, Color? statusColor, bool heroic = false)
+    /// <param name="iconAlways">Sniper level: the class icon replaces the number in every state.</param>
+    public void Bind(MapNodeState state, int number, Sprite classIcon, Color? statusColor, bool heroic = false, bool iconAlways = false)
     {
         _state = state;
 
@@ -80,14 +81,15 @@ public sealed class MapNodeView : MonoBehaviour
         if (_number != null)
         {
             _number.text = number.ToString();
-            _number.gameObject.SetActive(state != MapNodeState.Current);
+            _number.gameObject.SetActive(state != MapNodeState.Current && !(iconAlways && classIcon != null));
             _number.color = state == MapNodeState.Locked ? new Color(0.75f, 0.73f, 0.7f) : Color.white;
         }
 
         if (_classIcon != null)
         {
             _classIcon.sprite = classIcon;
-            _classIcon.gameObject.SetActive(state == MapNodeState.Current && classIcon != null);
+            _classIcon.gameObject.SetActive((state == MapNodeState.Current || iconAlways) && classIcon != null);
+            _classIcon.color = state == MapNodeState.Locked ? new Color(0.6f, 0.58f, 0.55f) : Color.white;
         }
 
         if (_check != null) _check.SetActive(state == MapNodeState.Completed);

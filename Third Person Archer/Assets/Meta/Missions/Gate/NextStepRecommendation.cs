@@ -5,8 +5,7 @@ public enum NextStepRecommendationType
     None,
     UpgradeWeapon,   // player can afford to upgrade equipped weapon right now
     BuyWeapon,       // player can afford to buy a stronger weapon right now
-    PlayContracts,   // player needs cash/tokens; Contracts is the right grind
-    PlaySniper,      // player needs Crossbow tokens; Sniper is the right grind
+    ReplayLevel,     // player needs gold/essence of the class: replay its last cleared level
 }
 
 /// <summary>
@@ -28,11 +27,10 @@ public sealed class NextStepRecommendation
     // Set for UpgradeWeapon (equipped weapon id) and BuyWeapon (weapon to purchase id).
     public string TargetWeaponId { get; }
 
-    // Set for PlayContracts / PlaySniper.
+    // Set for ReplayLevel.
     public MissionType TargetMissionType { get; }
 
-    // True when the gate is Crossbow-based (Boss gate or Sniper-access gate).
-    // Popup B uses this to route to Sniper instead of Contracts.
+    // True when the gate is Crossbow-based (Boss gate or a Sniper level).
     public bool IsCrossbowPath { get; }
 
     public NextStepRecommendation(

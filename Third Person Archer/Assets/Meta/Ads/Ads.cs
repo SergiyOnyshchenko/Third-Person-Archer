@@ -18,6 +18,5 @@ namespace Meta.Ads
         public const string VictoryMultiplier = "reward_multiplier";
         public const string WeaponUpgrade = "weapon_upgrade";
         public const string SkinUnlock = "skin_unlock";
-        public const string GuildRefresh = "guild_refresh";
     }
 }

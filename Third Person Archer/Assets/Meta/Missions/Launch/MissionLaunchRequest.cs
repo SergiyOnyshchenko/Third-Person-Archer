@@ -18,7 +18,7 @@ public sealed class MissionLaunchRequest : ScriptableObject
     [SerializeField] private bool _isDebugRun;
     [SerializeField] private bool _easyDebugMode;
 
-    [Header("Contracts (Guild Board)")]
+    [Header("Replay of a cleared level (Contracts)")]
     [SerializeField] private int _contractSlot = -1; // -1 = not a board contract
     [SerializeField] private bool _contractOrderMatched;
     [SerializeField] private bool _contractDailyBonus;
@@ -94,7 +94,7 @@ public sealed class MissionLaunchRequest : ScriptableObject
         ClearContract();
     }
 
-    /// <summary>Call after Set(...) for a Guild Board contract.</summary>
+    /// <summary>Call after Set(...) for a replay.</summary>
     public void SetContract(ContractRunInfo contract)
     {
         if (contract == null)

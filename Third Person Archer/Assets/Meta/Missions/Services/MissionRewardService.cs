@@ -26,7 +26,7 @@ public sealed class MissionRewardService : IMissionRewardService
 
         if (ctx.SelectedType == MissionType.Contracts)
         {
-            // Guild Board: by the level's zone, essence of the played class, order/daily bonus fixed at launch.
+            // Replay of a cleared level: by the level's zone, gold + essence of the level's class.
             float multiplier = ctx.Contract != null ? ctx.Contract.RewardMultiplier : 1f;
             var contract = _balance.GetContractReward(ctx.ZoneIndex, missionWeaponClass, multiplier);
             return new MissionReward(contract.Cash, NormalizeTokens(contract.TokensPerType));
@@ -35,8 +35,9 @@ public sealed class MissionRewardService : IMissionRewardService
         if (!hasOverride)
         {
             // Unified reward from BalanceConfig (no per-type helper methods, no randomness).
+            // Sniper levels on the Campaign path keep the Sniper reward curve.
             var result = _balance.GetMissionReward(
-                ctx.SelectedType,
+                GetRewardType(ctx),
                 rewardIndex,
                 missionWeaponClass);
 
@@ -71,7 +72,7 @@ public sealed class MissionRewardService : IMissionRewardService
         int cash;
         int[] tokensOut;
 
-        switch (ctx.SelectedType)
+        switch (GetRewardType(ctx))
         {
             case MissionType.Campaign:
             {
@@ -120,7 +121,7 @@ public sealed class MissionRewardService : IMissionRewardService
         // Contracts: handled in Calculate (zone of the replayed level)
         // Sniper: sniper completed index
         // Boss: zone index (reward grows with zone; its tokens are the "key" to the next zone's tier)
-        switch (ctx.SelectedType)
+        switch (GetRewardType(ctx))
         {
             case MissionType.Campaign:
                 // Heroic continues the campaign curve.
@@ -128,12 +129,11 @@ public sealed class MissionRewardService : IMissionRewardService
 
             case MissionType.Sniper:
             {
-                // Fixed per mission (its place among all Sniper missions), so replays (Heroic: every zone
-                // is open) don't grow the reward forever. Counter only as a fallback.
-                int global = MissionProgressData.Active != null
-                    ? MissionProgressData.Active.GetGlobalSegmentIndex(MissionType.Sniper, ctx.Mission)
-                    : -1;
-                return global >= 0 ? global : Mathf.Max(0, _loopData != null ? _loopData.SniperCompletedIndex : 0);
+                // Fixed per level (its place among all Sniper levels of the path); Heroic continues the curve.
+                var progress = MissionProgressData.Active;
+                int global = progress != null ? progress.GetGlobalSniperIndex(ctx.Mission) : -1;
+                if (global < 0) global = Mathf.Max(0, _loopData != null ? _loopData.SniperCompletedIndex : 0);
+                return global + (ctx.IsHeroic && progress != null ? progress.GetSniperLevelCount() : 0);
             }
 
             case MissionType.Boss:
@@ -143,6 +143,11 @@ public sealed class MissionRewardService : IMissionRewardService
                 return 0;
         }
     }
+
+    private static MissionType GetRewardType(MissionContext ctx) =>
+        ctx.SelectedType == MissionType.Campaign && ctx.Mission != null && ctx.Mission.IsSniper
+            ? MissionType.Sniper
+            : ctx.SelectedType;
 
     /// <summary>
     /// First clear of the campaign's last level (last level of the boss-less final zone): it also pays

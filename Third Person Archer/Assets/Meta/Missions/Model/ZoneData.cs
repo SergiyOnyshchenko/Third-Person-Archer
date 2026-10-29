@@ -12,7 +12,7 @@ public class ZoneData : ScriptableObject
     [SerializeField] private string _zoneName;
 
     [Header("Segments")]
-    [Tooltip("Mission segments (Campaign, Contracts, Sniper, Boss). Campaign is the primary segment for zone completion.")]
+    [Tooltip("Mission segments (Campaign path incl. Sniper levels, Boss). Campaign is the primary segment for zone completion.")]
     [SerializeField] private List<MissionSegmentData> _segments = new();
 
     public string ID => _id;
@@ -39,6 +39,18 @@ public class ZoneData : ScriptableObject
             string key = zoneKey + "_" + segment.Type;
             segment.Init(key);
         }
+
+        MigrateToSinglePath(zoneKey);
+    }
+
+    /// <summary>Sniper levels moved from their own segment onto the Campaign path: remap old saves once.</summary>
+    private void MigrateToSinglePath(string zoneKey)
+    {
+        string flag = zoneKey + "_single_path";
+        if (SaveSystem.Load(flag, false)) return;
+
+        GetSegmentByType(MissionType.Campaign)?.MigrateFromSplitSegments(zoneKey + "_" + MissionType.Sniper);
+        SaveSystem.Save(flag, true);
     }
 
     // --------- New system helpers ---------

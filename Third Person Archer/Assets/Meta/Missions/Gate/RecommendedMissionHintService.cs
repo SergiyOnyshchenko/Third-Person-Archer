@@ -3,14 +3,12 @@ using Meta.Weapons;
 /// <summary>
 /// Decides which mission type should display the recommended-hint indicator on the map.
 /// Returns null when no single clear recommendation exists (e.g. zone with no boss after
-/// campaign complete, or both Contracts and Sniper are locked).
+/// campaign complete).
 ///
 /// Priority order:
-/// 1. Campaign incomplete + gate passes           → Campaign
-/// 2. Campaign incomplete + gate blocked          → Contracts (if unlocked), else Campaign
-/// 3. Campaign complete + zone has boss + gate OK → Boss
-/// 4. Campaign complete + boss gate blocked       → Sniper (if unlocked), else null
-/// 5. Campaign complete + zone has no boss        → null
+/// 1. Campaign path incomplete                    → Campaign
+/// 2. Campaign complete + zone has boss           → Boss
+/// 3. Campaign complete + zone has no boss        → null
 /// Heroic mode (whole campaign done): treated as campaign incomplete (rules 1–2).
 /// </summary>
 public static class RecommendedMissionHintService
@@ -26,19 +24,7 @@ public static class RecommendedMissionHintService
         bool heroic = services.ProgressData != null && services.ProgressData.IsHeroicUnlocked();
         if (heroic || !zone.IsCampaignComplete())
         {
-            var campaignCtx = BuildContext(services, MissionType.Campaign);
-            var campaignAvail = services.Availability.GetAvailability(campaignCtx);
-
-            if (campaignAvail.CanPlay)
-                return MissionType.Campaign;
-
-            // Campaign gate blocked — Contracts is the primary token grind to clear it.
-            var contractsCtx = BuildContext(services, MissionType.Contracts);
-            var contractsAvail = services.Availability.GetAvailability(contractsCtx);
-            if (contractsAvail.CanPlay)
-                return MissionType.Contracts;
-
-            // Contracts not yet unlocked by company level — Campaign remains the goal.
+            // Gate blocked: the Play button still leads there and its popup explains how to get stronger.
             return MissionType.Campaign;
         }
 
@@ -49,19 +35,9 @@ public static class RecommendedMissionHintService
         var bossCtx = BuildContext(services, MissionType.Boss);
         var bossAvail = services.Availability.GetAvailability(bossCtx);
 
-        if (bossAvail.CanPlay)
-            return MissionType.Boss;
-
-        // Boss Crossbow gate blocked — Sniper gives CrossbowTokens needed to upgrade.
-        if (bossAvail.Reason == AvailabilityBlockReason.BossCrossbowDamageTooLow)
-        {
-            var sniperCtx = BuildContext(services, MissionType.Sniper);
-            var sniperAvail = services.Availability.GetAvailability(sniperCtx);
-            if (sniperAvail.CanPlay)
-                return MissionType.Sniper;
-        }
-
-        return null;
+        return bossAvail.CanPlay || bossAvail.Reason == AvailabilityBlockReason.BossCrossbowDamageTooLow
+            ? MissionType.Boss
+            : null;
     }
 
     /// <summary>

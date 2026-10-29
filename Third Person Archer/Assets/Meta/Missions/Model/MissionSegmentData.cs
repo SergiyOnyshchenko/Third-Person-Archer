@@ -96,6 +96,31 @@ public class MissionSegmentData
         Save();
     }
 
+    /// <summary>
+    /// One-time save migration after Sniper missions moved onto the Campaign path. Old saves kept
+    /// per-index flags of the Campaign-only list (same key) and of the old Sniper segment. Each
+    /// old flag maps to the n-th Campaign / n-th Sniper mission of the new list (their order is kept).
+    /// </summary>
+    public void MigrateFromSplitSegments(string sniperSaveKey)
+    {
+        if (string.IsNullOrEmpty(_saveKey) || _missions == null) return;
+
+        EnsureCompletedOnceSize();
+
+        int campaign = 0, sniper = 0;
+        for (int i = 0; i < _missions.Count; i++)
+        {
+            bool isSniper = _missions[i] != null && _missions[i].IsSniper;
+            _completedOnce[i] = isSniper
+                ? SaveSystem.Load(sniperSaveKey + "_once_" + sniper++, false)
+                : SaveSystem.Load(_saveKey + "_once_" + campaign++, false);
+        }
+
+        // The path is linear: continue from the first level not cleared yet.
+        _currentIndex = Mathf.Max(0, _completedOnce.IndexOf(false));
+        Save();
+    }
+
     private void EnsureCompletedOnceSize()
     {
         if (_missions == null)

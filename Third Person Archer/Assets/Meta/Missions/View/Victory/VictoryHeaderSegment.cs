@@ -31,8 +31,7 @@ public sealed class VictoryHeaderSegment : MonoBehaviour, IVictorySegment
             _titleText.text = context.missionType switch
             {
                 MissionType.Boss => "Boss Defeated",
-                MissionType.Contracts => "Contract Completed",
-                MissionType.Sniper => "Sniper Mission Completed",
+                MissionType.Contracts => "Level Replayed",
                 _ => context.isHeroic ? "Heroic Cleared" : "Completed" // Campaign default
             };
         }

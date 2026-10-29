@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// "What this win brought me": essence of the played class filling toward its next level
-/// (with an "Upgrade ready!" stamp) and, for Guild contracts, reputation toward the next rank.
+/// (with an "Upgrade ready!" stamp).
 /// Wallet values are read before the payout, so the bar shows before → after this mission.
 /// </summary>
 public sealed class VictoryProgressSegment : MonoBehaviour, IVictorySegment
@@ -26,13 +26,6 @@ public sealed class VictoryProgressSegment : MonoBehaviour, IVictorySegment
     [SerializeField] private TMP_Text _classHint;
     [SerializeField] private GameObject _readyStamp;
     [SerializeField] private RectTransform _readyRays;
-
-    [Header("Guild reputation (contracts)")]
-    [SerializeField] private GameObject _guildRoot;
-    [SerializeField] private TMP_Text _rankText;
-    [SerializeField] private Image _repFill;
-    [SerializeField] private TMP_Text _repText;
-    [SerializeField] private GameObject _rankUpStamp;
 
     [Header("Look")]
     [SerializeField] private WeaponClassIconLibrary _classIcons;
@@ -63,7 +56,6 @@ public sealed class VictoryProgressSegment : MonoBehaviour, IVictorySegment
         if (_rootGroup != null) _seq.Append(_rootGroup.DOFade(1f, _fadeDuration));
 
         SetupClass(ctx, runtime != null ? runtime.Balance : null, rewards);
-        SetupGuild(ctx, runtime != null ? runtime.Balance : null);
 
         // Let the bars fill before the next segment (multiplier) starts.
         _seq.AppendInterval(_fillDuration * 0.6f);
@@ -94,9 +86,7 @@ public sealed class VictoryProgressSegment : MonoBehaviour, IVictorySegment
         var wallet = Economy.Wallet;
         if (ctx == null || !ctx.IsValid || balance == null || balance.WeaponCatalog == null || wallet == null) return;
 
-        _class = ctx.SelectedType == MissionType.Sniper || ctx.SelectedType == MissionType.Boss
-            ? WeaponClass.Crossbow
-            : ctx.RequiredWeaponClass;
+        _class = ctx.SelectedType == MissionType.Boss ? WeaponClass.Crossbow : ctx.RequiredWeaponClass;
 
         var repo = new WeaponRepository();
         var progression = new ClassProgressionService(repo, wallet, new EquipmentService(repo), new StatsService(), balance.WeaponCatalog);
@@ -192,62 +182,4 @@ public sealed class VictoryProgressSegment : MonoBehaviour, IVictorySegment
             .SetEase(Ease.Linear).SetLoops(-1).SetLink(_readyRays.gameObject);
     }
 
-    // ── Guild reputation ─────────────────────────────────────────────────────
-
-    private void SetupGuild(MissionContext ctx, BalanceConfig balance)
-    {
-        if (_guildRoot != null) _guildRoot.SetActive(false);
-        if (_rankUpStamp != null) _rankUpStamp.SetActive(false);
-
-        if (ctx == null || ctx.SelectedType != MissionType.Contracts || balance == null) return;
-        if (DataManager.Instance == null || !DataManager.Instance.TryGetData(out GuildData guild) || guild == null) return;
-
-        var g = balance.Guild;
-        int after = guild.Reputation; // already granted by MissionCompletionService
-        int gained = g.GetReputation(ctx.Contract != null && ctx.Contract.OrderMatched);
-        int before = Mathf.Max(0, after - gained);
-
-        int rankBefore = g.GetRank(before);
-        int rankAfter = g.GetRank(after);
-
-        if (_guildRoot != null) _guildRoot.SetActive(true);
-        if (_rankText != null) _rankText.text = $"GUILD RANK {rankBefore}";
-
-        float From(int rep, int rank)
-        {
-            int need = rank >= g.MaxRank ? 0 : g.GetRepForNextRank(rank);
-            return need > 0 ? Mathf.Clamp01((rep - g.GetRepForRank(rank)) / (float)need) : 1f;
-        }
-
-        if (_repFill != null) _repFill.fillAmount = From(before, rankBefore);
-        if (_repText != null) _repText.text = $"+{gained} reputation";
-
-        float t0 = _fadeDuration + 0.2f;
-        if (_repFill == null) return;
-
-        if (rankAfter > rankBefore)
-        {
-            _seq.Insert(t0, _repFill.DOFillAmount(1f, _fillDuration * 0.6f).SetEase(Ease.InQuad));
-            _seq.InsertCallback(t0 + _fillDuration * 0.6f, () =>
-            {
-                _repFill.fillAmount = 0f;
-                if (_rankText != null)
-                {
-                    _rankText.text = $"GUILD RANK {rankAfter}";
-                    _rankText.transform.DOPunchScale(Vector3.one * 0.3f, 0.4f, 6, 0.5f).SetLink(_rankText.gameObject);
-                }
-                if (_rankUpStamp != null)
-                {
-                    _rankUpStamp.SetActive(true);
-                    _rankUpStamp.transform.localScale = Vector3.one * 2f;
-                    _rankUpStamp.transform.DOScale(1f, 0.35f).SetEase(Ease.OutBack, 2f).SetLink(_rankUpStamp);
-                }
-            });
-            _seq.Insert(t0 + _fillDuration * 0.6f, _repFill.DOFillAmount(From(after, rankAfter), _fillDuration * 0.5f).SetEase(Ease.OutCubic));
-        }
-        else
-        {
-            _seq.Insert(t0, _repFill.DOFillAmount(From(after, rankAfter), _fillDuration).SetEase(Ease.OutCubic));
-        }
-    }
 }

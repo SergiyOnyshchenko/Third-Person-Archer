@@ -18,11 +18,11 @@ public sealed class MissionContext
     public MissionType BalanceMode { get; } // what balance formulas should treat this as
     public int ContractsCompletedIndexOverride { get; } // -1 = no override
 
-    /// <summary>Guild Board run info (Contracts only), null otherwise.</summary>
+    /// <summary>Replay run info (Contracts = replay of a cleared level), null otherwise.</summary>
     public ContractRunInfo Contract { get; }
     public int ContractPlayerDamage => Contract != null ? Contract.PlayerDamage : 0;
 
-    /// <summary>The whole campaign is done (any mission type): Contracts also use the Heroic tier and rewards.</summary>
+    /// <summary>The whole campaign is done (any mission type): replays also use the Heroic tier and rewards.</summary>
     public bool IsHeroicEra { get; }
     /// <summary>Campaign level played in Heroic mode (whole campaign done): R from the Heroic tier.</summary>
     public bool IsHeroic { get; }
@@ -65,7 +65,7 @@ public sealed class MissionContext
     }
 }
 
-/// <summary>What the Guild Board decided at launch (kept fixed so the victory preview and the payout match).</summary>
+/// <summary>Replay run info fixed at launch (kept so the victory preview and the payout match).</summary>
 public sealed class ContractRunInfo
 {
     public int Slot { get; }

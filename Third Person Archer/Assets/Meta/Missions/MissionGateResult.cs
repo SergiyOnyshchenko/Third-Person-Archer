@@ -5,7 +5,7 @@ using Meta.Weapons;
 /// Green  — damage >= recommended R: regular enemies die in 1 body shot.
 /// Yellow — min <= damage < R: playable, some enemies need 2 body shots (head is always 1).
 /// Red    — damage < min: blocked.
-/// Hard gates (Sniper/Boss) are only Green or Red.
+/// Hard gate (Boss) is only Green or Red.
 /// </summary>
 public enum MissionGateStatus
 {

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// Popup shown when the next Campaign/Boss gate is blocked and the player cannot
 /// currently upgrade or buy — they need to grind resources first.
 ///
-/// Action button → directly starts a Contracts or Sniper mission (direct-start path).
+/// Action button → directly replays the last cleared level of the class (gold + its essence).
 ///   1. Selects the appropriate mission type via Progress.SelectMissionType().
 ///   2. Calls MissionStart.TryStartSelected().
 ///   3. If successful, closes popup and loads the mission scene.
@@ -50,18 +50,9 @@ public sealed class NotEnoughResourcesPopupController : MonoBehaviour, IReceives
     {
         _args = args;
 
-        if (args.IsCrossbowGate)
-        {
-            if (_titleText != null)       _titleText.text = "Need Crossbow Tokens";
-            if (_bodyText != null)        _bodyText.text  = "Play Sniper missions to upgrade your Crossbow.";
-            if (_actionButtonLabel != null) _actionButtonLabel.text = "Play Sniper";
-        }
-        else
-        {
-            if (_titleText != null)       _titleText.text = "Not enough resources";
-            if (_bodyText != null)        _bodyText.text  = "Take a Guild contract: gold and essence for the class you play.";
-            if (_actionButtonLabel != null) _actionButtonLabel.text = "Play Contracts";
-        }
+        if (_titleText != null)         _titleText.text = $"Need more {args.WeaponClass} essence";
+        if (_bodyText != null)          _bodyText.text  = $"Replay a {args.WeaponClass} level you cleared: gold and essence for the upgrade.";
+        if (_actionButtonLabel != null) _actionButtonLabel.text = "Replay";
     }
 
     private void OnActionClicked()
@@ -71,23 +62,10 @@ public sealed class NotEnoughResourcesPopupController : MonoBehaviour, IReceives
         var services = MainMenuRuntime.Instance?.Services;
         if (services == null) { Close(); return; }
 
-        var targetType = _args.IsCrossbowGate ? MissionType.Sniper : MissionType.Contracts;
+        var result = services.MissionStart.TryStartReplay(_args.WeaponClass);
 
-        // Switch to the correct tab — required for BuildSelectedContext to return the right type.
-        // Side effect: OnMissionTypeChanged fires, which refreshes all map presenters (harmless).
-        services.Progress.SelectMissionType(targetType);
-
-        // Attempt direct start using the existing play flow.
-        var result = services.MissionStart.TryStartSelected();
-
-        // Always close popup — either mission scene loads or the correct tab is already selected.
+        // Always close popup — either the replay loads or the player picks a level on the map.
         Destroy(gameObject);
-
-        if (result.FailReason == MissionStartFailReason.ContractsUseGuildBoard)
-        {
-            GuildBoardNavigation.Open();
-            return;
-        }
 
         if (result.Started && result.MissionToLoad?.Scene != null &&
             !string.IsNullOrEmpty(result.MissionToLoad.Scene.ScenePath))

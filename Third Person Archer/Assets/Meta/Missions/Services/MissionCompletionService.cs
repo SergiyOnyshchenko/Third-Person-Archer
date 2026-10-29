@@ -3,21 +3,15 @@ public sealed class MissionCompletionService : IMissionCompletionService
     private readonly IMetaProgressWrite _progress;
     private readonly MetaLoopProgressData _loopData;
     private readonly IMissionRewardService _rewards;
-    private readonly GuildData _guild;
-    private readonly BalanceConfig _balance;
 
     public MissionCompletionService(
         IMetaProgressWrite progress,
         MetaLoopProgressData loopData,
-        IMissionRewardService rewards,
-        GuildData guild = null,
-        BalanceConfig balance = null)
+        IMissionRewardService rewards)
     {
         _progress = progress;
         _loopData = loopData;
         _rewards = rewards;
-        _guild = guild;
-        _balance = balance;
     }
 
     public MissionCompleteResult Complete(MissionContext ctx, MissionOutcome outcome)
@@ -62,8 +56,8 @@ public sealed class MissionCompletionService : IMissionCompletionService
                 break;
 
             case MissionType.Contracts:
+                // Replay: no path progress.
                 _loopData?.IncreaseContractsCompleted();
-                CompleteGuildContract(ctx.Contract);
                 break;
 
             case MissionType.Sniper:
@@ -71,15 +65,6 @@ public sealed class MissionCompletionService : IMissionCompletionService
                 _loopData?.IncreaseSniperCompleted();
                 break;
         }
-    }
-
-    private void CompleteGuildContract(ContractRunInfo contract)
-    {
-        if (_guild == null || contract == null)
-            return;
-
-        int reputation = _balance != null ? _balance.Guild.GetReputation(contract.OrderMatched) : 0;
-        _guild.CompleteContract(contract.Slot, reputation, contract.DailyBonus);
     }
 
     private void AdvanceToNextZone(int currentZoneIndex)

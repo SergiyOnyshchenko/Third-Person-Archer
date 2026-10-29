@@ -72,10 +72,6 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
 
     private static string BuildTitle(DamageGatePopupArgs args)
     {
-        // Crossbow (Boss / Sniper access) gets a dedicated title.
-        if (args.WeaponClass == WeaponClass.Crossbow)
-            return "Your Crossbow is too weak";
-
         return $"Your {args.WeaponClass} is too weak";
     }
 
@@ -83,9 +79,8 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
     {
         return action switch
         {
-            GatePopupAction.PlayContracts => "Take a Guild contract: gold and essence for the class you play.",
-            GatePopupAction.PlaySniper    => "Play Sniper missions to earn Crossbow Tokens.",
-            _                             => "Upgrade it or buy a stronger one to continue.",
+            GatePopupAction.ReplayLevel => "Replay a level you cleared to earn gold and essence.",
+            _                           => "Upgrade it or buy a stronger one to continue.",
         };
     }
 
@@ -93,9 +88,8 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
     {
         return action switch
         {
-            GatePopupAction.PlayContracts => "Play Contracts",
-            GatePopupAction.PlaySniper    => "Play Sniper",
-            _                             => "Open Weapons",
+            GatePopupAction.ReplayLevel => "Replay",
+            _                           => "Open Weapons",
         };
     }
 
@@ -109,11 +103,8 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
 
         switch (_args.Action)
         {
-            case GatePopupAction.PlayContracts:
-                StartMissionThenClose(MissionType.Contracts);
-                break;
-            case GatePopupAction.PlaySniper:
-                StartMissionThenClose(MissionType.Sniper);
+            case GatePopupAction.ReplayLevel:
+                StartReplayThenClose();
                 break;
             default:
                 OpenWeapons();
@@ -136,20 +127,18 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
         nav.Open(_args.WeaponScreenId, weaponArgs, reuseCached: true);
     }
 
-    private void StartMissionThenClose(MissionType missionType)
+    private void StartReplayThenClose()
     {
         var services = MainMenuRuntime.Instance?.Services;
         if (services == null) { Close(); return; }
 
-        services.Progress.SelectMissionType(missionType);
-
-        var result = services.MissionStart.TryStartSelected();
+        var result = services.MissionStart.TryStartReplay(_args.WeaponClass);
 
         Destroy(gameObject);
 
-        if (result.FailReason == MissionStartFailReason.ContractsUseGuildBoard)
+        if (!result.Started)
         {
-            GuildBoardNavigation.Open();
+            OpenWeapons();
             return;
         }
 

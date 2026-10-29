@@ -100,7 +100,7 @@ public class MissionProgressData : GameData
 
     // --------- Global progress helpers ---------
 
-    /// <summary>Completed campaign missions across ALL zones at least once.</summary>
+    /// <summary>Completed campaign missions across ALL zones at least once (Sniper levels on the path don't count).</summary>
     public int GetCompletedGlobalCampaignCount()
     {
         if (_zones == null) return 0;
@@ -108,15 +108,88 @@ public class MissionProgressData : GameData
         int total = 0;
         foreach (var z in _zones)
         {
-            if (z == null) continue;
+            var campaign = z?.GetSegmentByType(MissionType.Campaign);
+            if (campaign?.Missions == null) continue;
 
-            var campaign = z.GetSegmentByType(MissionType.Campaign);
-            if (campaign == null) continue;
-
-            total += campaign.GetCompletedOnceCount();
+            foreach (var m in campaign.Missions)
+                if (m != null && !m.IsSniper && campaign.IsMissionCompletedOnce(m))
+                    total++;
         }
 
         return total;
+    }
+
+    /// <summary>Index of a Sniper level among all Sniper levels of the path (zone order); -1 if not a Sniper level.</summary>
+    public int GetGlobalSniperIndex(MissionData mission)
+    {
+        if (_zones == null || mission == null || !mission.IsSniper) return -1;
+
+        int index = 0;
+        foreach (var z in _zones)
+        {
+            var missions = z?.GetSegmentByType(MissionType.Campaign)?.Missions;
+            if (missions == null) continue;
+
+            foreach (var m in missions)
+            {
+                if (m == null || !m.IsSniper) continue;
+                if (m == mission) return index;
+                index++;
+            }
+        }
+
+        return -1;
+    }
+
+    public int GetSniperLevelCount()
+    {
+        int count = 0;
+        if (_zones == null) return 0;
+
+        foreach (var z in _zones)
+        {
+            var missions = z?.GetSegmentByType(MissionType.Campaign)?.Missions;
+            if (missions == null) continue;
+            foreach (var m in missions)
+                if (m != null && m.IsSniper) count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Last cleared path level of the class, for a replay (gold + essence of that class): current zone
+    /// first, then earlier zones, then later ones. Null if no such level is cleared yet.
+    /// </summary>
+    public bool TryFindReplayLevel(Meta.Weapons.WeaponClass weaponClass, out MissionData mission, out int zoneIndex)
+    {
+        mission = null;
+        zoneIndex = -1;
+        if (_zones == null) return false;
+
+        for (int step = 0; step < _zones.Count; step++)
+        {
+            int zi = step <= _zoneIndex ? _zoneIndex - step : step;
+            if (zi < 0 || zi >= _zones.Count) continue;
+
+            var campaign = _zones[zi]?.GetSegmentByType(MissionType.Campaign);
+            if (campaign?.Missions == null) continue;
+
+            for (int i = campaign.Missions.Count - 1; i >= 0; i--)
+            {
+                var m = campaign.Missions[i];
+                if (m == null || !campaign.IsMissionCompletedOnce(m)) continue;
+
+                var cls = m.UseFixedWeaponClass ? m.FixedWeaponClass : m.BaseWeaponClass;
+                if (cls != weaponClass) continue;
+
+                mission = m;
+                zoneIndex = zi;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>Company level = completed global campaign count + 1.</summary>
@@ -165,7 +238,7 @@ public class MissionProgressData : GameData
 
     /// <summary>
     /// Zone the menu opens on. Before Heroic only the last unlocked zone is playable; after the
-    /// campaign every zone is open (Heroic levels, unfinished Sniper), so keep the player's choice.
+    /// campaign every zone is open (Heroic levels, boss replays), so keep the player's choice.
     /// </summary>
     public int GetMenuZoneIndex()
     {

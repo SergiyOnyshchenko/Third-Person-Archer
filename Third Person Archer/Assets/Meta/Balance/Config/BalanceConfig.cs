@@ -10,13 +10,14 @@ public partial class BalanceConfig : ScriptableObject
     [SerializeField] private RewardModule _rewards = new();
     [SerializeField] private WeaponClassPerformanceModule _weaponPerformance = new();
     [SerializeField] private RoundingModule _rounding = new();
-    [SerializeField] private GuildModule _guild = new();
+    [UnityEngine.Serialization.FormerlySerializedAs("_guild")]
+    [SerializeField] private ReplayModule _replay = new();
     [SerializeField] private HeroicModule _heroic = new();
 
     [Header("Weapon Tiers (damage ranges for tier gates)")]
     [SerializeField] private WeaponCatalog _weaponCatalog;
 
-    public GuildModule Guild => _guild;
+    public ReplayModule Replay => _replay;
     public HeroicModule Heroic => _heroic;
     public WeaponCatalog WeaponCatalog => _weaponCatalog;
 
@@ -110,10 +111,8 @@ public partial class BalanceConfig : ScriptableObject
             ctx.CompanyLevel > 0 ? (ctx.CompanyLevel - 1) :
             0;
 
-        // Sniper enemies scale with the Sniper tier gate; Contracts use the tier of the replayed level (below).
-        float gateDamage = effectiveType == MissionType.Sniper
-            ? GetSniperGateDamage(ctx)
-            : GetRequiredDamageForCampaign(ctx.RequiredWeaponClass, gateIndex);
+        // Campaign and replays use the tier R below; this legacy value only feeds enemy damage.
+        float gateDamage = GetRequiredDamageForCampaign(ctx.RequiredWeaponClass, gateIndex);
 
         int progressionIndex = effectiveType switch
         {
@@ -137,16 +136,16 @@ public partial class BalanceConfig : ScriptableObject
 
         int dmg = Mathf.Max(0, Mathf.RoundToInt(gateDamage * dmgFromGate * difficulty * typeDmg * mpDmg));
 
-        // Contracts (Guild Board): no upward auto-scaling. HP = R of the played class for the replayed level,
+        // Replay of a cleared level: no upward auto-scaling. HP = R of the played class for the replayed level,
         // capped so the player's weapon never needs more than MaxBodyShots body shots.
         if (ctx.SelectedType == MissionType.Contracts)
         {
             int recommended = GetContractRecommendedDamage(ctx);
             int contractHp = Mathf.Max(1, Mathf.FloorToInt(recommended * Mathf.Min(1f, typeHp) * mpHp));
             if (ctx.ContractPlayerDamage > 0)
-                contractHp = Mathf.Min(contractHp, ctx.ContractPlayerDamage * _guild.MaxBodyShots);
+                contractHp = Mathf.Min(contractHp, ctx.ContractPlayerDamage * _replay.MaxBodyShots);
 
-            int contractDmg = Mathf.Max(0, Mathf.RoundToInt(dmg * _guild.EnemyDamageMultiplier));
+            int contractDmg = Mathf.Max(0, Mathf.RoundToInt(dmg * _replay.EnemyDamageMultiplier));
             return new EnemyModule.EnemyStats(contractHp, contractDmg);
         }
 
@@ -248,19 +247,6 @@ public partial class BalanceConfig : ScriptableObject
     {
         int recommended = GetCampaignRecommendedDamage(ctx);
         return Mathf.Max(1, Mathf.CeilToInt(recommended * _gates.CampaignMinDamageFraction));
-    }
-
-    /// <summary>
-    /// Hard Crossbow gate of a Sniper mission: zone's Crossbow tier at the mission's position in the
-    /// zone's Sniper segment. The first Sniper of a zone asks exactly for the new tier's base.
-    /// </summary>
-    public float GetSniperGateDamage(MissionContext ctx)
-    {
-        if (ctx == null || ctx.Zone == null) return 0f;
-
-        float position = GetSegmentPosition01(ctx.Zone, MissionType.Sniper, ctx.Mission, WeaponClass.Crossbow);
-        return Mathf.Floor(GetTierGateDamage(WeaponClass.Crossbow, ctx.ZoneIndex, position,
-            fallbackGlobalIndex: Mathf.Max(0, ctx.CompanyLevel - 1)));
     }
 
     /// <summary>

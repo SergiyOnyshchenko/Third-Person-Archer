@@ -20,7 +20,7 @@ public enum PostMissionGuidanceMode
     /// <summary>
     /// Experimental. Skips Popup A and opens WeaponSelectionScreen automatically
     /// when the coordinator is idle and the map is active.
-    /// Popup B (not_enough_resources_popup) is still shown for PlayContracts/PlaySniper.
+    /// Popup B (not_enough_resources_popup) is still shown for ReplayLevel.
     /// </summary>
     AutoOpenWeapons,
 }
@@ -40,7 +40,7 @@ public enum PostMissionGuidanceMode
 ///   The target weapon is pre-selected and the correct button is highlighted.
 ///
 /// POPUP B — Not Enough Resources (popup id: not_enough_resources_popup)
-///   Shown when NextStepRecommendationService returns PlayContracts or PlaySniper.
+///   Shown when NextStepRecommendationService returns ReplayLevel.
 ///   Behavior is identical in both modes.
 ///
 /// ANTI-SPAM
@@ -231,7 +231,7 @@ public sealed class PostMissionNextStepPresenter : MonoBehaviour
         if (rec.Type != NextStepRecommendationType.UpgradeWeapon &&
             rec.Type != NextStepRecommendationType.BuyWeapon)
         {
-            // Could be PlayContracts/PlaySniper — the coordinator submission path
+            // Could be ReplayLevel — the coordinator submission path
             // (EvaluateAndSubmit) already handles those.
             return;
         }
@@ -318,8 +318,7 @@ public sealed class PostMissionNextStepPresenter : MonoBehaviour
                 SubmitWeaponTooWeak(coord, rec);
                 break;
 
-            case NextStepRecommendationType.PlayContracts:
-            case NextStepRecommendationType.PlaySniper:
+            case NextStepRecommendationType.ReplayLevel:
                 SubmitNotEnoughResources(coord, rec);
                 break;
         }
@@ -350,7 +349,7 @@ public sealed class PostMissionNextStepPresenter : MonoBehaviour
     private void SubmitNotEnoughResources(IStartupPopupCoordinator coord, NextStepRecommendation rec)
     {
         var args = new NotEnoughResourcesPopupArgs(
-            isCrossbowGate: rec.IsCrossbowPath,
+            weaponClass:    rec.RequiredWeaponClass,
             currentDamage:  rec.CurrentDamage,
             requiredDamage: rec.RequiredDamage);
 

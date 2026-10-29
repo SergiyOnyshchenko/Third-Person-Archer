@@ -56,6 +56,9 @@ public class MissionData : ScriptableObject
     public bool UseFixedWeaponClass => _useFixedWeaponClass;
     public WeaponClass FixedWeaponClass => _fixedWeaponClass;
 
+    /// <summary>Sniper level placed on the Campaign path (Crossbow, Sniper reward; does not raise company level).</summary>
+    public bool IsSniper => _missionType == MissionType.Sniper;
+
     public bool UseRewardOverride => _useRewardOverride;
     public int OverrideBaseCash => _overrideBaseCash;
     public int OverrideBaseTokensPerType => _overrideBaseTokensPerType;

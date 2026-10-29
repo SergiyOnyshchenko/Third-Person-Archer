@@ -12,7 +12,7 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
     [SerializeField] private GameObject _highlight;
     [SerializeField] private GameObject _lockedIcon;
     [SerializeField] private GameObject _recommendedHint;
-    [Tooltip("Optional progress badge: Sniper \"2/5\", Guild \"Rank 3 · x2 ×5\".")]
+    [Tooltip("Optional progress badge.")]
     [SerializeField] private GameObject _badgeRoot;
     [SerializeField] private TMP_Text _badgeText;
 
@@ -61,26 +61,12 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
         transform.DOKill(complete: true);
         transform.DOPunchScale(Vector3.one * 0.12f, 0.25f, 8, 0.6f).SetLink(gameObject);
 
-        // Guild contracts live on their own board; locked state is explained there too.
-        if (_missionType == MissionType.Contracts && IsUnlocked())
-        {
-            GuildBoardNavigation.Open();
-            return;
-        }
-
         // We always allow selecting the mode (even if it’s locked): the panel explains why it’s blocked.
-        if (_selectionPresenter != null && _missionType != MissionType.Contracts)
+        if (_selectionPresenter != null)
             _selectionPresenter.SelectMissionType(_missionType);
 
-        if (_panel != null && _missionType != MissionType.Contracts)
+        if (_panel != null)
             _panel.ShowMode(_missionType);
-    }
-
-    private bool IsUnlocked()
-    {
-        if (_services == null) return false;
-        var avail = _services.Availability.GetAvailability(BuildContextFor(_missionType));
-        return avail.CanPlay || avail.Reason != AvailabilityBlockReason.ContractsLockedByCompanyLevel;
     }
 
     private void Refresh()
@@ -89,8 +75,8 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
 
         var zone = _services.Progress.CurrentZone;
 
-        // Campaign levels are drawn as a path of nodes (CampaignPathView); the old landmark is gone.
-        if (_missionType == MissionType.Campaign)
+        // Campaign and Sniper levels are nodes of one path (CampaignPathView); only the Boss keeps a landmark.
+        if (_missionType != MissionType.Boss)
         {
             SetRecommendedHint(false);
             gameObject.SetActive(false);
@@ -126,22 +112,9 @@ public sealed class MissionSelectorButtonPresenter : MonoBehaviour
         string text = null;
         if (!locked && zone != null)
         {
-            switch (_missionType)
-            {
-                case MissionType.Sniper:
-                    var sniper = zone.GetSegmentByType(MissionType.Sniper);
-                    if (sniper != null && sniper.Missions.Count > 0)
-                        text = $"{sniper.GetCompletedOnceCount()}/{sniper.Missions.Count}";
-                    break;
-
-                case MissionType.Contracts:
-                    var board = _services.ContractBoard;
-                    if (board != null)
-                        text = board.DailyBonusLeft > 0
-                            ? $"Rank {board.Rank} · x2 left: {board.DailyBonusLeft}"
-                            : $"Rank {board.Rank}";
-                    break;
-            }
+            var campaign = zone.GetSegmentByType(MissionType.Campaign);
+            if (_missionType == MissionType.Boss && campaign != null && !campaign.IsFullyCompleted())
+                text = $"{campaign.GetCompletedOnceCount()}/{campaign.Missions.Count}";
         }
 
         _badgeRoot.SetActive(text != null);

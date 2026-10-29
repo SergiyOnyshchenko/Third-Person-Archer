@@ -16,7 +16,6 @@ public sealed class MainMenuServices
     public IMissionCatalogService Catalog { get; }
     public IWeaponRequirementService WeaponRequirement { get; }
     public NextStepRecommendationService NextStep { get; }
-    public IContractBoardService ContractBoard { get; }
     public BalanceConfig Balance { get; }
     public IMissionRewardService Rewards { get; }
 
@@ -34,7 +33,6 @@ public sealed class MainMenuServices
         IMissionCatalogService catalog,
         IWeaponRequirementService weaponRequirement,
         NextStepRecommendationService nextStep = null,
-        IContractBoardService contractBoard = null,
         BalanceConfig balance = null,
         IMissionRewardService rewards = null)
     {
@@ -50,7 +48,6 @@ public sealed class MainMenuServices
         Catalog = catalog;
         WeaponRequirement = weaponRequirement;
         NextStep = nextStep;
-        ContractBoard = contractBoard;
         Balance = balance;
         Rewards = rewards;
     }
