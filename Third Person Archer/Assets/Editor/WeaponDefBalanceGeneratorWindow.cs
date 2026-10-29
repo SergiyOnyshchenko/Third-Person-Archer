@@ -220,9 +220,9 @@ public sealed class WeaponDefAutoGeneratorWindow : EditorWindow
             // - Still include loop multiplier so later loops scale.
             float gateForWeapon;
             if (_ignoreGateDamageCapForWeaponGeneration)
-                gateForWeapon = GetRequiredDamageForCampaign_Uncapped(_balanceConfig, def.Class, globalIndexTotal, loopIndex);
+                gateForWeapon = GetRequiredDamageForCampaign_Uncapped(_balanceConfig, def.Class, globalIndexTotal);
             else
-                gateForWeapon = _balanceConfig.GetRequiredDamageForCampaign(def.Class, globalIndexTotal, loopIndex);
+                gateForWeapon = _balanceConfig.GetRequiredDamageForCampaign(def.Class, globalIndexTotal);
 
             float floor = isStarter ? GetStarterFloor(def.Class) : 0f;
 
@@ -240,7 +240,7 @@ public sealed class WeaponDefAutoGeneratorWindow : EditorWindow
 
             if (_logDamageInputs)
             {
-                float gateCapped = _balanceConfig.GetRequiredDamageForCampaign(def.Class, globalIndexTotal, loopIndex);
+                float gateCapped = _balanceConfig.GetRequiredDamageForCampaign(def.Class, globalIndexTotal);
                 Debug.Log(
                     $"[GEN] {def.name} | Class={def.Class} | Unlock={def.UnlockAfterCampaignLevel} | GlobalIdx={globalIndexTotal} | " +
                     $"Loop={loopIndex} | InLoop={indexInLoop} | Zone={zoneIndex} | GateUsed={( _ignoreGateDamageCapForWeaponGeneration ? "UNCAPPED" : "CAPPED")}={gateForWeapon:F2} | " +
@@ -261,7 +261,7 @@ public sealed class WeaponDefAutoGeneratorWindow : EditorWindow
             }
 
             // Upgrade prices anchor to rewards at same "position in loop"
-            var reward = _balanceConfig.GetMissionReward(MissionType.Campaign, indexInLoop, def.Class, loopIndex);
+            var reward = _balanceConfig.GetMissionReward(MissionType.Campaign, indexInLoop, def.Class);
 
             int cashPerMission = Mathf.Max(0, reward.Cash);
             int tokensPerMission = ExtractTokenForClass(reward.TokensPerType, def.Class);
@@ -304,7 +304,7 @@ public sealed class WeaponDefAutoGeneratorWindow : EditorWindow
     // ------------------------------------------------------------
     // Gate (UNCAPPED) computation via reflection
     // ------------------------------------------------------------
-    private static float GetRequiredDamageForCampaign_Uncapped(BalanceConfig cfg, WeaponClass cls, int globalIndex, int loopIndex)
+    private static float GetRequiredDamageForCampaign_Uncapped(BalanceConfig cfg, WeaponClass cls, int globalIndex)
     {
         if (cfg == null) return 0f;
 
@@ -312,17 +312,17 @@ public sealed class WeaponDefAutoGeneratorWindow : EditorWindow
         {
             // BalanceConfig has: [SerializeField] private GateModule _gates;
             var gatesField = typeof(BalanceConfig).GetField("_gates", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (gatesField == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex, loopIndex);
+            if (gatesField == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex);
 
             object gates = gatesField.GetValue(cfg);
-            if (gates == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex, loopIndex);
+            if (gates == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex);
 
             // GateModule has: [SerializeField] private WeaponGateProfile[] _weaponGateProfiles;
             var profilesField = gates.GetType().GetField("_weaponGateProfiles", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (profilesField == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex, loopIndex);
+            if (profilesField == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex);
 
             var profiles = profilesField.GetValue(gates) as Array;
-            if (profiles == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex, loopIndex);
+            if (profiles == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex);
 
             object profile = null;
             foreach (var p in profiles)
@@ -339,7 +339,7 @@ public sealed class WeaponDefAutoGeneratorWindow : EditorWindow
                 }
             }
 
-            if (profile == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex, loopIndex);
+            if (profile == null) return cfg.GetRequiredDamageForCampaign(cls, globalIndex);
 
             float baseDamage = ReadFloat(profile, "BaseDamage", 0f);
             float missionGrowth = ReadFloat(profile, "MissionGrowth", 0f);
@@ -352,16 +352,12 @@ public sealed class WeaponDefAutoGeneratorWindow : EditorWindow
 
             // IMPORTANT: do NOT apply DamageCap here.
 
-            // Apply loop multiplier (same way BalanceConfig wrapper does)
-            float loopMult = cfg.GetLoopMultipliers(loopIndex).GateDamage;
-            value *= loopMult;
-
             return Mathf.Max(0f, value);
         }
         catch
         {
             // fallback
-            return cfg.GetRequiredDamageForCampaign(cls, globalIndex, loopIndex);
+            return cfg.GetRequiredDamageForCampaign(cls, globalIndex);
         }
     }
 

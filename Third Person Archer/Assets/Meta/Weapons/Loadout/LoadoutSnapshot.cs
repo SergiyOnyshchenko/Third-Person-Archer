@@ -11,8 +11,9 @@ namespace Meta.Weapons
         public sealed class Slot
         {
             [SerializeField] private WeaponClass _class;
-            [SerializeField] private WeaponDef _weapon;
-            [SerializeField] private int _upgradeLevel;
+            [SerializeField] private WeaponDef _weapon;      // equipped model (visual, projectile)
+            [SerializeField] private WeaponDef _powerWeapon; // best owned tier (damage range)
+            [SerializeField] private int _upgradeLevel;      // class level
 
             // Keep old field
             [SerializeField] private float _damage;
@@ -22,6 +23,7 @@ namespace Meta.Weapons
 
             public WeaponClass Class => _class;
             public WeaponDef Weapon => _weapon;
+            public WeaponDef PowerWeapon => _powerWeapon != null ? _powerWeapon : _weapon;
             public int UpgradeLevel => _upgradeLevel;
 
             public float Damage => _damage;
@@ -32,9 +34,10 @@ namespace Meta.Weapons
                 _class = cls;
             }
 
-            public void Set(WeaponDef weapon, int upgradeLevel, float damage, WeaponStats computedStats)
+            public void Set(WeaponDef weapon, WeaponDef powerWeapon, int upgradeLevel, float damage, WeaponStats computedStats)
             {
                 _weapon = weapon;
+                _powerWeapon = powerWeapon;
                 _upgradeLevel = upgradeLevel;
                 _damage = damage;
                 _computedStats = computedStats;
@@ -57,10 +60,10 @@ namespace Meta.Weapons
         public void SetSlot(WeaponClass cls, WeaponDef weapon, int upgradeLevel, float damage)
         {
             // Keep computed stats at least consistent for Damage if caller uses old API.
-            SetSlot(cls, weapon, upgradeLevel, damage, new WeaponStats { Damage = damage });
+            SetSlot(cls, weapon, weapon, upgradeLevel, damage, new WeaponStats { Damage = damage });
         }
 
-        public void SetSlot(WeaponClass cls, WeaponDef weapon, int upgradeLevel, float damage, WeaponStats computedStats)
+        public void SetSlot(WeaponClass cls, WeaponDef weapon, WeaponDef powerWeapon, int upgradeLevel, float damage, WeaponStats computedStats)
         {
             var slot = FindSlot(cls);
             if (slot == null)
@@ -69,7 +72,7 @@ namespace Meta.Weapons
                 _slots.Add(slot);
             }
 
-            slot.Set(weapon, upgradeLevel, damage, computedStats);
+            slot.Set(weapon, powerWeapon, upgradeLevel, damage, computedStats);
         }
 
         public bool TryGet(WeaponClass cls, out Slot slot)

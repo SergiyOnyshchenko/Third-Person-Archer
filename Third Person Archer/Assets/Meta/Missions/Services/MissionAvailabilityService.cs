@@ -60,8 +60,7 @@ public sealed class MissionAvailabilityService : IMissionAvailabilityService
                         return MissionAvailability.Blocked(AvailabilityBlockReason.SniperLockedByCompanyLevel);
 
                     // Check Crossbow damage access gate for current Sniper tier.
-                    int sniperIndex = _loopProgressData != null ? _loopProgressData.SniperCompletedIndex : 0;
-                    var sniperGate = _gateService.CheckSniperGate(ctx, sniperIndex);
+                    var sniperGate = _gateService.CheckSniperGate(ctx);
                     return sniperGate.Passed
                         ? MissionAvailability.Allowed()
                         : MissionAvailability.Blocked(AvailabilityBlockReason.SniperDamageTooLow);

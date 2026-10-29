@@ -59,7 +59,7 @@ public sealed class NotEnoughResourcesPopupController : MonoBehaviour, IReceives
         else
         {
             if (_titleText != null)       _titleText.text = "Not enough resources";
-            if (_bodyText != null)        _bodyText.text  = "Play Contracts to earn cash and weapon tokens.";
+            if (_bodyText != null)        _bodyText.text  = "Take a Guild contract: gold and essence for the class you play.";
             if (_actionButtonLabel != null) _actionButtonLabel.text = "Play Contracts";
         }
     }
@@ -82,6 +82,12 @@ public sealed class NotEnoughResourcesPopupController : MonoBehaviour, IReceives
 
         // Always close popup — either mission scene loads or the correct tab is already selected.
         Destroy(gameObject);
+
+        if (result.FailReason == MissionStartFailReason.ContractsUseGuildBoard)
+        {
+            GuildBoardNavigation.Open();
+            return;
+        }
 
         if (result.Started && result.MissionToLoad?.Scene != null &&
             !string.IsNullOrEmpty(result.MissionToLoad.Scene.ScenePath))

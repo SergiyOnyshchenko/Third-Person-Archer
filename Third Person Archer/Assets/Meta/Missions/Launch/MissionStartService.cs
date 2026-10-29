@@ -7,6 +7,7 @@ public enum MissionStartFailReason
     NotAvailable,
     NoEligibleContractMissions,
     MissingScene,
+    ContractsUseGuildBoard, // Contracts start from the Guild Board (TryStartContract)
 }
 
 public sealed class MissionStartResult
@@ -46,6 +47,9 @@ public sealed class MissionStartResult
 public interface IMissionStartService
 {
     MissionStartResult TryStartSelected();
+
+    /// <summary>Guild Board: replay the card's level with the class the player picked.</summary>
+    MissionStartResult TryStartContract(ContractCard card, WeaponClass playedClass);
 }
 
 public sealed class MissionStartService : IMissionStartService
@@ -55,11 +59,9 @@ public sealed class MissionStartService : IMissionStartService
     private readonly IMissionAvailabilityService _availability;
     private readonly IMissionGateService _gate;
     private readonly IWeaponRequirementService _weaponRequirement;
-    private readonly IContractPoolService _contractPool;
+    private readonly IContractBoardService _contractBoard;
     private readonly MissionLaunchRequest _launchRequest;
     private readonly MetaLoopProgressData _loopProgressData;
-
-    private readonly bool _randomizeContractWeaponClass = true;
 
     public MissionStartService(
         MissionProgressData progressData,
@@ -67,7 +69,7 @@ public sealed class MissionStartService : IMissionStartService
         IMissionAvailabilityService availability,
         IMissionGateService gate,
         IWeaponRequirementService weaponRequirement,
-        IContractPoolService contractPool,
+        IContractBoardService contractBoard,
         MissionLaunchRequest launchRequest,
         MetaLoopProgressData loopProgressData = null)
     {
@@ -76,7 +78,7 @@ public sealed class MissionStartService : IMissionStartService
         _availability = availability;
         _gate = gate;
         _weaponRequirement = weaponRequirement;
-        _contractPool = contractPool;
+        _contractBoard = contractBoard;
         _launchRequest = launchRequest;
         _loopProgressData = loopProgressData;
     }
@@ -105,8 +107,7 @@ public sealed class MissionStartService : IMissionStartService
             // If blocked by Sniper access gate, return gate info for popup.
             if (avail.Reason == AvailabilityBlockReason.SniperDamageTooLow)
             {
-                int sniperIndex = _loopProgressData != null ? _loopProgressData.SniperCompletedIndex : 0;
-                var sniperGate = _gate.CheckSniperGate(ctx, sniperIndex);
+                var sniperGate = _gate.CheckSniperGate(ctx);
                 return MissionStartResult.Fail(MissionStartFailReason.NotAvailable, avail, sniperGate);
             }
 
@@ -128,28 +129,21 @@ public sealed class MissionStartService : IMissionStartService
         {
             case MissionType.Campaign:
                 missionToLoad = ctx.Mission;
-                requiredClass = _weaponRequirement.GetRequiredWeaponClass(missionToLoad, ctx.LoopIndex);
+                requiredClass = _weaponRequirement.GetRequiredWeaponClass(missionToLoad);
                 break;
 
             case MissionType.Boss:
                 missionToLoad = ctx.Mission;
-                requiredClass = _weaponRequirement.GetRequiredWeaponClass(missionToLoad, ctx.LoopIndex);
+                requiredClass = _weaponRequirement.GetRequiredWeaponClass(missionToLoad);
                 break;
 
             case MissionType.Sniper:
                 missionToLoad = ctx.Mission;
-                requiredClass = _weaponRequirement.GetRequiredWeaponClass(missionToLoad, ctx.LoopIndex);
+                requiredClass = _weaponRequirement.GetRequiredWeaponClass(missionToLoad);
                 break;
 
             case MissionType.Contracts:
-                missionToLoad = _contractPool.PickRandomEligibleCampaignMission();
-                if (missionToLoad == null)
-                    return MissionStartResult.Fail(MissionStartFailReason.NoEligibleContractMissions, avail);
-
-                requiredClass = _randomizeContractWeaponClass
-                    ? GetRandomWeaponClass()
-                    : _weaponRequirement.GetRequiredWeaponClass(missionToLoad, ctx.LoopIndex);
-                break;
+                return MissionStartResult.Fail(MissionStartFailReason.ContractsUseGuildBoard, avail);
 
             default:
                 return MissionStartResult.Fail(MissionStartFailReason.NoContext);
@@ -164,18 +158,40 @@ public sealed class MissionStartService : IMissionStartService
             missionToLoad: missionToLoad,
             requiredWeaponClass: requiredClass,
             zoneIndex: ctx.ZoneIndex,
-            globalCampaignIndex: globalIndex,
-            loopIndex: ctx.LoopIndex,
-            balanceLoopIndex: ctx.BalanceLoopIndex
-        );
+            globalCampaignIndex: globalIndex);
 
         return MissionStartResult.Ok(missionToLoad, requiredClass);
     }
 
-    private static WeaponClass GetRandomWeaponClass()
+    public MissionStartResult TryStartContract(ContractCard card, WeaponClass playedClass)
     {
-        int count = System.Enum.GetValues(typeof(WeaponClass)).Length;
-        int idx = UnityEngine.Random.Range(0, count);
-        return (WeaponClass)idx;
+        var ctx = _context.BuildSelectedContext();
+        if (ctx == null || card == null || card.Mission == null || _contractBoard == null)
+            return MissionStartResult.Fail(MissionStartFailReason.NoEligibleContractMissions);
+
+        // Mode lock (company level) is checked on a Contracts-typed context.
+        var contractsCtx = new MissionContext(ctx.Zone, ctx.ZoneIndex, MissionType.Contracts, null,
+            -1, ctx.CompanyLevel, playedClass);
+        var avail = _availability.GetAvailability(contractsCtx);
+        if (!avail.CanPlay)
+            return MissionStartResult.Fail(MissionStartFailReason.NotAvailable, avail);
+
+        if (!_contractBoard.IsClassPlayable(playedClass))
+            return MissionStartResult.Fail(MissionStartFailReason.NotAvailable, avail);
+
+        var mission = card.Mission;
+        if (mission.Scene == null || string.IsNullOrEmpty(mission.Scene.ScenePath))
+            return MissionStartResult.Fail(MissionStartFailReason.MissingScene, avail);
+
+        // Zone = the level's zone (enemy R and reward); not a campaign run, so no global campaign index.
+        _launchRequest.Set(
+            mode: MissionType.Contracts,
+            missionToLoad: mission,
+            requiredWeaponClass: playedClass,
+            zoneIndex: card.ZoneIndex,
+            globalCampaignIndex: -1);
+        _launchRequest.SetContract(_contractBoard.BuildRunInfo(card, playedClass));
+
+        return MissionStartResult.Ok(mission, playedClass);
     }
 }

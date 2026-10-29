@@ -52,6 +52,18 @@ namespace Meta.Weapons.UI
                 _lockedText.text = message;
         }
 
+        /// <summary>Skin unlock: progress message + the ad button.</summary>
+        public void ShowSkinAdUnlock(string message, bool adAvailable)
+        {
+            ShowLocked(message);
+
+            if (_adUpgradeButton != null)
+            {
+                _adUpgradeButton.gameObject.SetActive(true);
+                _adUpgradeButton.interactable = adAvailable;
+            }
+        }
+
         public void ShowPurchase(Sprite moneyIcon, int moneyRequired,
                                  Sprite tokenIcon, int tokenRequired, int tokenOwned)
         {

@@ -13,13 +13,12 @@ public static class VictoryContextFactory
 
         if (ctx.SelectedType == MissionType.Campaign)
         {
-            var zone = progress.Zone;
-            var segment = zone != null
-                ? zone.GetSegmentByType(MissionType.Campaign)
-                : null;
-
-            if (segment != null)
-                indexInsideZone = Mathf.Max(0, segment.CurrentIndex - 1);
+            // Position of the played level (not the segment cursor: it has already moved / wraps in Heroic).
+            var missions = ctx.Zone.GetSegmentByType(MissionType.Campaign)?.Missions;
+            if (missions != null)
+                for (int i = 0; i < missions.Count; i++)
+                    if (missions[i] == ctx.Mission)
+                        indexInsideZone = i;
         }
 
         int enemies = 0;
@@ -32,7 +31,7 @@ public static class VictoryContextFactory
             missionType = ctx.SelectedType,
             zoneIndex = ctx.ZoneIndex,
             indexInsideZone = indexInsideZone,
-            loopIndex = ctx.LoopIndex,
+            isHeroic = ctx.IsHeroic,
 
             enemiesKilled = enemies
         };

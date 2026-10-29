@@ -73,7 +73,7 @@ public sealed class MissionTypeInfoButton : MonoBehaviour
             case MissionType.Contracts:
                 return new MissionInfoPopupArgs(
                     title: "Contracts",
-                    description: "Repeatable missions. Replay cleared Campaign missions and earn tokens for all weapon classes every run.",
+                    description: "Guild Board: replay cleared Campaign levels with any weapon. Gold and essence for the class you play, guild reputation and rank rewards.",
                     rewardTypes: new[]
                     {
                         CurrencyType.Cash,
@@ -83,7 +83,7 @@ public sealed class MissionTypeInfoButton : MonoBehaviour
                         CurrencyType.ShurikenToken,
                         CurrencyType.BoomerangToken,
                     },
-                    rewardNote: "All token classes earned every run"
+                    rewardNote: "Essence of the class you play (order class: bonus)"
                 );
 
             case MissionType.Sniper:

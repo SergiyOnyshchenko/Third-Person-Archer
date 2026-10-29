@@ -22,6 +22,9 @@ public sealed class ZoneMapPresenter : MonoBehaviour
         foreach (var b in buttons)
             b.Init(services);
 
+        foreach (var path in GetComponentsInChildren<CampaignPathView>(includeInactive: true))
+            path.Init(services);
+
         // Force a refresh when map appears
         services.NotifyMenuStateChanged();
     }

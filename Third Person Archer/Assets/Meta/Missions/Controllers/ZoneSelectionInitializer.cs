@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// New rule: player cannot browse zones from menu.
-/// We force-select the last unlocked zone on menu load.
+/// We force-select the last unlocked zone on menu load (Heroic mode: all zones open, see ZoneBrowseView).
 /// </summary>
 public sealed class ZoneSelectionInitializer : MonoBehaviour
 {
@@ -23,7 +23,6 @@ public sealed class ZoneSelectionInitializer : MonoBehaviour
             return;
         }
 
-        int lastUnlocked = _progressData.GetLastUnlockedZoneIndex();
-        _progressData.SelectZone(lastUnlocked);
+        _progressData.SelectZone(_progressData.GetMenuZoneIndex());
     }
 }

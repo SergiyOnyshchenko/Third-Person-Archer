@@ -14,7 +14,7 @@ namespace Meta.Weapons
         private readonly LoadoutSnapshot _snapshot;
         private readonly IWeaponRepository _weaponRepo;
         private readonly IEquipmentService _equipmentService;
-        private readonly IStatsService _statsService;
+        private readonly IClassProgressionService _progression;
         private readonly WeaponCatalog _catalog;
 
         private Dictionary<string, WeaponDef> _defById;
@@ -23,13 +23,13 @@ namespace Meta.Weapons
             LoadoutSnapshot snapshot,
             IWeaponRepository weaponRepo,
             IEquipmentService equipmentService,
-            IStatsService statsService,
+            IClassProgressionService progression,
             WeaponCatalog catalog)
         {
             _snapshot = snapshot;
             _weaponRepo = weaponRepo;
             _equipmentService = equipmentService;
-            _statsService = statsService;
+            _progression = progression;
             _catalog = catalog;
         }
 
@@ -42,6 +42,7 @@ namespace Meta.Weapons
 
             // Subscribe to events (added below if missing)
             _equipmentService.OnEquippedWeaponChanged += HandleEquippedChanged;
+            _progression.OnProgressChanged += HandleProgressChanged;
 
             // Upgrade event may exist on IUpgradeService, but we usually have it on UpgradeService instance:
             // We’ll subscribe from WeaponsInitializer where UpgradeService exists.
@@ -54,12 +55,14 @@ namespace Meta.Weapons
         {
             if (_equipmentService != null)
                 _equipmentService.OnEquippedWeaponChanged -= HandleEquippedChanged;
+            if (_progression != null)
+                _progression.OnProgressChanged -= HandleProgressChanged;
         }
 
         public void RefreshAll()
         {
             if (_snapshot == null) return;
-            if (_weaponRepo == null || _equipmentService == null || _statsService == null) return;
+            if (_weaponRepo == null || _equipmentService == null || _progression == null) return;
 
             var state = _weaponRepo.Load();
             if (state == null) return;
@@ -82,6 +85,8 @@ namespace Meta.Weapons
             RefreshAll();
         }
 
+        private void HandleProgressChanged(WeaponClass cls) => RefreshAll();
+
         private void HandleEquippedChanged(WeaponClass cls, string weaponId)
         {
             // Update just that slot
@@ -97,25 +102,16 @@ namespace Meta.Weapons
         {
             if (_snapshot == null) return;
 
-            WeaponDef def = null;
-            if (!string.IsNullOrEmpty(equippedId))
-                def = ResolveDef(equippedId);
+            // Visual = equipped model (tier or skin); power = best owned tier at the class level.
+            var power = _progression.GetPowerDef(cls);
+            var visual = !string.IsNullOrEmpty(equippedId) ? ResolveDef(equippedId) : null;
+            if (visual == null || !_progression.IsOwned(visual.Id))
+                visual = power;
 
-            int upgradeLevel = 0;
-            float damage = 0f;
-            var computedStats = WeaponStats.Zero;
+            var computedStats = power != null ? _progression.GetPowerStats(cls) : WeaponStats.Zero;
+            int classLevel = _progression.GetClassLevel(cls);
 
-            if (def != null && state != null)
-            {
-                var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id && w.Owned);
-                if (inst != null)
-                    upgradeLevel = inst.UpgradeLevel;
-
-                computedStats = _statsService.Compute(def, inst);
-                damage = computedStats.Damage;
-            }
-
-            _snapshot.SetSlot(cls, def, upgradeLevel, damage, computedStats);
+            _snapshot.SetSlot(cls, visual, power, classLevel, computedStats.Damage, computedStats);
         }
 
         private WeaponDef ResolveDef(string weaponId)

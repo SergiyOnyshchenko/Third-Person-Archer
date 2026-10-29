@@ -10,7 +10,8 @@ using Meta.Weapons;
 /// 2. Campaign incomplete + gate blocked          → Contracts (if unlocked), else Campaign
 /// 3. Campaign complete + zone has boss + gate OK → Boss
 /// 4. Campaign complete + boss gate blocked       → Sniper (if unlocked), else null
-/// 5. Campaign complete + zone has no boss        → null (loop transition handles progression)
+/// 5. Campaign complete + zone has no boss        → null
+/// Heroic mode (whole campaign done): treated as campaign incomplete (rules 1–2).
 /// </summary>
 public static class RecommendedMissionHintService
 {
@@ -21,7 +22,9 @@ public static class RecommendedMissionHintService
         var zone = services.Progress.CurrentZone;
         if (zone == null) return null;
 
-        if (!zone.IsCampaignComplete())
+        // Heroic mode: the Campaign always has a next level (it starts over after the last one).
+        bool heroic = services.ProgressData != null && services.ProgressData.IsHeroicUnlocked();
+        if (heroic || !zone.IsCampaignComplete())
         {
             var campaignCtx = BuildContext(services, MissionType.Campaign);
             var campaignAvail = services.Availability.GetAvailability(campaignCtx);
@@ -78,8 +81,6 @@ public static class RecommendedMissionHintService
             mission,
             base_.GlobalCampaignIndex,
             base_.CompanyLevel,
-            base_.LoopIndex,
-            base_.BalanceLoopIndex,
             base_.RequiredWeaponClass
         );
     }

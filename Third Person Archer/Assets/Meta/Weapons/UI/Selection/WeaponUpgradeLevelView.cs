@@ -17,14 +17,21 @@ namespace Meta.Weapons.UI
         /// </summary>
         public void SetLevel(int currentUpgradeLevel, int maxUpgradeLevel, bool visible)
         {
+            SetLevel(currentUpgradeLevel, 0, maxUpgradeLevel, visible);
+        }
+
+        /// <summary>Class level inside the current tier: slider spans [minUpgradeLevel..maxUpgradeLevel].</summary>
+        public void SetLevel(int currentUpgradeLevel, int minUpgradeLevel, int maxUpgradeLevel, bool visible)
+        {
             if (_root != null)
                 _root.SetActive(visible);
 
             if (!visible)
                 return;
 
-            currentUpgradeLevel = Mathf.Clamp(currentUpgradeLevel, 0, Mathf.Max(0, maxUpgradeLevel));
             maxUpgradeLevel     = Mathf.Max(0, maxUpgradeLevel);
+            minUpgradeLevel     = Mathf.Clamp(minUpgradeLevel, 0, maxUpgradeLevel);
+            currentUpgradeLevel = Mathf.Clamp(currentUpgradeLevel, minUpgradeLevel, maxUpgradeLevel);
 
             if (_levelText != null)
                 _levelText.text = $"Lvl{currentUpgradeLevel + 1}";
@@ -32,7 +39,7 @@ namespace Meta.Weapons.UI
             if (_levelSlider != null)
             {
                 _levelSlider.wholeNumbers = true;
-                _levelSlider.minValue = 0;
+                _levelSlider.minValue = minUpgradeLevel;
                 _levelSlider.maxValue = maxUpgradeLevel;
                 _levelSlider.value = currentUpgradeLevel;
             }

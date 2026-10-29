@@ -4,7 +4,7 @@
 /// </summary>
 public static class StartupPopupPriority
 {
-    /// <summary>Full-game loop transition (Zone 3 campaign complete). Shown once ever.</summary>
+    /// <summary>Campaign finale: Heroic mode unlocked (Zone 3 campaign complete). Shown once ever.</summary>
     public const int LoopTransition     = 10;
 
     /// <summary>A new zone became available (previous zone boss defeated).</summary>
@@ -24,9 +24,6 @@ public static class StartupPopupPriority
 
     /// <summary>Individual weapon within an already-unlocked class first unlocked.</summary>
     public const int WeaponUnlock       = 70;
-
-    /// <summary>Repeating Contracts completion milestone (1 / 5 / 10 / 20).</summary>
-    public const int ContractsMilestone = 80;
 
     /// <summary>
     /// Repeating post-mission next-step guidance (Weapon Too Weak / Not Enough Resources).

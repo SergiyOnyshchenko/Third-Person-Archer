@@ -5,19 +5,20 @@ using Meta.Weapons;
 public partial class BalanceConfig : ScriptableObject
 {
     [Header("Modules (Single ScriptableObject)")]
-    [SerializeField] private LoopModule _loops = new();
     [SerializeField] private EnemyModule _enemies = new();
     [SerializeField] private GateModule _gates = new();
     [SerializeField] private RewardModule _rewards = new();
     [SerializeField] private WeaponClassPerformanceModule _weaponPerformance = new();
     [SerializeField] private RoundingModule _rounding = new();
+    [SerializeField] private GuildModule _guild = new();
+    [SerializeField] private HeroicModule _heroic = new();
 
-    #region Loop API
+    [Header("Weapon Tiers (damage ranges for tier gates)")]
+    [SerializeField] private WeaponCatalog _weaponCatalog;
 
-    public int ClampLoopIndex(int loopIndex) => _loops.ClampLoopIndex(loopIndex);
-    public LoopMultipliers GetLoopMultipliers(int loopIndex) => _loops.GetLoopMultipliers(loopIndex);
-
-    #endregion
+    public GuildModule Guild => _guild;
+    public HeroicModule Heroic => _heroic;
+    public WeaponCatalog WeaponCatalog => _weaponCatalog;
 
     #region Enemy & Difficulty API
 
@@ -35,22 +36,20 @@ public partial class BalanceConfig : ScriptableObject
     public float GetDifficultyScalar(
         MissionType type,
         int progressionIndex,
-        WeaponClass weaponClass,
-        int balanceLoopIndex)
+        WeaponClass weaponClass)
     {
-        balanceLoopIndex = ClampLoopIndex(balanceLoopIndex);
         progressionIndex = Mathf.Max(0, progressionIndex);
 
         switch (type)
         {
             case MissionType.Campaign:
-                return GetCampaignDifficultyScalar(progressionIndex, balanceLoopIndex);
+                return _enemies.GetCampaignDifficultyScalar(progressionIndex);
 
             case MissionType.Contracts:
-                return GetContractsDifficultyScalar(progressionIndex, weaponClass, balanceLoopIndex);
+                return _enemies.GetContractsDifficultyScalar(progressionIndex) * _enemies.GetWeaponClassDifficultyMultiplier(weaponClass);
 
             case MissionType.Sniper:
-                return GetSniperDifficultyScalar(progressionIndex, weaponClass, balanceLoopIndex);
+                return _enemies.GetSniperDifficultyScalar(progressionIndex) * _enemies.GetWeaponClassDifficultyMultiplier(weaponClass);
 
             case MissionType.Boss:
                 // Boss excluded from formula balancing per Archer.
@@ -58,43 +57,6 @@ public partial class BalanceConfig : ScriptableObject
 
             default:
                 return 1f;
-        }
-    }
-
-    private float GetCampaignDifficultyScalar(int globalCampaignIndex, int loopIndex)
-    {
-        float baseValue = _enemies.GetCampaignDifficultyScalar(globalCampaignIndex);
-        return ApplyLoopDifficulty(MissionType.Campaign, baseValue, loopIndex);
-    }
-
-    private float GetContractsDifficultyScalar(int contractsCompleted, WeaponClass requiredClass, int loopIndex)
-    {
-        float baseValue = _enemies.GetContractsDifficultyScalar(contractsCompleted);
-        float classMult = _enemies.GetWeaponClassDifficultyMultiplier(requiredClass);
-
-        float raw = baseValue * classMult;
-        return ApplyLoopDifficulty(MissionType.Contracts, raw, loopIndex);
-    }
-
-    private float GetSniperDifficultyScalar(int sniperCompleted, WeaponClass requiredClass, int loopIndex)
-    {
-        float baseValue = _enemies.GetSniperDifficultyScalar(sniperCompleted);
-        float classMult = _enemies.GetWeaponClassDifficultyMultiplier(requiredClass);
-
-        float raw = baseValue * classMult;
-        return ApplyLoopDifficulty(MissionType.Sniper, raw, loopIndex);
-    }
-
-    private float ApplyLoopDifficulty(MissionType type, float raw, int loopIndex)
-    {
-        var m = GetLoopMultipliers(loopIndex);
-
-        switch (type)
-        {
-            case MissionType.Campaign: return raw * m.CampaignDifficulty;
-            case MissionType.Contracts: return raw * m.ContractDifficulty;
-            case MissionType.Sniper: return raw * m.SniperDifficulty;
-            default: return raw;
         }
     }
 
@@ -143,14 +105,15 @@ public partial class BalanceConfig : ScriptableObject
         int effectiveContractsCompletedIndex =
             ctx.ContractsCompletedIndexOverride >= 0 ? ctx.ContractsCompletedIndexOverride : contractsCompletedIndex;
 
-        int loopIndex = ClampLoopIndex(ctx.BalanceLoopIndex);
-
         int gateIndex =
             ctx.GlobalCampaignIndex >= 0 ? ctx.GlobalCampaignIndex :
             ctx.CompanyLevel > 0 ? (ctx.CompanyLevel - 1) :
             0;
 
-        float gateDamage = GetRequiredDamageForCampaign(ctx.RequiredWeaponClass, gateIndex, loopIndex);
+        // Sniper enemies scale with the Sniper tier gate; Contracts use the tier of the replayed level (below).
+        float gateDamage = effectiveType == MissionType.Sniper
+            ? GetSniperGateDamage(ctx)
+            : GetRequiredDamageForCampaign(ctx.RequiredWeaponClass, gateIndex);
 
         int progressionIndex = effectiveType switch
         {
@@ -160,7 +123,7 @@ public partial class BalanceConfig : ScriptableObject
             _ => 0
         };
 
-        float difficulty = GetDifficultyScalar(effectiveType, progressionIndex, ctx.RequiredWeaponClass, loopIndex);
+        float difficulty = GetDifficultyScalar(effectiveType, progressionIndex, ctx.RequiredWeaponClass);
 
         var profile = GetEnemyProfile(archetype);
         float typeHp = profile != null ? profile.HpMultiplier : 1f;
@@ -172,11 +135,34 @@ public partial class BalanceConfig : ScriptableObject
         float mpHp = isMultiplayer ? _enemies.MultiplayerHpMultiplier : 1f;
         float mpDmg = isMultiplayer ? _enemies.MultiplayerDamageMultiplier : 1f;
 
-        int hp = Mathf.Max(1, Mathf.RoundToInt(gateDamage * hpFromGate * difficulty * typeHp * mpHp));
         int dmg = Mathf.Max(0, Mathf.RoundToInt(gateDamage * dmgFromGate * difficulty * typeDmg * mpDmg));
 
-        // Campaign health clamp: prevent bullet-sponge enemies.
-        // maxAllowedHp = gateDamage * maxShots — scales with loop since gateDamage includes loop GateDamage multiplier.
+        // Contracts (Guild Board): no upward auto-scaling. HP = R of the played class for the replayed level,
+        // capped so the player's weapon never needs more than MaxBodyShots body shots.
+        if (ctx.SelectedType == MissionType.Contracts)
+        {
+            int recommended = GetContractRecommendedDamage(ctx);
+            int contractHp = Mathf.Max(1, Mathf.FloorToInt(recommended * Mathf.Min(1f, typeHp) * mpHp));
+            if (ctx.ContractPlayerDamage > 0)
+                contractHp = Mathf.Min(contractHp, ctx.ContractPlayerDamage * _guild.MaxBodyShots);
+
+            int contractDmg = Mathf.Max(0, Mathf.RoundToInt(dmg * _guild.EnemyDamageMultiplier));
+            return new EnemyModule.EnemyStats(contractHp, contractDmg);
+        }
+
+        // Campaign: 1–2 shot rule. HP = R * type multiplier (no difficulty scaling, no sponge factor);
+        // difficulty comes from enemy damage, count and placement instead.
+        if (effectiveType == MissionType.Campaign)
+        {
+            int recommended = GetCampaignRecommendedDamage(ctx);
+            int campaignHp = Mathf.Max(1, Mathf.FloorToInt(recommended * Mathf.Min(1f, typeHp) * mpHp));
+            return new EnemyModule.EnemyStats(campaignHp, dmg);
+        }
+
+        int hp = Mathf.Max(1, Mathf.RoundToInt(gateDamage * hpFromGate * difficulty * typeHp * mpHp));
+
+        // Health clamp: prevent bullet-sponge enemies (Contracts, if enabled in the profile).
+        // maxAllowedHp = gateDamage * maxShots.
         if (_enemies.ShouldApplyHealthClamp(ctx.RequiredWeaponClass, effectiveType))
         {
             int maxShots = _enemies.GetMaxShotsToKill(ctx.RequiredWeaponClass, archetype);
@@ -194,36 +180,147 @@ public partial class BalanceConfig : ScriptableObject
 
     #region Gate API
 
-    public float GetRequiredDamageForCampaign(WeaponClass weaponClass, int globalIndex, int loopIndex)
+    /// <summary>Legacy formula (editor generator, debug easy mode, fallback when a tier is missing).</summary>
+    public float GetRequiredDamageForCampaign(WeaponClass weaponClass, int globalIndex)
     {
-        float value = _gates.GetRequiredDamageForCampaign(weaponClass, globalIndex);
-        value *= GetLoopMultipliers(loopIndex).GateDamage;
-        return Mathf.Max(0f, value);
+        return Mathf.Max(0f, _gates.GetRequiredDamageForCampaign(weaponClass, globalIndex));
     }
 
     /// <summary>
-    /// Required Crossbow damage to access Sniper missions at the given tier.
-    /// sniperCompletedIndex = total Sniper missions completed so far.
-    /// GateDamage loop multiplier is applied so higher loops are harder.
+    /// Recommended power R for a Campaign mission: at this damage every regular enemy dies
+    /// in one body shot. R = damage of the class's zone tier at the mission's position among
+    /// same-class missions of the zone. Integer because in-game damage is integer.
     /// </summary>
-    public float GetRequiredCrossbowDamageForSniper(int sniperCompletedIndex, int loopIndex)
+    public int GetCampaignRecommendedDamage(MissionContext ctx)
     {
-        float value = _gates.GetRequiredCrossbowDamageForSniper(sniperCompletedIndex);
-        value *= GetLoopMultipliers(loopIndex).GateDamage;
-        return Mathf.Max(0f, value);
+        if (ctx == null || !ctx.IsValid) return 1;
+
+        if (ctx.IsHeroic)
+        {
+            var heroicDef = FindTierDef(ctx.RequiredWeaponClass, _heroic.GetTier(ctx.RequiredWeaponClass));
+            if (heroicDef != null)
+                return Mathf.Max(1, Mathf.FloorToInt(heroicDef.GetDamageAt01(ctx.HeroicPosition01)));
+        }
+
+        float position = GetSegmentPosition01(ctx.Zone, MissionType.Campaign, ctx.Mission, ctx.RequiredWeaponClass);
+        float value = GetTierGateDamage(ctx.RequiredWeaponClass, ctx.ZoneIndex, position,
+            fallbackGlobalIndex: ctx.GlobalCampaignIndex);
+
+        return Mathf.Max(1, Mathf.FloorToInt(value));
     }
 
     /// <summary>
-    /// Required Crossbow damage to access a Boss mission in the given zone.
-    /// bossZoneIndex = 0-based zone index (Zone 1 = 0, Zone 2 = 1).
-    /// GateDamage loop multiplier is applied so higher loops require stronger Crossbow.
+    /// R of a replayed level for the class the player brought: tier of that class in the level's zone
+    /// (at least T1 — e.g. spear on a Zone 1 level) at the level's position among the class's missions.
+    /// After the campaign (Heroic era) it is the Heroic tier at the whole-campaign position, like Heroic levels.
+    /// </summary>
+    public int GetContractRecommendedDamage(MissionContext ctx)
+    {
+        if (ctx == null || !ctx.IsValid) return 1;
+
+        var cls = ctx.RequiredWeaponClass;
+        float position;
+        WeaponDef tierDef;
+
+        if (ctx.IsHeroicEra && MissionProgressData.Active != null)
+        {
+            position = MissionProgressData.Active.GetHeroicPosition01(ctx.Mission, cls);
+            tierDef = FindTierDef(cls, _heroic.GetTier(cls));
+        }
+        else
+        {
+            position = GetSegmentPosition01(ctx.Zone, MissionType.Campaign, ctx.Mission, cls);
+            tierDef = FindTierDef(cls, Mathf.Max(1, _gates.GetTierForZone(cls, ctx.ZoneIndex)));
+        }
+
+        float value = tierDef != null
+            ? tierDef.GetDamageAt01(position)
+            : GetRequiredDamageForCampaign(cls, Mathf.Max(0, ctx.CompanyLevel - 1));
+
+        return Mathf.Max(1, Mathf.FloorToInt(value));
+    }
+
+    /// <summary>
+    /// Minimum damage to start a Campaign mission (below = Red, blocked).
+    /// ceil(R * fraction) with fraction >= 0.5 → two body shots always kill (2 * min >= R >= enemy HP).
+    /// </summary>
+    public int GetCampaignMinDamage(MissionContext ctx)
+    {
+        int recommended = GetCampaignRecommendedDamage(ctx);
+        return Mathf.Max(1, Mathf.CeilToInt(recommended * _gates.CampaignMinDamageFraction));
+    }
+
+    /// <summary>
+    /// Hard Crossbow gate of a Sniper mission: zone's Crossbow tier at the mission's position in the
+    /// zone's Sniper segment. The first Sniper of a zone asks exactly for the new tier's base.
+    /// </summary>
+    public float GetSniperGateDamage(MissionContext ctx)
+    {
+        if (ctx == null || ctx.Zone == null) return 0f;
+
+        float position = GetSegmentPosition01(ctx.Zone, MissionType.Sniper, ctx.Mission, WeaponClass.Crossbow);
+        return Mathf.Floor(GetTierGateDamage(WeaponClass.Crossbow, ctx.ZoneIndex, position,
+            fallbackGlobalIndex: Mathf.Max(0, ctx.CompanyLevel - 1)));
+    }
+
+    /// <summary>
+    /// Hard Crossbow gate of a Boss: zone's Crossbow tier at BossTierPosition.
     /// Does NOT affect boss HP/damage gameplay scaling — purely a meta access gate.
     /// </summary>
-    public float GetRequiredCrossbowDamageForBoss(int bossZoneIndex, int loopIndex)
+    public float GetBossGateDamage(MissionContext ctx)
     {
-        float value = _gates.GetRequiredCrossbowDamageForBoss(bossZoneIndex);
-        value *= GetLoopMultipliers(loopIndex).GateDamage;
-        return Mathf.Max(0f, value);
+        if (ctx == null) return 0f;
+
+        return Mathf.Floor(GetTierGateDamage(WeaponClass.Crossbow, ctx.ZoneIndex, _gates.BossTierPosition,
+            fallbackGlobalIndex: Mathf.Max(0, ctx.CompanyLevel - 1)));
+    }
+
+    /// <summary>Damage of the class's zone tier at position01 of its level range.</summary>
+    public float GetTierGateDamage(WeaponClass weaponClass, int zoneIndex, float position01, int fallbackGlobalIndex = 0)
+    {
+        var tierDef = FindTierDef(weaponClass, _gates.GetTierForZone(weaponClass, zoneIndex));
+        if (tierDef == null)
+            return GetRequiredDamageForCampaign(weaponClass, fallbackGlobalIndex);
+
+        return Mathf.Max(0f, tierDef.GetDamageAt01(position01));
+    }
+
+    private WeaponDef FindTierDef(WeaponClass weaponClass, int tier)
+    {
+        if (_weaponCatalog == null || tier <= 0) return null;
+
+        foreach (var def in _weaponCatalog.GetByClass(weaponClass))
+            if (def != null && !def.IsSkin && def.Tier == tier)
+                return def;
+
+        return null;
+    }
+
+    /// <summary>
+    /// k / n: k = same-class missions before this one in the zone segment, n = same-class missions in it.
+    /// </summary>
+    private static float GetSegmentPosition01(ZoneData zone, MissionType type, MissionData mission, WeaponClass weaponClass)
+    {
+        var missions = zone != null ? zone.GetSegmentByType(type)?.Missions : null;
+        if (missions == null || mission == null) return 0f;
+
+        int before = 0, total = 0;
+        bool found = false;
+
+        foreach (var m in missions)
+        {
+            if (m == null) continue;
+            if (m == mission) found = true;
+
+            var cls = m.UseFixedWeaponClass ? m.FixedWeaponClass : m.BaseWeaponClass;
+            if (type != MissionType.Campaign || cls == weaponClass)
+            {
+                total++;
+                if (!found) before++;
+            }
+        }
+
+        return found && total > 0 ? (float)before / total : 0f;
     }
 
     #endregion
@@ -233,8 +330,7 @@ public partial class BalanceConfig : ScriptableObject
     public MissionRewardResult GetMissionReward(
         MissionType missionType,
         int rewardIndex,
-        WeaponClass missionWeaponClass,
-        int loopIndex)
+        WeaponClass missionWeaponClass)
     {
         int weaponClassCount = System.Enum.GetValues(typeof(WeaponClass)).Length;
         return _rewards.GetMissionReward(
@@ -242,8 +338,26 @@ public partial class BalanceConfig : ScriptableObject
             rewardIndex,
             missionWeaponClass,
             weaponClassCount,
-            _rounding,
-            loopDeterminismSalt: loopIndex);
+            _rounding);
+    }
+
+    /// <summary>
+    /// Contract reward: profile by the level's zone (gold + essence of the played class), times the
+    /// order / daily bonus multiplier. Heroic era: the profile index is shifted (enemies use the Heroic tier).
+    /// </summary>
+    public MissionRewardResult GetContractReward(int levelZoneIndex, WeaponClass playedClass, float multiplier)
+    {
+        bool heroic = MissionProgressData.Active != null && MissionProgressData.Active.IsHeroicUnlocked();
+        int index = Mathf.Max(0, levelZoneIndex) + (heroic ? _heroic.ContractZoneOffset : 0);
+        var raw = GetMissionReward(MissionType.Contracts, index, playedClass);
+        if (Mathf.Approximately(multiplier, 1f))
+            return raw;
+
+        var tokens = raw.TokensPerType;
+        for (int i = 0; i < tokens.Length; i++)
+            tokens[i] = Mathf.RoundToInt(tokens[i] * multiplier);
+
+        return new MissionRewardResult(_rounding.RoundMoneyToNiceInt(raw.Cash * multiplier), tokens);
     }
 
     #endregion

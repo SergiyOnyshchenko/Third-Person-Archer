@@ -14,6 +14,29 @@ namespace Meta.Weapons
         public string EquippedSpearId;
         public string EquippedShurikenId;
         public string EquippedBoomerangId;
+
+        // Upgrade level belongs to the class (0..cap of the best owned tier), not to a model.
+        public List<WeaponClassLevel> ClassLevels = new();
+
+        // Rewarded ads watched towards each skin.
+        public List<SkinAdProgress> SkinAds = new();
+
+        // 0 = per-weapon levels (old saves), 1 = per-class levels.
+        public int ProgressionVersion;
+    }
+
+    [Serializable]
+    public class WeaponClassLevel
+    {
+        public WeaponClass Class;
+        public int Level;
+    }
+
+    [Serializable]
+    public class SkinAdProgress
+    {
+        public string WeaponId;
+        public int AdsWatched;
     }
 
     [Serializable]
@@ -23,7 +46,8 @@ namespace Meta.Weapons
         public bool Owned;
 
         /// <summary>
-        /// Current upgrade level, 0..WeaponDef.MaxUpgradeLevel.
+        /// Old per-weapon upgrade level. Read only when migrating saves (ProgressionVersion 0);
+        /// the live level is WeaponsState.ClassLevels.
         /// </summary>
         public int UpgradeLevel;
     }

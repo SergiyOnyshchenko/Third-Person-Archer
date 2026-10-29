@@ -2,22 +2,15 @@ using UI.Core;
 using UnityEngine;
 
 /// <summary>
-/// Checks once per session (after MainMenuRuntime is ready) whether the player has
-/// completed the final zone's Campaign (which has no Boss). If so, and if the popup
-/// has not been shown before, submits a LoopTransitionPopup request to
-/// StartupPopupCoordinator.
-///
-/// The popup is shown only when the map screen is active (coordinator rule).
-/// The one-time save flag is written immediately before the popup is displayed.
-///
-/// Setup: Add this MonoBehaviour to the main menu scene. Set _popupId to match the
-/// ScreenRegistry entry for LoopTransitionPopupController.
+/// Campaign finale (D11): once the whole campaign is complete (last zone has no Boss), shows the
+/// "Heroic mode unlocked" popup once via StartupPopupCoordinator (top priority).
+/// Class name kept from the old loop-transition popup (scene/registry references).
 /// </summary>
 public sealed class LoopTransitionPresenter : MonoBehaviour
 {
     [SerializeField] private string _popupId = "loop_transition_popup";
 
-    private const string SaveKey = "loop_transition_shown";
+    private const string SaveKey = "heroic_unlock_shown";
 
     private void OnEnable()
     {
@@ -48,24 +41,8 @@ public sealed class LoopTransitionPresenter : MonoBehaviour
         if (SaveSystem.Load(SaveKey, false))
             return;
 
-        var zones = services.ProgressData.AllZones;
-        if (zones == null || zones.Count == 0)
+        if (services.ProgressData == null || !services.ProgressData.IsHeroicUnlocked())
             return;
-
-        var lastZone = zones[zones.Count - 1];
-        if (lastZone == null || lastZone.HasBoss())
-            return;
-
-        if (!lastZone.IsCampaignComplete())
-            return;
-
-        for (int i = 0; i < zones.Count - 1; i++)
-        {
-            var zone = zones[i];
-            if (zone == null) continue;
-            bool complete = zone.HasBoss() ? zone.IsBossCompleted() : zone.IsCampaignComplete();
-            if (!complete) return;
-        }
 
         // Submit to coordinator — save flag is written by OnBeforeShow (just before display).
         if (ServiceLocator.TryResolve<IStartupPopupCoordinator>(out var coord))

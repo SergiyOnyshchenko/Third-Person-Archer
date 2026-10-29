@@ -96,12 +96,6 @@ public class MissionSegmentData
         Save();
     }
 
-    public void ResetCurrentIndexForNewLoop()
-    {
-        _currentIndex = 0;
-        Save();
-    }
-
     private void EnsureCompletedOnceSize()
     {
         if (_missions == null)

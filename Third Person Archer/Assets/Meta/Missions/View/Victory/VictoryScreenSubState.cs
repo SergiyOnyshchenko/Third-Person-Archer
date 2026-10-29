@@ -16,6 +16,7 @@ public sealed class VictoryScreenSubState : SubState
     [SerializeField] private VictoryHeaderSegment _header;
     [SerializeField] private VictoryStatsSegment _stats;
     [SerializeField] private VictoryRewardsSegment _rewards;
+    [SerializeField] private VictoryProgressSegment _progress;
     [SerializeField] private VictoryMultiplierSegment _multiplier;
 
     [Header("Continue")]
@@ -95,6 +96,7 @@ public sealed class VictoryScreenSubState : SubState
         if (_header != null) _segments.Add(_header);
         if (_stats != null) _segments.Add(_stats);
         if (_rewards != null) _segments.Add(_rewards);
+        if (_progress != null) _segments.Add(_progress);
         if (_multiplier != null) _segments.Add(_multiplier);
 
         for (int i = 0; i < _segments.Count; i++)
@@ -170,6 +172,9 @@ public sealed class VictoryScreenSubState : SubState
 
         if (_rewards != null)
             _rewards.ApplyFinalValues(_bundle);
+
+        if (_progress != null && multiplier > 1f)
+            _progress.ApplyFinalValues(_bundle);
     }
 
     private void OnContinueClicked()

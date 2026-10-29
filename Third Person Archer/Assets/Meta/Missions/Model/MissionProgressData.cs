@@ -35,11 +35,19 @@ public class MissionProgressData : GameData
     public MissionSegmentData GetSegment(MissionType type) =>
         Zone?.Segments.FirstOrDefault(s => s.Type == type);
 
+    /// <summary>Current mission of the segment; Campaign is the Heroic level once the whole campaign is done.</summary>
     public MissionData GetMission(MissionType type) =>
-        GetSegment(type)?.GetCurrentMission();
+        type == MissionType.Campaign && IsHeroicUnlocked()
+            ? GetHeroicCurrentMission(Zone)
+            : GetSegment(type)?.GetCurrentMission();
+
+    /// <summary>Loaded instance (set by DataManager); null in edit mode tools.</summary>
+    public static MissionProgressData Active { get; private set; }
 
     public override void Initialize()
     {
+        Active = this;
+
         foreach (var z in _zones)
             z?.Init();
 
@@ -117,38 +125,6 @@ public class MissionProgressData : GameData
         return GetCompletedGlobalCampaignCount() + 1;
     }
 
-    /// <summary>
-    /// Contract pool: all campaign missions completed at least once across all zones (including previous zones).
-    /// </summary>
-    public IReadOnlyList<MissionData> GetEligibleContractCampaignMissions()
-    {
-        if (_zones == null) return System.Array.Empty<MissionData>();
-
-        var result = new List<MissionData>(64);
-
-        foreach (var z in _zones)
-        {
-            if (z == null) continue;
-
-            var campaign = z.GetSegmentByType(MissionType.Campaign);
-            if (campaign == null) continue;
-
-            var missions = campaign.Missions;
-            if (missions == null) continue;
-
-            for (int i = 0; i < missions.Count; i++)
-            {
-                var m = missions[i];
-                if (m == null) continue;
-
-                if (campaign.IsMissionCompletedOnce(m))
-                    result.Add(m);
-            }
-        }
-
-        return result;
-    }
-
     // --------- Unlock / zone progression (new rule) ---------
 
     /// <summary>
@@ -186,6 +162,148 @@ public class MissionProgressData : GameData
             SaveSystem.Save("last_unlocked_zone_index", _lastUnlockedZoneIndex);
         }
     }
+
+    /// <summary>
+    /// Zone the menu opens on. Before Heroic only the last unlocked zone is playable; after the
+    /// campaign every zone is open (Heroic levels, unfinished Sniper), so keep the player's choice.
+    /// </summary>
+    public int GetMenuZoneIndex()
+    {
+        return IsHeroicUnlocked() ? _zoneIndex : GetLastUnlockedZoneIndex();
+    }
+
+    /// <summary>Normal Campaign done in this zone (normal mode) or Heroic level cleared (Heroic mode).</summary>
+    public bool IsCampaignLevelCleared(ZoneData zone, MissionData mission)
+    {
+        if (zone == null || mission == null) return false;
+        if (IsHeroicUnlocked()) return IsHeroicLevelCleared(zone, mission);
+
+        var campaign = zone.GetSegmentByType(MissionType.Campaign);
+        return campaign != null && campaign.IsMissionCompletedOnce(mission);
+    }
+
+    // --------- Heroic mode (replaces campaign loops) ---------
+    // Opens when every zone's Campaign is complete. Each zone has its own linear Heroic progress;
+    // after the last level it starts over (replays keep the Heroic rewards).
+
+    public bool IsHeroicUnlocked()
+    {
+        if (_zones == null || _zones.Count == 0) return false;
+
+        foreach (var z in _zones)
+            if (z == null || !z.IsCampaignComplete())
+                return false;
+
+        return true;
+    }
+
+    /// <summary>Heroic clears in the zone (monotonic; >= level count means the zone was cleared once).</summary>
+    public int GetHeroicCompleted(ZoneData zone) =>
+        zone != null ? SaveSystem.Load(HeroicKey(zone), 0) : 0;
+
+    public int GetHeroicLevelCount(ZoneData zone)
+    {
+        var missions = zone?.GetSegmentByType(MissionType.Campaign)?.Missions;
+        return missions != null ? missions.Count : 0;
+    }
+
+    public bool IsHeroicZoneCleared(ZoneData zone)
+    {
+        int count = GetHeroicLevelCount(zone);
+        return count > 0 && GetHeroicCompleted(zone) >= count;
+    }
+
+    public int GetHeroicCurrentIndex(ZoneData zone)
+    {
+        int count = GetHeroicLevelCount(zone);
+        return count > 0 ? GetHeroicCompleted(zone) % count : 0;
+    }
+
+    public MissionData GetHeroicCurrentMission(ZoneData zone)
+    {
+        var missions = zone?.GetSegmentByType(MissionType.Campaign)?.Missions;
+        if (missions == null || missions.Count == 0) return null;
+        return missions[GetHeroicCurrentIndex(zone)];
+    }
+
+    public bool IsHeroicLevelCleared(ZoneData zone, MissionData mission)
+    {
+        var missions = zone?.GetSegmentByType(MissionType.Campaign)?.Missions;
+        if (missions == null || mission == null) return false;
+
+        int idx = IndexOfMission(missions, mission);
+        if (idx < 0) return false;
+
+        int done = GetHeroicCompleted(zone);
+        return done >= missions.Count || idx < done;
+    }
+
+    public void AdvanceHeroic(ZoneData zone)
+    {
+        if (zone == null) return;
+        SaveSystem.Save(HeroicKey(zone), GetHeroicCompleted(zone) + 1);
+    }
+
+    /// <summary>
+    /// k / n over the WHOLE campaign: k = same-class levels before this one, n = same-class levels.
+    /// Heroic R grows across zones on one tier (Zone 1 Heroic is the easiest, Zone 3 the hardest).
+    /// </summary>
+    public float GetHeroicPosition01(MissionData mission, Meta.Weapons.WeaponClass weaponClass)
+    {
+        if (_zones == null || mission == null) return 0f;
+
+        int before = 0, total = 0;
+        bool found = false;
+
+        foreach (var z in _zones)
+        {
+            var missions = z?.GetSegmentByType(MissionType.Campaign)?.Missions;
+            if (missions == null) continue;
+
+            foreach (var m in missions)
+            {
+                if (m == null) continue;
+                if (m == mission) found = true;
+
+                var cls = m.UseFixedWeaponClass ? m.FixedWeaponClass : m.BaseWeaponClass;
+                if (cls != weaponClass) continue;
+
+                total++;
+                if (!found) before++;
+            }
+        }
+
+        return found && total > 0 ? (float)before / total : 0f;
+    }
+
+    /// <summary>Index of the mission among all missions of this type across zones (in zone order); -1 if absent.</summary>
+    public int GetGlobalSegmentIndex(MissionType type, MissionData mission)
+    {
+        if (_zones == null || mission == null) return -1;
+
+        int offset = 0;
+        foreach (var z in _zones)
+        {
+            var missions = z?.GetSegmentByType(type)?.Missions;
+            if (missions == null) continue;
+
+            int idx = IndexOfMission(missions, mission);
+            if (idx >= 0) return offset + idx;
+            offset += missions.Count;
+        }
+
+        return -1;
+    }
+
+    private static int IndexOfMission(IReadOnlyList<MissionData> missions, MissionData mission)
+    {
+        for (int i = 0; i < missions.Count; i++)
+            if (missions[i] == mission) return i;
+        return -1;
+    }
+
+    private static string HeroicKey(ZoneData zone) =>
+        "heroic_" + (string.IsNullOrWhiteSpace(zone.ID) ? zone.name : zone.ID) + "_done";
 
     // --------- Persistence ---------
 

@@ -25,8 +25,9 @@ public sealed class LoadoutSnapshotWeaponStatService : ILoadoutWeaponStatService
         if (_snapshot == null)
             return 0f;
 
-        if (_snapshot.TryGet(weaponClass, out var slot) && slot?.Weapon != null)
-            return slot.Weapon.MaxStats.Damage;
+        // Ceiling reachable by levels alone = max of the best owned tier.
+        if (_snapshot.TryGet(weaponClass, out var slot) && slot?.PowerWeapon != null)
+            return slot.PowerWeapon.MaxStats.Damage;
 
         return 0f;
     }

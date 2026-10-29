@@ -287,63 +287,68 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
       DamageCap: 150
-    _sniperAccessProfile:
-      BaseDamage: 15
-      MissionGrowth: 2.5
-      DamageCap: 0
-    _bossAccessProfile:
-      BaseDamage: 28
-      ZoneGrowth: 9
-      DamageCap: 200
+    _classZoneTiers:
+    - Class: 0
+      TierByZone: 010000000200000003000000
+    - Class: 3
+      TierByZone: 010000000200000003000000
+    - Class: 1
+      TierByZone: 010000000200000003000000
+    - Class: 2
+      TierByZone: 010000000100000002000000
+    - Class: 4
+      TierByZone: 010000000100000001000000
+    _bossTierPosition: 0.5
+    _campaignMinDamageFraction: 0.5
   _rewards:
     _profiles:
     - MissionType: 0
       Entries:
       - Channel: 0
         Progression:
-          Base: 70
-          PerStep: 7
+          Base: 100
+          PerStep: 12
           RandomSpread: 0
       - Channel: 1
         Progression:
-          Base: 1
-          PerStep: 0
+          Base: 6
+          PerStep: 0.6
           RandomSpread: 0
     - MissionType: 1
       Entries:
-      - Channel: 2
-        Progression:
-          Base: 3
-          PerStep: 1
-          RandomSpread: 0
       - Channel: 0
         Progression:
-          Base: 40
-          PerStep: 15
+          Base: 70
+          PerStep: 45
+          RandomSpread: 0
+      - Channel: 1
+        Progression:
+          Base: 4
+          PerStep: 2.5
           RandomSpread: 0
     - MissionType: 2
       Entries:
       - Channel: 0
         Progression:
-          Base: 150
-          PerStep: 50
+          Base: 100
+          PerStep: 30
           RandomSpread: 0
       - Channel: 1
         Progression:
-          Base: 2
+          Base: 6
           PerStep: 1
           RandomSpread: 0
     - MissionType: 3
       Entries:
       - Channel: 0
         Progression:
-          Base: 300
-          PerStep: 100
+          Base: 500
+          PerStep: 200
           RandomSpread: 0
       - Channel: 2
         Progression:
-          Base: 3
-          PerStep: 2
+          Base: 10
+          PerStep: 5
           RandomSpread: 0
   _weaponPerformance:
     _multipliers:
@@ -364,3 +369,39 @@ MonoBehaviour:
     _tokenStepSmall: 1
     _tokenStepMedium: 2
     _tokenStepLarge: 5
+  _guild:
+    SlotCount: 3
+    RecentZonesChance: 0.7
+    LaggingClassOrderWeight: 3
+    OrderClassRewardMultiplier: 1.5
+    DailyBonusMultiplier: 2
+    DailyBonusContracts: 5
+    EnemyDamageMultiplier: 0.6
+    MaxBodyShots: 2
+    ReputationPerContract: 10
+    OrderClassReputationBonus: 5
+    MaxRank: 20
+    RankBaseRep: 100
+    RankRepStep: 50
+    SkinEveryRanks: 3
+    GoldBase: 150
+    GoldPerRank: 50
+    ChestBase: 8
+    ChestPerRank: 2
+  _heroic:
+    _tiers:
+    - Class: 0
+      Tier: 4
+    - Class: 1
+      Tier: 4
+    - Class: 3
+      Tier: 4
+    - Class: 2
+      Tier: 3
+    - Class: 4
+      Tier: 3
+    _rewardIndexOffset: 23
+    _finaleBossReward: 1
+    _bossReplayCashMultiplier: 0.5
+    _bossReplayTokenMultiplier: 0.3
+  _weaponCatalog: {fileID: 11400000, guid: 46ae2edf5eeacaa4e97df4b219f9365f, type: 2}

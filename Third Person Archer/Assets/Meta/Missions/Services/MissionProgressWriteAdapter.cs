@@ -31,4 +31,11 @@ public sealed class MissionProgressWriteAdapter : IMetaProgressWrite
         if (_data == null) return;
         _data.SelectMissionType(type);
     }
+
+    public bool IsHeroicUnlocked => _data != null && _data.IsHeroicUnlocked();
+
+    public void AdvanceHeroic(ZoneData zone)
+    {
+        _data?.AdvanceHeroic(zone);
+    }
 }

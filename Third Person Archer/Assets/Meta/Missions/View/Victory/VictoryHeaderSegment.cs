@@ -33,7 +33,7 @@ public sealed class VictoryHeaderSegment : MonoBehaviour, IVictorySegment
                 MissionType.Boss => "Boss Defeated",
                 MissionType.Contracts => "Contract Completed",
                 MissionType.Sniper => "Sniper Mission Completed",
-                _ => "Completed" // Campaign default
+                _ => context.isHeroic ? "Heroic Cleared" : "Completed" // Campaign default
             };
         }
 
@@ -43,7 +43,8 @@ public sealed class VictoryHeaderSegment : MonoBehaviour, IVictorySegment
             if (context.missionType == MissionType.Campaign)
             {
                 _chapterText.gameObject.SetActive(true);
-                _chapterText.text = $"Mission {context.zoneIndex + 1} - {context.indexInsideZone + 1}";
+                string prefix = context.isHeroic ? "<color=#FF6A50>HEROIC</color> " : "Mission ";
+                _chapterText.text = $"{prefix}{context.zoneIndex + 1} - {context.indexInsideZone + 1}";
             }
             else
             {

@@ -108,6 +108,12 @@ namespace Meta.Weapons
 
             int companyLevel = _classUnlocks.CurrentCompanyLevel;
 
+            // D12: at most one weapon popup per visit. Only the newest unseen tier gets a popup;
+            // older ones (and all of them when a class popup is queued) are marked seen silently:
+            // the Arsenal red dot points the player there instead.
+            WeaponDef newest = null;
+            bool silentChanges = false;
+
             foreach (var def in _weaponCatalog.All)
             {
                 if (def == null) continue;
@@ -116,12 +122,42 @@ namespace Meta.Weapons
                 if (!_classUnlocks.IsClassUnlocked(def.Class)) continue;
                 if (_progress.shownWeaponIds.Contains(def.Id)) continue;
 
-                _pendingArgs.Enqueue(new WeaponUnlockedPopupArgs
+                if (newest != null && newest.UnlockAfterCampaignLevel <= def.UnlockAfterCampaignLevel)
                 {
-                    Title    = "New Weapon Unlocked",
-                    WeaponId = def.Id
-                });
+                    _progress.shownWeaponIds.Add(newest.Id);
+                    silentChanges = true;
+                    newest = def;
+                }
+                else if (newest == null)
+                {
+                    newest = def;
+                }
+                else
+                {
+                    _progress.shownWeaponIds.Add(def.Id);
+                    silentChanges = true;
+                }
             }
+
+            if (newest != null)
+            {
+                if (_pendingArgs.Count > 0)
+                {
+                    _progress.shownWeaponIds.Add(newest.Id);
+                    silentChanges = true;
+                }
+                else
+                {
+                    _pendingArgs.Enqueue(new WeaponUnlockedPopupArgs
+                    {
+                        Title    = "New Weapon Unlocked",
+                        WeaponId = newest.Id
+                    });
+                }
+            }
+
+            if (silentChanges)
+                SaveSystem.Save(SaveKey, _progress);
         }
 
         private void EnqueueClassPopupIfNew(WeaponClass cls)
@@ -187,7 +223,9 @@ namespace Meta.Weapons
         {
             DestroyPopupInstance(popupInstance);
             _popupActive = false;
-            ShowNextIfAny();
+
+            // D12: one popup per visit; the rest (e.g. a second class unlock) shows next visit.
+            _pendingArgs.Clear();
         }
 
         public void GoToWeaponClass(object popupInstance, WeaponClass weaponClass)

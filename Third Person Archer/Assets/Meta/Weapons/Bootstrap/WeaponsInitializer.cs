@@ -20,6 +20,7 @@ namespace Meta.Weapons
         public IStatsService StatsService { get; private set; }
         public IEquipmentService EquipmentService { get; private set; }
         public IUpgradeService UpgradeService { get; private set; }
+        public IClassProgressionService Progression { get; private set; }
         public IWeaponClassUnlockService ClassUnlockService { get; private set; }
         public WeaponCatalog WeaponCatalog { get => _weaponCatalog; }
 
@@ -53,7 +54,9 @@ namespace Meta.Weapons
             var allDefs = _weaponCatalog.All.ToArray();
 
             EquipmentService = new EquipmentService(WeaponRepository);
-            UpgradeService = new UpgradeService(WeaponRepository, _wallet, allDefs);
+            var progression = new ClassProgressionService(WeaponRepository, _wallet, EquipmentService, StatsService, _weaponCatalog);
+            Progression = progression;
+            UpgradeService = new UpgradeService(Progression, _wallet, _weaponCatalog);
 
             ClassUnlockService = new WeaponClassUnlockService(_missionProgressData);
             ServiceLocator.Register<IWeaponClassUnlockService>(ClassUnlockService);
@@ -62,13 +65,16 @@ namespace Meta.Weapons
             var applier = new DefaultLoadoutApplier(WeaponRepository, EquipmentService, allDefs, _defaultLoadoutConfig);
             applier.ApplyIfNeeded();
 
+            // Per-model levels → per-class levels (old saves).
+            progression.MigrateIfNeeded();
+
             if (_loadoutSnapshot != null)
             {
                 _loadoutSnapshotUpdater = new LoadoutSnapshotUpdater(
                     _loadoutSnapshot,
                     WeaponRepository,
                     EquipmentService,
-                    StatsService,
+                    Progression,
                     _weaponCatalog);
 
                 _loadoutSnapshotUpdater.Initialize();

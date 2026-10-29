@@ -12,8 +12,7 @@ public sealed class VictoryContext
 
     public int enemiesKilled;
 
-    // Optional: keep if you want to show loop
-    public int loopIndex;
+    public bool isHeroic;         // Campaign level played in Heroic mode
 }
 
 [Serializable]

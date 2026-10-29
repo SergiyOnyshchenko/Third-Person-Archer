@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Simple popup shown once when the player completes the last available zone
-/// (Zone 3, which has no Boss). Explains that a new loop/challenge begins.
+/// Shown once when the whole campaign is complete (last level of Zone 3, which has no Boss):
+/// Heroic mode is unlocked.
 /// Needs a prefab wired with title, body, and close button.
 /// Register the prefab in ScreenRegistry Popups as "LoopTransitionPopup".
 /// </summary>
@@ -18,14 +18,17 @@ public sealed class LoopTransitionPopupController : MonoBehaviour
     [SerializeField] private Button _closeButton;
 
     [Header("Content (edit in Inspector)")]
-    [SerializeField] private string _titleString = "Campaign Complete!";
+    [SerializeField] private string _titleString = HeroicTitle;
 
     [SerializeField]
     [TextArea(4, 10)]
-    private string _bodyString =
-        "You have cleared all three zones.\n\n" +
-        "A new challenge begins — gates are stronger, but rewards are better.\n\n" +
-        "Your weapons and progress carry over. Keep fighting!";
+    private string _bodyString = HeroicBody;
+
+    public const string HeroicTitle = "Campaign Complete!";
+    public const string HeroicBody =
+        "All three zones cleared!\n\n" +
+        "<color=#FF6A50>HEROIC MODE</color> is open: tougher enemies, bigger rewards, Tier 4 weapons.\n\n" +
+        "Switch zones with the map arrows.";
 
     private void Awake()
     {

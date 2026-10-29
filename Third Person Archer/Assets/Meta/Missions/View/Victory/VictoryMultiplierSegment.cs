@@ -13,11 +13,6 @@ public struct MultiplierSegment
     public float multiplier;
 }
 
-public interface IAdsService
-{
-    void ShowRewarded(string placementId, Action<bool> onComplete);
-}
-
 public sealed class VictoryMultiplierSegment : MonoBehaviour, IVictorySegment
 {
     [Header("Roots")]
@@ -42,14 +37,15 @@ public sealed class VictoryMultiplierSegment : MonoBehaviour, IVictorySegment
 
     [Header("Ads")]
     [SerializeField] private MonoBehaviour _adsServiceBehaviour;
-    [SerializeField] private string _adsPlacementId = "reward_multiplier";
+    [SerializeField] private string _adsPlacementId = Meta.Ads.AdPlacements.VictoryMultiplier;
 
     [SerializeField] private float _fadeDuration = 0.3f;
 
     public event Action OnShown;
     public event Action<float> OnMultiplierDecided;
 
-    private IAdsService AdsService => _adsServiceBehaviour as IAdsService;
+    // Inspector override (optional), otherwise the global ads service.
+    private IAdsService AdsService => _adsServiceBehaviour as IAdsService ?? Meta.Ads.Ads.Service;
 
     public bool IsResolved => _multiplierChosen;
     public float ChosenMultiplier => _chosenMultiplier;
@@ -58,6 +54,7 @@ public sealed class VictoryMultiplierSegment : MonoBehaviour, IVictorySegment
     private int _direction = 1;
     private bool _running;
     private bool _multiplierChosen;
+    private bool _adInProgress;
     private float _chosenMultiplier = 1f;
 
     private Tween _fadeTween;
@@ -76,6 +73,7 @@ public sealed class VictoryMultiplierSegment : MonoBehaviour, IVictorySegment
         gameObject.SetActive(true);
 
         _multiplierChosen = false;
+        _adInProgress = false;
         _chosenMultiplier = 1f;
         _position = 0f;
         _direction = 1;
@@ -159,10 +157,18 @@ public sealed class VictoryMultiplierSegment : MonoBehaviour, IVictorySegment
         if (_multiplierChosen) return;
 
         // Always tied to ad
-        if (AdsService != null)
-            AdsService.ShowRewarded(_adsPlacementId, OnAdCompleted);
-        else
-            OnAdCompleted(true); // no ads service: treat as success for now
+        if (_adInProgress) return;
+
+        var ads = AdsService;
+        if (!ads.IsRewardedReady(_adsPlacementId))
+            return; // keep the minigame running; player can retry or press Continue
+
+        _adInProgress = true;
+        ads.ShowRewarded(_adsPlacementId, success =>
+        {
+            _adInProgress = false;
+            OnAdCompleted(success);
+        });
     }
 
     private void OnAdCompleted(bool success)

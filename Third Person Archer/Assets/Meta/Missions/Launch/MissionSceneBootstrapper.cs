@@ -35,10 +35,7 @@ public sealed class MissionSceneBootstrapper : MonoBehaviour
             _launchRequest.MissionToLoad,
             _launchRequest.RequiredWeaponClass,
             _launchRequest.ZoneIndex,
-            _launchRequest.GlobalCampaignIndex,
-            _launchRequest.LoopIndex,
-            _launchRequest.BalanceLoopIndex
-        );
+            _launchRequest.GlobalCampaignIndex);
 
         // Important: keep the request until mission end, then clear it in mission completion pipeline.
         // (We'll do that in MissionEndPresenter later.)
@@ -58,25 +55,19 @@ public static class RuntimeMissionSession
 
     public static int ZoneIndex { get; private set; }
     public static int GlobalCampaignIndex { get; private set; }
-    public static int LoopIndex { get; private set; }
-    public static int BalanceLoopIndex { get; private set; }
 
     public static void Set(
         MissionType mode,
         MissionData mission,
         WeaponClass requiredWeaponClass,
         int zoneIndex,
-        int globalCampaignIndex,
-        int loopIndex,
-        int balanceLoopIndex)
+        int globalCampaignIndex)
     {
         Mode = mode;
         Mission = mission;
         RequiredWeaponClass = requiredWeaponClass;
         ZoneIndex = zoneIndex;
         GlobalCampaignIndex = globalCampaignIndex;
-        LoopIndex = loopIndex;
-        BalanceLoopIndex = balanceLoopIndex;
     }
 
     public static void Clear()
@@ -86,7 +77,5 @@ public static class RuntimeMissionSession
         RequiredWeaponClass = default;
         ZoneIndex = 0;
         GlobalCampaignIndex = -1;
-        LoopIndex = 0;
-        BalanceLoopIndex = 0;
     }
 }

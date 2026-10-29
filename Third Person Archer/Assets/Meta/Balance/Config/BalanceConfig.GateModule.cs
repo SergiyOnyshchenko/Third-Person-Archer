@@ -29,44 +29,51 @@ public partial class BalanceConfig
         }
 
         [Serializable]
-        public sealed class SniperAccessProfile
+        public sealed class ClassZoneTiers
         {
-            [Header("Sniper Access Gate (Crossbow Damage Required)")]
-            [Tooltip("Base Crossbow damage required to start the first Sniper mission (sniperIndex=0).")]
-            public float BaseDamage = 15f;
+            [Tooltip("Weapon class.")]
+            public WeaponClass Class;
 
-            [Tooltip("Additional Crossbow damage required per cumulative Sniper mission completed.")]
-            public float MissionGrowth = 3f;
-
-            [Tooltip("Hard cap for Sniper access gate. 0 = no cap.")]
-            public float DamageCap = 0f;
+            [Tooltip("Weapon tier (1..4) the class is balanced for in each zone. Index = zone index (Zone 1 = 0).")]
+            public int[] TierByZone = { 1, 2, 3 };
         }
 
-        [Serializable]
-        public sealed class BossAccessProfile
-        {
-            [Header("Boss Access Gate (Crossbow Damage Required)")]
-            [Tooltip("Base Crossbow damage required to access Boss missions in the first zone (bossZoneIndex=0).")]
-            public float BaseDamage = 28f;
-
-            [Tooltip("Additional Crossbow damage required per boss zone index (Zone 1=0, Zone 2=1, etc.).")]
-            public float ZoneGrowth = 9f;
-
-            [Tooltip("Hard cap for Boss access gate. 0 = no cap.")]
-            public float DamageCap = 200f;
-        }
-
-        [Header("Campaign Damage Gate Profiles Per Weapon Class")]
-        [Tooltip("Required damage settings for each weapon class for Campaign missions.")]
+        [Header("Legacy Damage Profiles (debug easy mode; fallback when a tier is missing)")]
+        [Tooltip("Old formula: BaseDamage + MissionGrowth * globalIndex. Campaign, Sniper and Boss use weapon tiers instead.")]
         [SerializeField] private WeaponGateProfile[] _weaponGateProfiles;
 
-        [Header("Sniper Access Gate")]
-        [Tooltip("Crossbow damage required to access Sniper missions by tier. Uses sniperCompletedIndex as progression index.")]
-        [SerializeField] private SniperAccessProfile _sniperAccessProfile = new();
+        [Header("Tier Gates (Campaign R, Sniper, Boss)")]
+        [Tooltip("Which tier each class is balanced for per zone. Gate = tier damage at the mission's position " +
+                 "among same-class missions of the zone (first = tier base, then towards tier max).")]
+        [SerializeField] private ClassZoneTiers[] _classZoneTiers;
 
-        [Header("Boss Access Gate")]
-        [Tooltip("Crossbow damage required to access Boss missions. Uses 0-based zone index (Zone 1 = 0, Zone 2 = 1).")]
-        [SerializeField] private BossAccessProfile _bossAccessProfile = new();
+        [Tooltip("Boss gate = zone's Crossbow tier damage at this position of its level range (0 = base, 1 = max).")]
+        [Range(0f, 1f)] [SerializeField] private float _bossTierPosition = 0.5f;
+
+        public float BossTierPosition => _bossTierPosition;
+
+        [Header("Campaign Soft Gate (1–2 shot rule)")]
+        [Tooltip("Tier gate value = recommended power R (enemy dies in 1 body shot at R). " +
+                 "Mission is playable from R * fraction (Yellow). >= 0.5 guarantees at most 2 body shots.")]
+        [Range(0.5f, 1f)] [SerializeField] private float _campaignMinDamageFraction = 0.5f;
+
+        public float CampaignMinDamageFraction => _campaignMinDamageFraction;
+
+        /// <summary>Tier the class is balanced for in the zone (last entry repeats). 0 = not configured.</summary>
+        public int GetTierForZone(WeaponClass weaponClass, int zoneIndex)
+        {
+            if (_classZoneTiers == null) return 0;
+
+            foreach (var t in _classZoneTiers)
+            {
+                if (t == null || t.Class != weaponClass || t.TierByZone == null || t.TierByZone.Length == 0)
+                    continue;
+
+                return t.TierByZone[Mathf.Clamp(zoneIndex, 0, t.TierByZone.Length - 1)];
+            }
+
+            return 0;
+        }
 
         public float GetRequiredDamageForCampaign(WeaponClass weaponClass, int globalIndex)
         {
@@ -82,34 +89,6 @@ public partial class BalanceConfig
 
             if (profile.DamageCap > 0f)
                 value = Mathf.Min(value, profile.DamageCap);
-
-            return Mathf.Max(0f, value);
-        }
-
-        public float GetRequiredCrossbowDamageForSniper(int sniperCompletedIndex)
-        {
-            var p = _sniperAccessProfile;
-            if (p == null)
-                return 0f;
-
-            float value = p.BaseDamage + p.MissionGrowth * Mathf.Max(0, sniperCompletedIndex);
-
-            if (p.DamageCap > 0f)
-                value = Mathf.Min(value, p.DamageCap);
-
-            return Mathf.Max(0f, value);
-        }
-
-        public float GetRequiredCrossbowDamageForBoss(int bossZoneIndex)
-        {
-            var p = _bossAccessProfile;
-            if (p == null)
-                return 0f;
-
-            float value = p.BaseDamage + p.ZoneGrowth * Mathf.Max(0, bossZoneIndex);
-
-            if (p.DamageCap > 0f)
-                value = Mathf.Min(value, p.DamageCap);
 
             return Mathf.Max(0f, value);
         }

@@ -15,6 +15,8 @@ namespace Meta.Weapons.UI
         [Header("State")]
         [SerializeField] private GameObject _lockedRoot;
         [SerializeField] private GameObject _damageRoot;
+        [Tooltip("Red dot: an upgrade or the next tier is affordable.")]
+        [SerializeField] private GameObject _attentionDot;
 
         [Header("Interaction")]
         [SerializeField] private Button _button;
@@ -67,6 +69,12 @@ namespace Meta.Weapons.UI
 
             if (locked)
                 _onClick = null;
+        }
+
+        public void SetAttention(bool show)
+        {
+            if (_attentionDot != null)
+                _attentionDot.SetActive(show);
         }
 
         private void HandleClick()

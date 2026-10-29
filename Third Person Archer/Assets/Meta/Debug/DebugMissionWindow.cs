@@ -249,7 +249,7 @@ public sealed class DebugMissionWindow : MonoBehaviour
             return;
         }
 
-        GUILayout.Label($"LoopIndex={loopData.CurrentLoopIndex} | Debug: Rewards ON, Progress OFF, Required Weapon Class ON", _labelStyle);
+        GUILayout.Label($"Heroic={progressData.IsHeroicUnlocked()} | Debug: Rewards ON, Progress OFF, Required Weapon Class ON", _labelStyle);
 
         GUILayout.Space(_rowSpacing);
 
@@ -418,12 +418,9 @@ public sealed class DebugMissionWindow : MonoBehaviour
         if (mission == null || mission.Scene == null || string.IsNullOrEmpty(mission.Scene.ScenePath))
             return;
 
-        int loopIndex = loopData != null ? loopData.CurrentLoopIndex : 0;
-        int balanceLoopIndex = Mathf.Clamp(loopIndex, 0, 2);
-
         int globalIndex = catalog.GetGlobalCampaignIndexOrMinusOne(mission);
 
-        WeaponClass required = weaponRequirement.GetRequiredWeaponClass(mission, loopIndex);
+        WeaponClass required = weaponRequirement.GetRequiredWeaponClass(mission);
 
         bool easyApplies = _easyDebugMode && type == MissionType.Campaign;
 
@@ -433,8 +430,6 @@ public sealed class DebugMissionWindow : MonoBehaviour
             requiredWeaponClass: required,
             zoneIndex: zoneIndex,
             globalCampaignIndex: globalIndex,
-            loopIndex: loopIndex,
-            balanceLoopIndex: balanceLoopIndex,
             isDebugRun: true,
             easyDebugMode: easyApplies
         );

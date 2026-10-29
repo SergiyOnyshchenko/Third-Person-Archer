@@ -65,7 +65,9 @@ public sealed class NextStepRecommendationService
 
         MissionGateResult gate;
 
-        if (!zone.IsCampaignComplete())
+        // Heroic mode: the Campaign always has a next level.
+        bool heroic = MissionProgressData.Active != null && MissionProgressData.Active.IsHeroicUnlocked();
+        if (heroic || !zone.IsCampaignComplete())
         {
             // Target: next Campaign mission.
             var campaignCtx = BuildContextFor(baseCtx, MissionType.Campaign);
@@ -110,21 +112,19 @@ public sealed class NextStepRecommendationService
         float currentDmg   = gate.CurrentDamage;
         float requiredDmg  = gate.RequiredDamage;
 
-        // 1. Upgrade the currently equipped weapon?
+        // 1. Upgrade the class (level is shared by all models of the class)?
+        var upgrades = Meta.Weapons.WeaponsInitializer.Instance?.UpgradeService;
         if (gate.CanUpgradeToPass &&
+            upgrades != null &&
             _snapshot.TryGet(weaponClass, out var slot) &&
-            slot?.Weapon != null)
+            slot?.Weapon != null &&
+            upgrades.CanAffordUpgrade(weaponClass))
         {
-            var equipped = slot.Weapon;
-            if (slot.UpgradeLevel < equipped.MaxUpgradeLevel &&
-                CanAffordUpgrade(equipped, slot.UpgradeLevel))
-            {
-                return new NextStepRecommendation(
-                    NextStepRecommendationType.UpgradeWeapon,
-                    weaponClass, currentDmg, requiredDmg,
-                    targetWeaponId: equipped.Id,
-                    isCrossbowPath: isCrossbow);
-            }
+            return new NextStepRecommendation(
+                NextStepRecommendationType.UpgradeWeapon,
+                weaponClass, currentDmg, requiredDmg,
+                targetWeaponId: slot.Weapon.Id,
+                isCrossbowPath: isCrossbow);
         }
 
         // 2. Buy a stronger weapon in the same class?
@@ -198,14 +198,13 @@ public sealed class NextStepRecommendationService
 
         // Null mission guard: GetRequiredWeaponClass may throw on null.
         var weaponClass = mission != null
-            ? _weaponRequirement.GetRequiredWeaponClass(mission, baseCtx.LoopIndex)
+            ? _weaponRequirement.GetRequiredWeaponClass(mission)
             : default;
 
         return new MissionContext(
             baseCtx.Zone, baseCtx.ZoneIndex,
             type, mission,
             globalIndex, companyLevel,
-            baseCtx.LoopIndex, baseCtx.BalanceLoopIndex,
             weaponClass);
     }
 
@@ -221,61 +220,18 @@ public sealed class NextStepRecommendationService
         return _catalog.GetGlobalCampaignIndexOrMinusOne(campaignMission);
     }
 
-    // True if the player can pay for the next upgrade level right now.
-    // Note: UpgradeService.CanUpgrade only checks remaining levels, not wallet.
-    private bool CanAffordUpgrade(WeaponDef def, int currentLevel)
-    {
-        var profile = def.UpgradePriceProfile;
-        if (profile == null) return false;
-
-        profile.EvaluateUpgradeCost(currentLevel, def.MaxUpgradeLevel,
-            out int cash, out int tokens);
-
-        var wallet = Meta.Economy.Economy.Wallet;
-        if (wallet == null) return false;
-
-        var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(def.Class);
-        return wallet.CanAfford(CurrencyType.Cash, cash) &&
-               wallet.CanAfford(tokenCurrency, tokens);
-    }
-
-    // Returns the first unowned, unlocked, affordable weapon in the class whose
-    // BASE damage already meets the gate requirement (player can proceed immediately
-    // after buying without any additional upgrades).
+    // Returns the next tier if it can be bought right now (unlocked, previous tier maxed, affordable)
+    // and its base damage already meets the gate.
     private WeaponDef FindAffordableNextTier(WeaponClass cls, float requiredDamage, int campaignIndex)
     {
-        var initializer = Meta.Weapons.WeaponsInitializer.Instance;
-        if (initializer == null) return null;
+        var progression = Meta.Weapons.WeaponsInitializer.Instance?.Progression;
+        if (progression == null) return null;
 
-        var catalog = initializer.WeaponCatalog;
-        var repo    = initializer.WeaponRepository;
-        if (catalog == null || repo == null) return null;
+        var next = progression.GetNextTierDef(cls);
+        if (next == null || next.BaseStats.Damage < requiredDamage) return null;
 
-        var wallet = Meta.Economy.Economy.Wallet;
-        if (wallet == null) return null;
-
-        var state         = repo.Load();
-        var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(cls);
-
-        foreach (var def in catalog.GetByClass(cls))
-        {
-            // Base damage must already pass the gate on purchase day-one.
-            if (def.BaseStats.Damage < requiredDamage) continue;
-
-            // Must be unlocked by the player's current campaign progress.
-            if (def.UnlockAfterCampaignLevel > campaignIndex) continue;
-
-            // Skip weapons the player already owns.
-            if (state.Weapons.Any(w => w.WeaponId == def.Id && w.Owned)) continue;
-
-            // Both cash and class-token must be affordable.
-            if (wallet.CanAfford(CurrencyType.Cash, def.PurchaseCash) &&
-                wallet.CanAfford(tokenCurrency, def.PurchaseTokens))
-            {
-                return def;
-            }
-        }
-
-        return null;
+        // Unlock levels are company levels (completed missions + 1).
+        int companyLevel = campaignIndex + 1;
+        return progression.GetTierPurchaseBlock(next, companyLevel) == TierPurchaseBlock.None ? next : null;
     }
 }

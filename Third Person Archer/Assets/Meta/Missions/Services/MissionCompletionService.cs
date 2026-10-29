@@ -3,15 +3,21 @@ public sealed class MissionCompletionService : IMissionCompletionService
     private readonly IMetaProgressWrite _progress;
     private readonly MetaLoopProgressData _loopData;
     private readonly IMissionRewardService _rewards;
+    private readonly GuildData _guild;
+    private readonly BalanceConfig _balance;
 
     public MissionCompletionService(
         IMetaProgressWrite progress,
         MetaLoopProgressData loopData,
-        IMissionRewardService rewards)
+        IMissionRewardService rewards,
+        GuildData guild = null,
+        BalanceConfig balance = null)
     {
         _progress = progress;
         _loopData = loopData;
         _rewards = rewards;
+        _guild = guild;
+        _balance = balance;
     }
 
     public MissionCompleteResult Complete(MissionContext ctx, MissionOutcome outcome)
@@ -35,16 +41,29 @@ public sealed class MissionCompletionService : IMissionCompletionService
         switch (ctx.SelectedType)
         {
             case MissionType.Campaign:
+                if (ctx.IsHeroic)
+                {
+                    _progress.AdvanceHeroic(ctx.Zone);
+                    break;
+                }
+
                 ctx.Zone.AdvanceMission(MissionType.Campaign);
+                if (_progress.IsHeroicUnlocked)
+                {
+                    // Campaign finale: Heroic mode starts from the first zone.
+                    _progress.SelectZone(0);
+                    _progress.SelectMissionType(MissionType.Campaign);
+                }
                 break;
 
             case MissionType.Boss:
                 ctx.Zone.AdvanceMission(MissionType.Boss);
-                AdvanceToNextZoneOrLoop(ctx.ZoneIndex);
+                AdvanceToNextZone(ctx.ZoneIndex);
                 break;
 
             case MissionType.Contracts:
                 _loopData?.IncreaseContractsCompleted();
+                CompleteGuildContract(ctx.Contract);
                 break;
 
             case MissionType.Sniper:
@@ -54,26 +73,31 @@ public sealed class MissionCompletionService : IMissionCompletionService
         }
     }
 
-    private void AdvanceToNextZoneOrLoop(int currentZoneIndex)
+    private void CompleteGuildContract(ContractRunInfo contract)
+    {
+        if (_guild == null || contract == null)
+            return;
+
+        int reputation = _balance != null ? _balance.Guild.GetReputation(contract.OrderMatched) : 0;
+        _guild.CompleteContract(contract.Slot, reputation, contract.DailyBonus);
+    }
+
+    private void AdvanceToNextZone(int currentZoneIndex)
     {
         var zones = _progress.AllZones;
         if (zones == null || zones.Count == 0)
             return;
 
-        bool isLastZone = currentZoneIndex >= zones.Count - 1;
-
-        if (!isLastZone)
-        {
-            _progress.SelectZone(currentZoneIndex + 1);
-            _progress.SelectMissionType(MissionType.Campaign);
+        // The last zone has no Boss: the campaign ends on its last level and Heroic mode follows
+        // (campaign loops are gone). A boss replay never moves the player forward past the last zone.
+        if (currentZoneIndex >= zones.Count - 1)
             return;
-        }
 
-        // Finished last zone boss => finished the run => next loop.
-        _loopData?.OnFullCampaignAndAllBossesCompleted();
+        // Replaying an old boss (Heroic, all zones open) must not move the map.
+        if (_progress.IsHeroicUnlocked)
+            return;
 
-        // Restart from zone 0 (first zone) at next loop.
-        _progress.SelectZone(0);
+        _progress.SelectZone(currentZoneIndex + 1);
         _progress.SelectMissionType(MissionType.Campaign);
     }
 }

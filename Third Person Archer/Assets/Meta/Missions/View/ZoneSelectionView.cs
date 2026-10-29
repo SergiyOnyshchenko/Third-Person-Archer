@@ -14,7 +14,7 @@ public class ZoneSelectionView : MonoBehaviour
     {
         if (DataManager.Instance.TryGetData(out _progress))
         {
-            UpdateView(_progress.GetLastUnlockedZoneIndex());
+            UpdateView(_progress.GetMenuZoneIndex());
             _progress.OnZoneChanged.AddListener(() => UpdateView(_progress.ZoneIndex));
         }
     }

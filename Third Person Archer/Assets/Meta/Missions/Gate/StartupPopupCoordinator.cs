@@ -39,6 +39,12 @@ using UnityEngine;
 /// and it is shown in the next RunQueue iteration (same or next frame).
 /// The PopupShown subscription therefore stays open until the event actually fires.
 ///
+/// POPUP BUDGET (D12)
+/// At most _maxPopupsPerVisit popups per main menu visit (scene load). The first one waits
+/// _settleFrames after the map appears so every presenter can submit and the most important
+/// request (lowest priority value) wins. Unshown one-time requests keep their save flag unset
+/// (OnBeforeShow never ran) and are submitted again on the next visit.
+///
 /// FALLBACK
 /// If no coordinator is registered (missing from scene), all presenter fallback
 /// paths call nav.ShowPopup() directly, preserving the old behaviour.
@@ -52,6 +58,18 @@ using UnityEngine;
 public sealed class StartupPopupCoordinator : MonoBehaviour, IStartupPopupCoordinator
 {
     [SerializeField] private string _mapScreenId = "map";
+
+    [Tooltip("D12: at most this many startup popups per main menu visit.")]
+    [Min(0)]
+    [SerializeField] private int _maxPopupsPerVisit = 1;
+
+    [Tooltip("Frames to wait after the map appears before the first popup, so all presenters can submit.")]
+    [Min(0)]
+    [SerializeField] private int _settleFrames = 3;
+
+    private int _shownThisVisit;
+    private bool _settled;
+    private bool _settling;
 
     private IUINavigator? _nav;
 
@@ -151,6 +169,22 @@ public sealed class StartupPopupCoordinator : MonoBehaviour, IStartupPopupCoordi
         if (_pending.Count == 0) return;
         if (_awaitingPopupShown) return;  // already waiting for nav to show the queued popup
 
+        if (!_settled)
+        {
+            if (!_settling) StartCoroutine(SettleThenShow());
+            return;
+        }
+
+        if (_shownThisVisit >= _maxPopupsPerVisit)
+        {
+            // Budget spent: drop the rest for this visit (one-time ones come back next visit).
+            _pending.Clear();
+            _pendingIds.Clear();
+            return;
+        }
+
+        _shownThisVisit++;
+
         var request = _pending[0];
         _pending.RemoveAt(0);
 
@@ -188,6 +222,17 @@ public sealed class StartupPopupCoordinator : MonoBehaviour, IStartupPopupCoordi
             _popupActive = false;
             TryShowNext();
         }
+    }
+
+    private IEnumerator SettleThenShow()
+    {
+        _settling = true;
+        for (int i = 0; i < _settleFrames; i++)
+            yield return null;
+
+        _settling = false;
+        _settled = true;
+        TryShowNext();
     }
 
     private void OnPopupShownForCurrentRequest(ScreenView view)

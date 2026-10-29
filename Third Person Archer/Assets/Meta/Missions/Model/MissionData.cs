@@ -24,27 +24,24 @@ public class MissionData : ScriptableObject
     [SerializeField] private SceneReference _scene;
 
     [Header("Weapon Requirement")]
-    [Tooltip("Base weapon class used for this mission on loop 0 (before rotation).")]
+    [Tooltip("Weapon class required by this mission.")]
     [SerializeField] private WeaponClass _baseWeaponClass = WeaponClass.Bow;
 
-    [Tooltip("If true, the required weapon class can rotate per loop (Option B rotation). Typically true for Campaign.")]
-    [SerializeField] private bool _allowLoopRotation = true;
-
-    [Tooltip("If true, this mission uses a fixed weapon class (ignores loop rotation). Recommended for Sniper missions.")]
+    [Tooltip("If true, this mission uses a fixed weapon class (overrides the base class). Recommended for Sniper missions.")]
     [SerializeField] private bool _useFixedWeaponClass = false;
 
     [Tooltip("Fixed weapon class when Use Fixed Weapon Class is enabled.")]
     [SerializeField] private WeaponClass _fixedWeaponClass = WeaponClass.Bow;
 
     [Header("Reward Override (Optional)")]
-    [Tooltip("If enabled, this mission uses override values as BASE (loop 0). Loop scaling still applies via BalanceConfig multipliers.")]
+    [Tooltip("If enabled, this mission uses override values instead of the BalanceConfig reward profile.")]
     [SerializeField] private bool _useRewardOverride = false;
 
-    [Tooltip("Base cash reward at loop 0 when override is enabled.")]
+    [Tooltip("Cash reward when override is enabled.")]
     [Min(0)]
     [SerializeField] private int _overrideBaseCash = 0;
 
-    [Tooltip("Base token amount per token type at loop 0 when override is enabled (for Contracts/Sniper/Boss style rewards).")]
+    [Tooltip("Token amount per token type when override is enabled (for Contracts/Sniper/Boss style rewards).")]
     [Min(0)]
     [SerializeField] private int _overrideBaseTokensPerType = 0;
 
@@ -56,7 +53,6 @@ public class MissionData : ScriptableObject
     public SceneReference Scene => _scene;
 
     public WeaponClass BaseWeaponClass => _baseWeaponClass;
-    public bool AllowLoopRotation => _allowLoopRotation;
     public bool UseFixedWeaponClass => _useFixedWeaponClass;
     public WeaponClass FixedWeaponClass => _fixedWeaponClass;
 
@@ -78,9 +74,6 @@ public class MissionData : ScriptableObject
         {
             if (!_useFixedWeaponClass)
                 _useFixedWeaponClass = true;
-
-            if (_allowLoopRotation)
-                _allowLoopRotation = false;
         }
     }
 #endif

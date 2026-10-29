@@ -65,7 +65,12 @@ public sealed class PlayMissionPresenter : MonoBehaviour
             _services.OnMenuStateChanged += Refresh;
 
         if (_playButtonView != null)
-            _playButtonView.BindClick(OnPlayClicked);
+            _playButtonView.BindClick(PlaySelected);
+
+        // One tap = the next step: start each menu visit on the recommended mode.
+        var recommended = RecommendedMissionHintService.GetRecommendedType(_services);
+        if (recommended.HasValue && recommended.Value != MissionType.Contracts)
+            _services.Progress.SelectMissionType(recommended.Value);
 
         Refresh();
     }
@@ -85,13 +90,64 @@ public sealed class PlayMissionPresenter : MonoBehaviour
             avail.Reason == AvailabilityBlockReason.BossCrossbowDamageTooLow;
 
         _playButtonView.SetInteractable(canClickPlay);
+        _playButtonView.SetPower(GetGateForPowerIndicator(ctx));
+        _playButtonView.SetSubtitle(GetSubtitle(ctx));
     }
 
-    private void OnPlayClicked()
+    private static string GetSubtitle(MissionContext ctx)
+    {
+        if (ctx == null || !ctx.IsValid) return "";
+
+        var segment = ctx.Zone.GetSegmentByType(ctx.SelectedType);
+        int index = segment != null ? Mathf.Max(0, IndexOf(segment, ctx.Mission)) : 0;
+
+        return ctx.SelectedType switch
+        {
+            MissionType.Campaign => $"{(ctx.IsHeroic ? "Heroic" : "Level")} {index + 1} · {ctx.RequiredWeaponClass}",
+            MissionType.Sniper => $"Sniper {index + 1} · Crossbow",
+            MissionType.Boss => "Boss fight!",
+            MissionType.Contracts => "Guild Board",
+            _ => ""
+        };
+    }
+
+    private static int IndexOf(MissionSegmentData segment, MissionData mission)
+    {
+        for (int i = 0; i < segment.Missions.Count; i++)
+            if (segment.Missions[i] == mission) return i;
+        return -1;
+    }
+
+    private MissionGateResult GetGateForPowerIndicator(MissionContext ctx)
+    {
+        if (ctx == null || _services.Gate == null)
+            return null;
+
+        switch (ctx.SelectedType)
+        {
+            case MissionType.Campaign:
+                return ctx.IsValid ? _services.Gate.CheckCampaignGate(ctx) : null;
+            case MissionType.Boss:
+                return ctx.IsValid && ctx.Zone.IsBossUnlocked() ? _services.Gate.CheckBossGate(ctx) : null;
+            case MissionType.Sniper:
+                return _services.Gate.CheckSniperGate(ctx);
+            default:
+                return null;
+        }
+    }
+
+    /// <summary>Starts the selected mode's current mission (Play button, mission panel).</summary>
+    public void PlaySelected()
     {
         if (_services == null) return;
 
         var result = _services.MissionStart.TryStartSelected();
+
+        if (result.FailReason == MissionStartFailReason.ContractsUseGuildBoard)
+        {
+            GuildBoardNavigation.Open();
+            return;
+        }
 
         if (!result.Started)
         {

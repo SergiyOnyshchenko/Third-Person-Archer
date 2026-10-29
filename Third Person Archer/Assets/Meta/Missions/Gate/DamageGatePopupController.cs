@@ -83,7 +83,7 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
     {
         return action switch
         {
-            GatePopupAction.PlayContracts => "Play Contracts to earn cash and weapon tokens.",
+            GatePopupAction.PlayContracts => "Take a Guild contract: gold and essence for the class you play.",
             GatePopupAction.PlaySniper    => "Play Sniper missions to earn Crossbow Tokens.",
             _                             => "Upgrade it or buy a stronger one to continue.",
         };
@@ -146,6 +146,12 @@ public sealed class DamageGatePopupController : MonoBehaviour, IReceivesArgs<Dam
         var result = services.MissionStart.TryStartSelected();
 
         Destroy(gameObject);
+
+        if (result.FailReason == MissionStartFailReason.ContractsUseGuildBoard)
+        {
+            GuildBoardNavigation.Open();
+            return;
+        }
 
         if (result.Started && result.MissionToLoad?.Scene != null &&
             !string.IsNullOrEmpty(result.MissionToLoad.Scene.ScenePath))

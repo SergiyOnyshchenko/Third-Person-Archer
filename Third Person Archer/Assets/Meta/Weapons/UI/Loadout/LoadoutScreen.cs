@@ -18,7 +18,7 @@ namespace Meta.Weapons.UI
         [SerializeField] private string _weaponSelectionScreenId = "WeaponSelection";
 
         private IWeaponRepository _weaponRepo;
-        private IStatsService _statsService;
+        private IClassProgressionService _progression;
         private IEquipmentService _equipmentService;
         private IWeaponClassUnlockService _classUnlocks;
         private IUINavigator _navigator;
@@ -27,7 +27,7 @@ namespace Meta.Weapons.UI
         private void Awake()
         {
             _weaponRepo = WeaponsInitializer.Instance.WeaponRepository;
-            _statsService = WeaponsInitializer.Instance.StatsService;
+            _progression = WeaponsInitializer.Instance.Progression;
             _equipmentService = WeaponsInitializer.Instance.EquipmentService;
 
             _classUnlocks = WeaponsInitializer.Instance.ClassUnlockService;
@@ -64,6 +64,7 @@ namespace Meta.Weapons.UI
 
             bool unlocked = _classUnlocks.IsClassUnlocked(weaponClass);
             slot.SetLocked(!unlocked);
+            slot.SetAttention(unlocked && ArsenalAttention.HasSomethingToBuy(weaponClass));
 
             if (!unlocked)
             {
@@ -85,8 +86,7 @@ namespace Meta.Weapons.UI
                 return;
             }
 
-            var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id);
-            var stats = _statsService.Compute(def, inst);
+            var stats = _progression.GetPowerStats(weaponClass);
 
             slot.SetData(
                 icon: def.Icon,

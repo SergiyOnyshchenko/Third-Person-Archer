@@ -59,10 +59,11 @@ public sealed class GameplayRuntime : MonoBehaviour
     private void BuildServices()
     {
         var progressWrite = new MissionProgressWriteAdapter(ProgressData);
-        var loopProgress = new LoopProgressService(_loopProgressData, maxBalancedLoopIndex: 2);
+        Rewards = new MissionRewardService(_balanceConfig, _loopProgressData);
 
-        Rewards = new MissionRewardService(_balanceConfig, loopProgress, _loopProgressData);
-        Completion = new MissionCompletionService(progressWrite, _loopProgressData, Rewards);
+        GuildData guild = null;
+        DataManager.Instance?.TryGetData(out guild);
+        Completion = new MissionCompletionService(progressWrite, _loopProgressData, Rewards, guild, _balanceConfig);
     }
 
     private void BuildContext()
@@ -75,11 +76,10 @@ public sealed class GameplayRuntime : MonoBehaviour
 
         var progressRead = new MissionProgressReadAdapter(ProgressData);
 
-        var loopProgress = new LoopProgressService(_loopProgressData, maxBalancedLoopIndex: 2);
         var catalog = new MissionCatalogService(ProgressData.AllZones);
-        var weaponReq = new WeaponRequirementService(rotationStep: 1);
+        var weaponReq = new WeaponRequirementService();
 
-        var contextService = new MissionContextService(progressRead, catalog, loopProgress, weaponReq);
+        var contextService = new MissionContextService(progressRead, catalog, weaponReq);
         Context = contextService.BuildSelectedContext();
     }
 
@@ -121,12 +121,11 @@ public sealed class GameplayRuntime : MonoBehaviour
             mission: req.MissionToLoad,
             globalCampaignIndex: globalCampaignIndex,
             companyLevel: companyLevel,
-            loopIndex: req.LoopIndex,
-            balanceLoopIndex: req.BalanceLoopIndex,
             requiredWeaponClass: req.RequiredWeaponClass,
             isDebugRun: isDebugRun,
             balanceMode: balanceMode,
-            contractsCompletedIndexOverride: contractsOverride
+            contractsCompletedIndexOverride: contractsOverride,
+            contract: req.Mode == MissionType.Contracts ? req.Contract : null
         );
 
         // 🔍 TEMP DEBUG LOG (keep until verified)

@@ -60,9 +60,9 @@ public sealed class ContractsUnlockPresenter : MonoBehaviour
 
         const string title = "Contracts Unlocked!";
         const string body =
-            "Repeatable missions — replay any completed Campaign level.\n" +
-            "Each run earns Cash and weapon Tokens.\n" +
-            "Use them to upgrade weapons and stay ahead of gates.";
+            "Guild Board: replay completed Campaign levels with any weapon.\n" +
+            "Each run earns Gold and essence of the class you play.\n" +
+            "Play the order class for a bonus and raise your guild rank.";
 
         var args = new MissionTypeUnlockPopupArgs(title, body, _icon);
 

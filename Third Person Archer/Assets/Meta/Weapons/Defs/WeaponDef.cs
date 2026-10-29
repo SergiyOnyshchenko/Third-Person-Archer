@@ -12,6 +12,15 @@ namespace Meta.Weapons
         [SerializeField] private Sprite _icon;
         [SerializeField] private WeaponClass _class;
 
+        [Header("Progression")]
+        [Tooltip("Power tier 1..4 within the class. 0 = skin: cosmetic only, power comes from the best owned tier.")]
+        [Min(0)]
+        [SerializeField] private int _tier = 1;
+
+        [Tooltip("Skins only: rewarded ads to watch to unlock this skin.")]
+        [Min(1)]
+        [SerializeField] private int _skinAdsRequired = 3;
+
         [Header("Unlock")]
         [Tooltip("Campaign level index (global) after which this weapon becomes visible/purchasable. 0 = available from start.")]
         [SerializeField] private int _unlockAfterCampaignLevel = 0;
@@ -60,6 +69,10 @@ namespace Meta.Weapons
         public Sprite Icon => _icon;
         public WeaponClass Class => _class;
 
+        public int Tier => _tier;
+        public bool IsSkin => _tier <= 0;
+        public int SkinAdsRequired => _skinAdsRequired;
+
         public int UnlockAfterCampaignLevel => _unlockAfterCampaignLevel;
 
         public WeaponStats BaseStats => _baseStats;
@@ -80,6 +93,16 @@ namespace Meta.Weapons
             if (_maxUpgradeLevel <= 0) return 0f;
             upgradeLevel = Mathf.Clamp(upgradeLevel, 0, _maxUpgradeLevel);
             return (float)upgradeLevel / _maxUpgradeLevel;
+        }
+
+        /// <summary>
+        /// Damage at a normalized position inside this weapon's level range (same curve as StatsService).
+        /// </summary>
+        public float GetDamageAt01(float t01)
+        {
+            float t = Mathf.Clamp01(t01);
+            float curve = _upgradeCurve01 != null ? Mathf.Clamp01(_upgradeCurve01.Evaluate(t)) : t;
+            return Mathf.Lerp(_baseStats.Damage, _maxStats.Damage, curve);
         }
     }
 }

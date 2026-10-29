@@ -20,20 +20,22 @@ public sealed class MissionGateService : IMissionGateService
         if (ctx.SelectedType != MissionType.Campaign)
             return new MissionGateResult(true, 0, 0, ctx.RequiredWeaponClass);
 
-        float required = _balance.GetRequiredDamageForCampaign(
-            ctx.RequiredWeaponClass,
-            ctx.GlobalCampaignIndex,
-            ctx.BalanceLoopIndex);
+        // Soft gate: playable from min damage (Yellow), full power at recommended R (Green).
+        float recommended = _balance.GetCampaignRecommendedDamage(ctx);
+        float required = _balance.GetCampaignMinDamage(ctx);
 
         float current = _loadoutStats.GetEquippedDamage(ctx.RequiredWeaponClass);
         float maxDamage = _loadoutStats.GetEquippedMaxDamage(ctx.RequiredWeaponClass);
 
-        bool passed = current >= required;
+        var status = current >= recommended ? MissionGateStatus.Green
+                   : current >= required ? MissionGateStatus.Yellow
+                   : MissionGateStatus.Red;
+
         bool canUpgrade = maxDamage >= required;
-        return new MissionGateResult(passed, required, current, ctx.RequiredWeaponClass, canUpgrade);
+        return new MissionGateResult(status, required, recommended, current, ctx.RequiredWeaponClass, canUpgrade);
     }
 
-    public MissionGateResult CheckSniperGate(MissionContext ctx, int sniperCompletedIndex)
+    public MissionGateResult CheckSniperGate(MissionContext ctx)
     {
         if (ctx == null)
             return new MissionGateResult(false, 0, 0, WeaponClass.Crossbow);
@@ -42,7 +44,7 @@ public sealed class MissionGateService : IMissionGateService
         if (ctx.SelectedType != MissionType.Sniper)
             return new MissionGateResult(true, 0, 0, WeaponClass.Crossbow);
 
-        float required = _balance.GetRequiredCrossbowDamageForSniper(sniperCompletedIndex, ctx.BalanceLoopIndex);
+        float required = _balance.GetSniperGateDamage(ctx);
         float current = _loadoutStats.GetEquippedDamage(WeaponClass.Crossbow);
         float maxDamage = _loadoutStats.GetEquippedMaxDamage(WeaponClass.Crossbow);
 
@@ -60,7 +62,7 @@ public sealed class MissionGateService : IMissionGateService
         if (ctx.SelectedType != MissionType.Boss)
             return new MissionGateResult(true, 0, 0, WeaponClass.Crossbow);
 
-        float required = _balance.GetRequiredCrossbowDamageForBoss(ctx.ZoneIndex, ctx.BalanceLoopIndex);
+        float required = _balance.GetBossGateDamage(ctx);
         float current = _loadoutStats.GetEquippedDamage(WeaponClass.Crossbow);
         float maxDamage = _loadoutStats.GetEquippedMaxDamage(WeaponClass.Crossbow);
 

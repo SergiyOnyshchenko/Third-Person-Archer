@@ -16,6 +16,9 @@ public sealed class MainMenuServices
     public IMissionCatalogService Catalog { get; }
     public IWeaponRequirementService WeaponRequirement { get; }
     public NextStepRecommendationService NextStep { get; }
+    public IContractBoardService ContractBoard { get; }
+    public BalanceConfig Balance { get; }
+    public IMissionRewardService Rewards { get; }
 
     public event Action OnMenuStateChanged;
 
@@ -30,7 +33,10 @@ public sealed class MainMenuServices
         MetaLoopProgressData loopData,
         IMissionCatalogService catalog,
         IWeaponRequirementService weaponRequirement,
-        NextStepRecommendationService nextStep = null)
+        NextStepRecommendationService nextStep = null,
+        IContractBoardService contractBoard = null,
+        BalanceConfig balance = null,
+        IMissionRewardService rewards = null)
     {
         Progress = progress;
         Context = context;
@@ -44,6 +50,29 @@ public sealed class MainMenuServices
         Catalog = catalog;
         WeaponRequirement = weaponRequirement;
         NextStep = nextStep;
+        ContractBoard = contractBoard;
+        Balance = balance;
+        Rewards = rewards;
+    }
+
+    /// <summary>
+    /// Context for any mission of the current zone (not only the segment's current one):
+    /// used by the map path and the mission panel to preview past/future levels.
+    /// </summary>
+    public MissionContext BuildContextFor(MissionType type, MissionData mission)
+    {
+        var baseCtx = Context.BuildSelectedContext();
+        int globalIndex = Catalog.GetGlobalCampaignIndexOrMinusOne(mission);
+        int companyLevel = globalIndex >= 0 ? globalIndex + 1 : ProgressData.GetCompanyLevel();
+
+        return new MissionContext(
+            baseCtx.Zone,
+            baseCtx.ZoneIndex,
+            type,
+            mission,
+            globalIndex,
+            companyLevel,
+            WeaponRequirement.GetRequiredWeaponClass(mission));
     }
 
     public void NotifyMenuStateChanged()

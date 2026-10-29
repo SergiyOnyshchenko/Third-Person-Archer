@@ -18,6 +18,7 @@ public sealed class MainMenuRuntime : MonoBehaviour
 
     public MainMenuServices Services { get; private set; }
     public MissionProgressData ProgressData { get; private set; }
+    public BalanceConfig Balance => _balanceConfig;
 
     private void Awake()
     {
@@ -56,9 +57,8 @@ public sealed class MainMenuRuntime : MonoBehaviour
 
         ProgressData = progress;
 
-        // Rule: only current map accessible => force zone to last unlocked
-        int lastUnlocked = ProgressData.GetLastUnlockedZoneIndex();
-        ProgressData.SelectZone(lastUnlocked);
+        // Rule: only current map accessible => force zone to last unlocked (Heroic: every zone, keep the choice)
+        ProgressData.SelectZone(ProgressData.GetMenuZoneIndex());
 
         BuildServices();
 
@@ -87,14 +87,12 @@ public sealed class MainMenuRuntime : MonoBehaviour
         var progressRead = new MissionProgressReadAdapter(ProgressData);
         var progressWrite = new MissionProgressWriteAdapter(ProgressData);
 
-        var loopProgress = new LoopProgressService(_loopProgressData, maxBalancedLoopIndex: 2);
-
         var catalog = new MissionCatalogService(ProgressData.AllZones);
 
         // Uses MissionData weapon fields (Option A)
-        var weaponReq = new WeaponRequirementService(rotationStep: 1);
+        var weaponReq = new WeaponRequirementService();
 
-        var context = new MissionContextService(progressRead, catalog, loopProgress, weaponReq);
+        var context = new MissionContextService(progressRead, catalog, weaponReq);
 
         var loadoutStats = new LoadoutSnapshotWeaponStatService(_loadoutSnapshot);
 
@@ -103,7 +101,12 @@ public sealed class MainMenuRuntime : MonoBehaviour
         var companyLevel = new CompanyLevelService(progressRead);
         var availability = new MissionAvailabilityService(gate, _modeUnlockConfig, companyLevel, _loopProgressData);
 
-        var contractPool = new ContractPoolService(ProgressData);
+        if (!DataManager.Instance.TryGetData(out GuildData guildData) || guildData == null)
+            Debug.LogError("MainMenuRuntime: GuildData not found in DataManager (add it to GameData.prefab).");
+
+        var contractBoard = guildData != null
+            ? new ContractBoardService(guildData, _balanceConfig, ProgressData, loadoutStats)
+            : null;
 
         var missionStart = new MissionStartService(
             ProgressData,
@@ -111,9 +114,11 @@ public sealed class MainMenuRuntime : MonoBehaviour
             availability,
             gate,
             weaponReq,
-            contractPool,
+            contractBoard,
             _launchRequest,
             _loopProgressData);
+
+        var rewards = new MissionRewardService(_balanceConfig, _loopProgressData);
 
         var nextStep = new NextStepRecommendationService(
             availability,
@@ -136,7 +141,10 @@ public sealed class MainMenuRuntime : MonoBehaviour
             _loopProgressData,
             catalog,
             weaponReq,
-            nextStep
+            nextStep,
+            contractBoard,
+            _balanceConfig,
+            rewards
         );
     }
 

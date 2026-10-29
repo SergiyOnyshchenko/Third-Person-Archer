@@ -8,6 +8,10 @@ using UnityEngine.Events;
 
 namespace Meta.Weapons.UI
 {
+    /// <summary>
+    /// Arsenal of one class. Tiers are bought in order (previous tier maxed first), the class level
+    /// is shared by all models, every owned model (tier or skin) shoots with the best tier's power.
+    /// </summary>
     public class WeaponSelectionScreen : MonoBehaviour, IReceivesArgs<WeaponSelectionArgs>
     {
         [Header("Refs")]
@@ -28,35 +32,46 @@ namespace Meta.Weapons.UI
         [SerializeField] private WeaponListItemView _itemPrefab;
         [SerializeField] private Transform _itemsRoot;
 
+        [Header("Zone matchup (optional)")]
+        [Tooltip("\"Japan · Level 6: Brawler 2 shots → 32 dmg for 1 shot\" for the class's next Campaign level.")]
+        [SerializeField] private GameObject _matchupRoot;
+        [SerializeField] private TextMeshProUGUI _matchupText;
+
         [Header("Debug / Temp")]
         [SerializeField] private int _currentCampaignLevel = 0;
 
         private WeaponsInitializer _weaponsInitializer;
         private IWeaponRepository _weaponRepo;
-        private IStatsService _statsService;
         private IEquipmentService _equipmentService;
         private IUpgradeService _upgradeService;
+        private IClassProgressionService _progression;
         private IWallet _wallet;
 
         private WeaponClass _currentClass;
         private List<WeaponDef> _classWeapons = new();
         private WeaponDef _selectedDef;
-        private WeaponInstance _selectedInstance;
         private string _pendingPreselectWeaponId;
         private WeaponHighlightMode _highlightMode;
         private string _highlightTargetWeaponId;
+        private bool _adInProgress;
 
         private readonly List<WeaponListItemView> _spawnedItems = new();
         public UnityEvent<WeaponDef> OnWeaponSelected = new UnityEvent<WeaponDef>();
+
+        /// <summary>Raised when a class is shown (args, class tabs) or its progress changed (upgrade, purchase).</summary>
+        public event System.Action<WeaponClass> OnClassShown;
+
+        public WeaponClass CurrentClass => _currentClass;
+        public int CampaignLevel => _currentCampaignLevel;
 
         private void Awake()
         {
             _weaponsInitializer = WeaponsInitializer.Instance;
 
             _weaponRepo = _weaponsInitializer.WeaponRepository;
-            _statsService = _weaponsInitializer.StatsService;
             _equipmentService = _weaponsInitializer.EquipmentService;
             _upgradeService = _weaponsInitializer.UpgradeService;
+            _progression = _weaponsInitializer.Progression;
             _wallet = Meta.Economy.Economy.Wallet;
 
             if (_pricePanel != null)
@@ -64,7 +79,7 @@ namespace Meta.Weapons.UI
                 _pricePanel.OnEquipClicked += HandleEquipClicked;
                 _pricePanel.OnPurchaseClicked += HandlePurchaseClicked;
                 _pricePanel.OnUpgradeClicked += HandleUpgradeClicked;
-                _pricePanel.OnAdUpgradeClicked += HandleAdUpgradeClicked;
+                _pricePanel.OnAdUpgradeClicked += HandleAdClicked;
             }
         }
 
@@ -75,7 +90,7 @@ namespace Meta.Weapons.UI
                 _pricePanel.OnEquipClicked -= HandleEquipClicked;
                 _pricePanel.OnPurchaseClicked -= HandlePurchaseClicked;
                 _pricePanel.OnUpgradeClicked -= HandleUpgradeClicked;
-                _pricePanel.OnAdUpgradeClicked -= HandleAdUpgradeClicked;
+                _pricePanel.OnAdUpgradeClicked -= HandleAdClicked;
             }
         }
 
@@ -107,9 +122,9 @@ namespace Meta.Weapons.UI
             gameObject.SetActive(true);
             BuildList();
             SelectInitialWeapon();
+            OnClassShown?.Invoke(_currentClass);
         }
 
-        // --- existing code below unchanged ---
         private void BuildList()
         {
             foreach (var item in _spawnedItems)
@@ -118,29 +133,23 @@ namespace Meta.Weapons.UI
                     Destroy(item.gameObject);
             }
             _spawnedItems.Clear();
-            _classWeapons.Clear();
 
-            var allDefs = _weaponCatalog.All.ToArray();
-            _classWeapons = allDefs
-                .Where(d => d.Class == _currentClass)
-                .OrderBy(d => d.UnlockAfterCampaignLevel)
+            // Tiers in order, then skins.
+            _classWeapons = _weaponCatalog.All
+                .Where(d => d != null && d.Class == _currentClass)
+                .OrderBy(d => d.IsSkin ? 1 : 0)
+                .ThenBy(d => d.Tier)
                 .ToList();
 
             var state = _weaponRepo.Load();
+            var classIcon = GetWeaponClassIcon(_currentClass);
 
             foreach (var def in _classWeapons)
             {
-                var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id && w.Owned);
-                bool isOwned = inst != null && inst.Owned;
-                bool isLocked = _currentCampaignLevel < def.UnlockAfterCampaignLevel;
                 bool isEquipped = _equipmentService.GetEquippedWeaponId(state, _currentClass) == def.Id;
 
-                var stats = isOwned ? _statsService.Compute(def, inst) : def.BaseStats;
-
-                var classIcon = GetWeaponClassIcon(def.Class);
-
                 var item = Instantiate(_itemPrefab, _itemsRoot);
-                item.SetData(def.DisplayName, stats.Damage, isLocked, isEquipped, classIcon,
+                item.SetData(def.DisplayName, GetDisplayStats(def).Damage, IsCampaignLocked(def), isEquipped, classIcon,
                     () => OnItemClicked(def));
                 _spawnedItems.Add(item);
             }
@@ -160,8 +169,7 @@ namespace Meta.Weapons.UI
                 }
             }
 
-            var state = _weaponRepo.Load();
-            var equippedId = _equipmentService.GetEquippedWeaponId(state, _currentClass);
+            var equippedId = _equipmentService.GetEquippedWeaponId(_currentClass);
 
             var initial = _classWeapons.FirstOrDefault(d => d.Id == equippedId)
                           ?? _classWeapons.FirstOrDefault();
@@ -187,34 +195,25 @@ namespace Meta.Weapons.UI
                 _selectedWeaponNameText.text = def.DisplayName;
 
             if (_selectedWeaponClassText != null)
-                _selectedWeaponClassText.text = def.Class.ToString();
+                _selectedWeaponClassText.text = def.IsSkin ? $"{def.Class} skin" : $"{def.Class} tier {def.Tier}";
 
             for (int i = 0; i < _classWeapons.Count; i++)
-            {
-                bool selected = _classWeapons[i] == def;
-                _spawnedItems[i].SetSelected(selected);
-            }
+                _spawnedItems[i].SetSelected(_classWeapons[i] == def);
 
-            var state = _weaponRepo.Load();
-            _selectedInstance = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id && w.Owned);
+            bool isOwned = _progression.IsOwned(def.Id);
+            bool isEquipped = _equipmentService.GetEquippedWeaponId(_currentClass) == def.Id;
 
-            bool isLocked = _currentCampaignLevel < def.UnlockAfterCampaignLevel;
-            bool isOwned = _selectedInstance != null && _selectedInstance.Owned;
-            bool isEquipped = _equipmentService.GetEquippedWeaponId(state, _currentClass) == def.Id;
-
-            var currentStats = isOwned
-                ? _statsService.Compute(def, _selectedInstance)
-                : def.BaseStats;
-
+            var currentStats = GetDisplayStats(def);
             var minStats = _statsRangeConfig != null ? _statsRangeConfig.Min : WeaponStats.Zero;
             var maxStats = _statsRangeConfig != null ? _statsRangeConfig.Max : def.MaxStats;
             _statsPanel.SetCurrentStats(currentStats, minStats, maxStats);
 
-            if (isOwned && isEquipped && def.MaxUpgradeLevel > 0 &&
-                _selectedInstance.UpgradeLevel < def.MaxUpgradeLevel)
+            var power = _progression.GetPowerDef(_currentClass);
+            int classLevel = _progression.GetClassLevel(_currentClass);
+
+            if (isOwned && isEquipped && power != null && _upgradeService.CanUpgrade(def.Id))
             {
-                var nextLevel = _selectedInstance.UpgradeLevel + 1;
-                var nextStats = _statsService.Compute(def, nextLevel);
+                var nextStats = _progression.GetTierStats(power, classLevel + 1);
                 _statsPanel.SetUpgradePreview(currentStats, nextStats, true);
             }
             else
@@ -222,33 +221,41 @@ namespace Meta.Weapons.UI
                 _statsPanel.SetUpgradePreview(currentStats, currentStats, false);
             }
 
-            if (isLocked)
+            if (!isOwned)
             {
-                string formatted = CampaignLevelFormatUtility.FormatCompanyLevelAsZoneCampaign(
-                    _missionProgressData, def.UnlockAfterCampaignLevel);
-
-                string msg = $"Unlocks at {formatted}";
-                _pricePanel.ShowLocked(msg);
+                if (def.IsSkin)
+                    ShowSkinUI(def);
+                else
+                    ShowTierPurchaseUI(def);
             }
-            else if (!isOwned)
-            {
-                ShowPurchaseUI(def);
-            }
-            else if (isOwned && !isEquipped)
+            else if (!isEquipped)
             {
                 _pricePanel.ShowOwnedNotEquipped();
             }
             else
             {
-                ShowUpgradeUI(def, _selectedInstance);
+                ShowUpgradeUI(def);
             }
 
-            UpdateUpgradeLevelUI(def, _selectedInstance, isOwned);
+            UpdateUpgradeLevelUI(power, classLevel);
+            RenderMatchup(currentStats.Damage, power, classLevel);
 
             ApplyHighlight();
 
             OnWeaponSelected?.Invoke(def);
         }
+
+        // Owned models and skins shoot with the class power; an unowned tier shows its base (the jump on purchase).
+        private WeaponStats GetDisplayStats(WeaponDef def)
+        {
+            if (def.IsSkin || _progression.IsOwned(def.Id))
+                return _progression.GetPowerStats(_currentClass);
+
+            return _progression.GetTierStats(def, _progression.GetTierStartLevel(def));
+        }
+
+        private bool IsCampaignLocked(WeaponDef def) =>
+            !def.IsSkin && _currentCampaignLevel < def.UnlockAfterCampaignLevel;
 
         private void ApplyHighlight()
         {
@@ -268,67 +275,128 @@ namespace Meta.Weapons.UI
             }
         }
 
-        private void ShowPurchaseUI(WeaponDef def)
+        private void ShowTierPurchaseUI(WeaponDef def)
         {
-            int cashRequired = def.PurchaseCash;
-            int tokensRequired = def.PurchaseTokens;
+            var block = _progression.GetTierPurchaseBlock(def, _currentCampaignLevel);
+            var previous = _progression.GetTierDef(def.Class, def.Tier - 1);
+
+            switch (block)
+            {
+                case TierPurchaseBlock.CampaignLocked:
+                    string formatted = CampaignLevelFormatUtility.FormatCompanyLevelAsZoneCampaign(
+                        _missionProgressData, def.UnlockAfterCampaignLevel);
+                    _pricePanel.ShowLocked($"Unlocks at {formatted}");
+                    return;
+
+                case TierPurchaseBlock.PreviousTierMissing:
+                    _pricePanel.ShowLocked($"Buy {previous?.DisplayName} first");
+                    return;
+
+                case TierPurchaseBlock.PreviousTierNotMaxed:
+                    int cap = _progression.GetTierStartLevel(previous) + previous.MaxUpgradeLevel;
+                    _pricePanel.ShowLocked($"Upgrade {previous.DisplayName} to Lvl{cap + 1}");
+                    return;
+            }
 
             var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(def.Class);
-            int tokenOwned = _wallet.Get(tokenCurrency);
-
-            var moneyIcon = GetCurrencyIcon(CurrencyType.Cash);
-            var tokenIcon = GetCurrencyIcon(tokenCurrency);
-
-            _pricePanel.ShowPurchase(moneyIcon, cashRequired, tokenIcon, tokensRequired, tokenOwned);
+            _pricePanel.ShowPurchase(GetCurrencyIcon(CurrencyType.Cash), def.PurchaseCash,
+                                     GetCurrencyIcon(tokenCurrency), def.PurchaseTokens, _wallet.Get(tokenCurrency));
         }
 
-        private void ShowUpgradeUI(WeaponDef def, WeaponInstance inst)
+        private void ShowSkinUI(WeaponDef def)
         {
-            if (def.MaxUpgradeLevel <= 0)
+            int watched = _progression.GetSkinAdsWatched(def);
+            bool adReady = !_adInProgress && Meta.Ads.Ads.Service.IsRewardedReady(Meta.Ads.AdPlacements.SkinUnlock);
+            _pricePanel.ShowSkinAdUnlock($"Skin: watch ads to unlock {watched}/{def.SkinAdsRequired}", adReady);
+        }
+
+        private void ShowUpgradeUI(WeaponDef def)
+        {
+            if (!_upgradeService.TryGetUpgradeCost(def.Class, out var cashRequired, out var tokensRequired))
             {
-                _pricePanel.ShowOwnedNotEquipped();
+                // Class level is at the cap of the best owned tier.
+                var next = _progression.GetNextTierDef(def.Class);
+                _pricePanel.ShowLocked(next != null ? $"Max level. Next: {next.DisplayName}" : "Max level");
                 return;
             }
 
-            var profile = def.UpgradePriceProfile;
-            if (profile == null)
+            var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(def.Class);
+
+            _pricePanel.ShowEquippedUpgradable(GetCurrencyIcon(CurrencyType.Cash), cashRequired,
+                                               GetCurrencyIcon(tokenCurrency), tokensRequired, _wallet.Get(tokenCurrency),
+                                               _upgradeService.CanAffordUpgrade(def.Class),
+                                               _upgradeService.CanUpgradeWithAd(def.Id));
+        }
+
+        /// <summary>
+        /// Next uncompleted Campaign level of this class in the current zone: how many body shots
+        /// the toughest enemy takes now and whether the next upgrade makes it one shot.
+        /// </summary>
+        private void RenderMatchup(float damage, WeaponDef power, int classLevel)
+        {
+            if (_matchupRoot == null || _matchupText == null) return;
+
+            var services = MainMenuRuntime.Instance != null ? MainMenuRuntime.Instance.Services : null;
+            var zone = services?.Progress.CurrentZone;
+            var campaign = zone?.GetSegmentByType(MissionType.Campaign);
+
+            int targetIndex = -1;
+            global::MissionGateResult gate = null;
+            if (campaign != null)
             {
-                _pricePanel.ShowOwnedNotEquipped();
+                for (int i = 0; i < campaign.Missions.Count; i++)
+                {
+                    var m = campaign.Missions[i];
+                    if (services.ProgressData.IsCampaignLevelCleared(zone, m)) continue;
+
+                    var ctx = services.BuildContextFor(MissionType.Campaign, m);
+                    if (ctx.RequiredWeaponClass != _currentClass) continue;
+
+                    targetIndex = i;
+                    gate = services.Gate.CheckCampaignGate(ctx);
+                    break;
+                }
+            }
+
+            _matchupRoot.SetActive(gate != null);
+            if (gate == null) return;
+
+            int r = Mathf.Max(1, Mathf.FloorToInt(gate.RecommendedDamage));
+            int dmg = Mathf.FloorToInt(damage);
+            var toughest = MissionPreviewUtility.GetShots(services.Balance, r, dmg, MissionPreviewUtility.RosterTypes[0]);
+
+            string level = services.ProgressData.IsHeroicUnlocked() ? "Heroic" : "Level";
+            string head = $"{zone.ZoneName} · {level} {targetIndex + 1}: ";
+            string green = MissionPreviewUtility.Hex(MissionPreviewUtility.Green);
+            string yellow = MissionPreviewUtility.Hex(MissionPreviewUtility.Yellow);
+
+            if (toughest.BodyShots <= 1)
+            {
+                _matchupText.text = head + $"<color={green}>every enemy 1 shot</color>";
                 return;
             }
 
-            bool canUpgrade = _upgradeService.CanUpgrade(def.Id);
-            int currentLevel = inst.UpgradeLevel;
+            string text = head + $"{MissionPreviewUtility.GetEnemyName(toughest.Type)} <color={yellow}>{toughest.BodyShots} shots</color> · {r} dmg = 1 shot";
 
-            profile.EvaluateUpgradeCost(currentLevel, def.MaxUpgradeLevel,
-                                        out var cashRequired, out var tokensRequired);
+            if (power != null && _upgradeService.CanUpgrade(power.Id))
+            {
+                int next = Mathf.FloorToInt(_progression.GetTierStats(power, classLevel + 1).Damage);
+                if (next >= r) text += $"\n<color={green}>Next upgrade makes it 1 shot!</color>";
+            }
 
-            var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(def.Class);
-            int tokenOwned = _wallet.Get(tokenCurrency);
-
-            var moneyIcon = GetCurrencyIcon(CurrencyType.Cash);
-            var tokenIcon = GetCurrencyIcon(tokenCurrency);
-
-            bool canUpgradeWithAd = profile.CanUpgradeWithAd;
-
-            _pricePanel.ShowEquippedUpgradable(moneyIcon, cashRequired,
-                                               tokenIcon, tokensRequired, tokenOwned,
-                                               canUpgrade, canUpgradeWithAd);
+            _matchupText.text = text;
         }
 
-        private void UpdateUpgradeLevelUI(WeaponDef def, WeaponInstance inst, bool isOwned)
+        private void UpdateUpgradeLevelUI(WeaponDef power, int classLevel)
         {
             if (_upgradeLevelView == null)
                 return;
 
-            // Show only when the weapon is owned and has upgrades.
-            bool visible = isOwned && def != null && def.MaxUpgradeLevel > 0;
+            bool visible = power != null && power.MaxUpgradeLevel > 0;
+            int start = visible ? _progression.GetTierStartLevel(power) : 0;
+            int cap = visible ? start + power.MaxUpgradeLevel : 0;
 
-            int currentLevel = 0;
-            if (visible && inst != null)
-                currentLevel = inst.UpgradeLevel;
-
-            _upgradeLevelView.SetLevel(currentLevel, def != null ? def.MaxUpgradeLevel : 0, visible);
+            _upgradeLevelView.SetLevel(classLevel, start, cap, visible);
         }
 
         private Sprite GetCurrencyIcon(CurrencyType currency)
@@ -353,16 +421,19 @@ namespace Meta.Weapons.UI
             return null;
         }
 
-        // Button handlers and SetCampaignLevel() stay as they were...
+        private void Reselect(WeaponDef def)
+        {
+            BuildList();
+            SelectWeapon(def);
+            OnClassShown?.Invoke(_currentClass);
+        }
+
         private void HandleEquipClicked()
         {
             if (_selectedDef == null) return;
 
             if (_equipmentService.Equip(_currentClass, _selectedDef.Id))
-            {
-                BuildList();
-                SelectWeapon(_selectedDef);
-            }
+                Reselect(_selectedDef);
         }
 
         private void HandlePurchaseClicked()
@@ -371,39 +442,8 @@ namespace Meta.Weapons.UI
 
             _highlightMode = WeaponHighlightMode.None;
 
-            var def = _selectedDef;
-            var state = _weaponRepo.Load();
-            var inst = state.Weapons.FirstOrDefault(w => w.WeaponId == def.Id);
-
-            int cashRequired = def.PurchaseCash;
-            int tokensRequired = def.PurchaseTokens;
-
-            var tokenCurrency = WeaponCurrencyUtility.GetTokenCurrency(def.Class);
-
-            if (!_wallet.CanAfford(CurrencyType.Cash, cashRequired)) return;
-            if (!_wallet.CanAfford(tokenCurrency, tokensRequired)) return;
-
-            _wallet.Spend(CurrencyType.Cash, cashRequired);
-            _wallet.Spend(tokenCurrency, tokensRequired);
-
-            if (inst == null)
-            {
-                inst = new WeaponInstance
-                {
-                    WeaponId = def.Id,
-                    Owned = true,
-                    UpgradeLevel = 0
-                };
-                state.Weapons.Add(inst);
-            }
-            else
-            {
-                inst.Owned = true;
-            }
-
-            _weaponRepo.Save(state);
-
-            SelectWeapon(def);
+            if (_progression.TryBuyTier(_selectedDef, _currentCampaignLevel))
+                Reselect(_selectedDef);
         }
 
         private void HandleUpgradeClicked()
@@ -413,19 +453,40 @@ namespace Meta.Weapons.UI
             if (_upgradeService.TryUpgradeWithCurrencies(_selectedDef.Id))
             {
                 _highlightMode = WeaponHighlightMode.None;
-                SelectWeapon(_selectedDef);
+                Reselect(_selectedDef);
             }
         }
 
-        private void HandleAdUpgradeClicked()
+        // The ad button unlocks skins (unowned skin selected) or tops up an upgrade.
+        private void HandleAdClicked()
         {
-            if (_selectedDef == null) return;
+            if (_selectedDef == null || _adInProgress) return;
 
-            if (_upgradeService.TryUpgradeWithAd(_selectedDef.Id))
+            bool skinUnlock = _selectedDef.IsSkin && !_progression.IsOwned(_selectedDef.Id);
+            if (!skinUnlock && !_upgradeService.CanUpgradeWithAd(_selectedDef.Id)) return;
+
+            string placement = skinUnlock ? Meta.Ads.AdPlacements.SkinUnlock : Meta.Ads.AdPlacements.WeaponUpgrade;
+            var ads = Meta.Ads.Ads.Service;
+            if (!ads.IsRewardedReady(placement)) return;
+
+            var def = _selectedDef;
+            _adInProgress = true;
+            ads.ShowRewarded(placement, success =>
             {
-                _highlightMode = WeaponHighlightMode.None;
-                SelectWeapon(_selectedDef);
-            }
+                _adInProgress = false;
+                if (this == null) return;
+
+                if (success)
+                {
+                    if (skinUnlock)
+                        _progression.RegisterSkinAd(def);
+                    else if (_upgradeService.TryUpgradeWithAd(def.Id))
+                        _highlightMode = WeaponHighlightMode.None;
+                }
+
+                if (_selectedDef == def)
+                    Reselect(def);
+            });
         }
 
         public void SetCampaignLevel(int campaignLevel)
