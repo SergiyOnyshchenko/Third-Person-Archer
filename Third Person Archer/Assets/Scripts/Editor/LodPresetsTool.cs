@@ -15,7 +15,7 @@ public static class LodPresetsTool
     {
         // Skyline: original mesh until small, then the coarsest level, never culled.
         Building,
-        // Original mesh until small, then the coarsest level, culled near the horizon.
+        // Original mesh only, culled near the horizon: PolyFew levels strip the needle cards, leaving bare trunks.
         Tree,
         // Hand-made levels (bushes): every level kept, switched further away.
         Vegetation,
@@ -42,7 +42,7 @@ public static class LodPresetsTool
     private static readonly Dictionary<Category, Preset> Presets = new Dictionary<Category, Preset>
     {
         { Category.Building, new Preset { KeepFarLevel = true, OriginalUntil = 0.12f, CullBelow = 0f, CrossFade = true } },
-        { Category.Tree, new Preset { KeepFarLevel = true, OriginalUntil = 0.08f, CullBelow = 0.01f, CrossFade = true } },
+        { Category.Tree, new Preset { CullBelow = 0.01f, CrossFade = true } },
         { Category.Vegetation, new Preset { KeepAllLevels = true, Heights = new[] { 0.2f, 0.1f, 0.04f, 0.008f }, CrossFade = true } },
         { Category.Prop, new Preset { CullBelow = 0.012f, CrossFade = true } },
         { Category.Character, new Preset { CullBelow = 0f } },
