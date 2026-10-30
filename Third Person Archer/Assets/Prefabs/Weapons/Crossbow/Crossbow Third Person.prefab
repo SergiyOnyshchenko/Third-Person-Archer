@@ -48,6 +48,7 @@ MonoBehaviour:
   outlineMode: 1
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
   outlineWidth: 1
+  priority: 0
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -144,18 +145,48 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -1504981713932161579, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 4b438513d3535a04c8f20e2eac922913, type: 2}
     - target: {fileID: -927199367670048503, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
       propertyPath: m_Name
       value: Pickup_Crossbow
       objectReference: {fileID: 0}
+    - target: {fileID: 5551014577142218206, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
+      propertyPath: m_LODs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5551014577142218206, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
+      propertyPath: m_LODs.Array.data[0].renderers.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5551014577142218206, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
+      propertyPath: m_LODs.Array.data[0].screenRelativeHeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5551014577142218206, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
+      propertyPath: m_LODs.Array.data[0].renderers.Array.data[1].renderer
+      value: 
+      objectReference: {fileID: 5465977943997507569}
+    - target: {fileID: 5551014577142218206, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
+      propertyPath: m_LODs.Array.data[0].renderers.Array.data[2].renderer
+      value: 
+      objectReference: {fileID: 5948446356985456536}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
+--- !u!23 &5465977943997507569 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1479015205292883181, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
+  m_PrefabInstance: {fileID: 2351572226648220898}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5948446356985456536 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8227889641565389690, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
+  m_PrefabInstance: {fileID: 2351572226648220898}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7338829678139084792 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 17d7e4cc9f6bc6a44aed3688dfbb0259, type: 3}
