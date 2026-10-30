@@ -59,6 +59,38 @@ namespace Actor
             _animator.SetFloat(name, value);
         }
 
+        public bool HasState(string stateName, int layer = 0)
+        {
+            return _animator != null && _animator.HasState(layer, UnityEngine.Animator.StringToHash(stateName));
+        }
+
+        /// <summary>Blends into the state from its start (duration in seconds).</summary>
+        public void CrossFade(string stateName, float duration, int layer = 0)
+        {
+            _animator.CrossFadeInFixedTime(stateName, duration, layer);
+        }
+
+        /// <summary>Switches to the state instantly at the given normalized time.</summary>
+        public void Play(string stateName, float normalizedTime, int layer = 0)
+        {
+            _animator.Play(stateName, layer, normalizedTime);
+        }
+
+        /// <summary>Normalized time (0..1, looped) of the current state if it is <paramref name="stateName"/>; -1 otherwise.</summary>
+        public float GetStatePhase(string stateName, int layer = 0)
+        {
+            if (_animator == null || !_animator.isActiveAndEnabled)
+                return -1f;
+
+            var info = _animator.GetCurrentAnimatorStateInfo(layer);
+            return info.IsName(stateName) ? Mathf.Repeat(info.normalizedTime, 1f) : -1f;
+        }
+
+        public float GetFloat(string name)
+        {
+            return _animator != null && _animator.isActiveAndEnabled ? _animator.GetFloat(name) : 0f;
+        }
+
         public void SetInteger(string name, int value)
         {
             _animator.SetInteger(name, value);

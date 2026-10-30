@@ -62,12 +62,18 @@ namespace Actor
         {
             StopRotation();
 
-            _transform.DORotateQuaternion(targetRotation, _duration.Value)
+            // RotateDuration is the time of a 90° turn; other angles scale with it (×0.4 … ×1.6).
+            float angle = Quaternion.Angle(_transform.rotation, targetRotation);
+            if (_transformY != null)
+                angle = Mathf.Max(angle, Quaternion.Angle(_transformY.localRotation, targetRotationY));
+            float duration = _duration.Value * Mathf.Clamp(angle / 90f, 0.4f, 1.6f);
+
+            _transform.DORotateQuaternion(targetRotation, duration)
                 .SetEase(_ease.Value)
                 .SetTarget(_transform);
 
             if (_transformY != null)
-                _transformY.DOLocalRotateQuaternion(targetRotationY, _duration.Value)
+                _transformY.DOLocalRotateQuaternion(targetRotationY, duration)
                     .SetEase(_ease.Value)
                     .SetTarget(_transformY);
         }

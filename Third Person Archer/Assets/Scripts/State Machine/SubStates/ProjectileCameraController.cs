@@ -58,10 +58,12 @@ namespace Actor
             _actor = actor;
         }
 
-        public virtual void ShootHandler(Projectile projectile, GameObject target, Vector3 hitpoint)
+        public virtual void ShootHandler(Projectile projectile, GameObject target, Vector3 hitpoint, bool followProjectile = true)
         {
             SetProjectileSettings(projectile);
-            SetCameraSettings(projectile.transform);
+
+            if (followProjectile)
+                SetCameraSettings(projectile.transform);
 
             projectile.GetComponentInChildren<VFXController>()?.Enable();
             projectile.EnableFeedbacks(false);
@@ -119,9 +121,9 @@ namespace Actor
         [SerializeField] private Camera _xRayOverlayCamera;
         private ITriggerReciever _currentFreezeEnemy;
 
-        public override void ShootHandler(Projectile projectile, GameObject target, Vector3 hitPoint)
+        public override void ShootHandler(Projectile projectile, GameObject target, Vector3 hitPoint, bool followProjectile = true)
         {
-            base.ShootHandler(projectile, target, hitPoint);
+            base.ShootHandler(projectile, target, hitPoint, followProjectile);
 
             if (target.TryGetComponent(out ITriggerReciever triggerReciever))
             {
@@ -132,17 +134,27 @@ namespace Actor
             _xRayOverlayCamera.gameObject.SetActive(true);
         }
 
+        public override void HitHandler()
+        {
+            // Let the target's death play out (in slow motion) instead of staying frozen.
+            Unfreeze();
+            base.HitHandler();
+        }
+
         public override void ResetHandler()
         {
             base.ResetHandler();
-
-            if (_currentFreezeEnemy != null)
-            {
-                _currentFreezeEnemy.ReciveTrigger("TimeUnfreeze", null);
-                _currentFreezeEnemy = null;
-            }
-
+            Unfreeze();
             _xRayOverlayCamera.gameObject.SetActive(false);
+        }
+
+        private void Unfreeze()
+        {
+            if (_currentFreezeEnemy == null)
+                return;
+
+            _currentFreezeEnemy.ReciveTrigger("TimeUnfreeze", null);
+            _currentFreezeEnemy = null;
         }
 
         protected override void SetProjectileSettings(Projectile projectile)
@@ -160,6 +172,8 @@ namespace Actor
         [SerializeField] private ProjectileView _regularView;
         [SerializeField] private XRayProjectileView _xRayView;
         [SerializeField] private CinematicSpeedProfile _cinematicProfile = new CinematicSpeedProfile();
+        [Tooltip("Directed last-shot camera; when set it replaces the projectile follow camera and the speed profile.")]
+        [SerializeField] private KillCam _killCam;
 
         private IEnumerator _cinematicSpeedRoutine;
 
@@ -216,6 +230,16 @@ namespace Actor
         private void ShootProjectileHandler(ProjectileView view, Projectile projectile, GameObject target, Vector3 hitPoint)
         {
             _currentView = view;
+
+            if (_killCam != null && !IsGuided(projectile))
+            {
+                StopDeactivateTimer();
+                StopCinematicSpeed();
+                view.ShootHandler(projectile, target, hitPoint, followProjectile: false);
+                _killCam.Play(projectile, hitPoint, view.HitHandler, view.ResetHandler);
+                return;
+            }
+
             _currentView.ShootHandler(projectile, target, hitPoint);
 
             StartDeactivateTimer();
@@ -229,6 +253,9 @@ namespace Actor
 
             _projectile.OnHited.AddListener(HitProjectileHandler);
         }
+
+        private static bool IsGuided(Projectile projectile) =>
+            projectile.Actor.TryGetProperty(out ProjectileMoveTypeProperty moveType) && moveType.Value == ProjectileMoveType.Guided;
 
         private void HitProjectileHandler()
         {

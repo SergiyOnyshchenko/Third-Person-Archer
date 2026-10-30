@@ -16,6 +16,8 @@ namespace Actor
         [SerializeField] private CinemachineVirtualCamera _fpvCamera;
         [SerializeField] private GameObject _fpvModel;
         [SerializeField] private Transform _fpvProjector;
+        [Tooltip("When the FPV model replaces the body: just before the Third -> First Person camera blend ends.")]
+        [SerializeField, Min(0f)] private float _fpvModelSwapDelay = 0.9f;
         private const int _noPriorityIndex = 0;
         private const int _activePriorityIndex = 1;
         private CinemachineVirtualCamera[] _allCameras;
@@ -24,6 +26,7 @@ namespace Actor
         private NormalFov _normalFov;
         public CinemachineVirtualCamera FpvCamera => _fpvCamera;
         public Transform FpvProjector => _fpvProjector;
+        public bool IsThirdPerson { get; private set; }
         public UnityEvent OnFPV = new UnityEvent();
         public UnityEvent OnFTV = new UnityEvent();
    
@@ -44,6 +47,7 @@ namespace Actor
 
         public void SetThirdPerson()
         {
+            IsThirdPerson = true;
             SetCamera(_tpvCamera);
 
             DOVirtual.DelayedCall(0.1f, () => 
@@ -59,10 +63,11 @@ namespace Actor
             _fpvCamera.gameObject.SetActive(true);
 
             _fpvCamera.m_Lens.FieldOfView = _normalFov.Value;
+            IsThirdPerson = false;
 
             SetCamera(_fpvCamera);
 
-            DOVirtual.DelayedCall(0.9f, () => 
+            DOVirtual.DelayedCall(_fpvModelSwapDelay, () => 
             {
                 SetModel(_fpvModel);
                 OnFPV?.Invoke();
