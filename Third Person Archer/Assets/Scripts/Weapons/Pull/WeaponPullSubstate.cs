@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class WeaponPullSubstate : SubState, IActorIniter
 {
+    [Tooltip("Multiplier on the weapon balance draw speed (heavy weapons < 1, quick ones > 1).")]
     [SerializeField] private float _pullSpeed = 1f;
     [SerializeField] private AnimationCurve _pullCurve = AnimationCurve.Linear(0, 0, 1, 1);
     private AttackInput _attackInput;
@@ -63,11 +64,11 @@ public class WeaponPullSubstate : SubState, IActorIniter
 
         if (isHolding && _isPulling)
         {
-            HoldPull(_balance.Speed);
+            HoldPull(_balance.Speed * _pullSpeed);
         }
         else if (_rawPull > 0f)
         {
-            HoldPull(-_balance.Speed);
+            HoldPull(-_balance.Speed * _pullSpeed);
         }
 
         _wasHolding = isHolding;

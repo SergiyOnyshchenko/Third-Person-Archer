@@ -22,6 +22,13 @@ namespace Actor
         [SerializeField] private bool _zoomCompensation = true;
         [Tooltip("How fast sensitivity changes (draw, zoom, aim slow) blend in (1/s).")]
         [SerializeField, Min(0.1f)] private float _sensitivityBlendRate = 10f;
+        [Header("Weapon feel")]
+        [Tooltip("How fast continuous weapon offsets (tremor, wind-up lean) blend in and out (1/s).")]
+        [SerializeField, Min(0.1f)] private float _feelBlendRate = 12f;
+        [Tooltip("How fast a recoil kick rises (1/s).")]
+        [SerializeField, Min(1f)] private float _recoilRiseRate = 45f;
+        [Tooltip("How fast the camera settles back after a recoil kick (1/s).")]
+        [SerializeField, Min(0.1f)] private float _recoilReturnRate = 7f;
         private Vector2 _rotation = Vector2.zero;
         private FpvInput _input;
         private WeaponPull _pull;
@@ -29,12 +36,20 @@ namespace Actor
         private CinemachineVirtualCamera _camera;
         private AimAssist _assist;
         private float _sensitivityScale = 1f;
+        private Quaternion _aim = Quaternion.identity;
+        private Vector3 _feelTarget;
+        private Vector3 _feel;
+        private Vector2 _kick;
+        private Vector2 _recoil;
         public float Sensitivity { get { return sensitivity; } set { sensitivity = value; } }
 
         private void OnEnable()
         {
             _rotation = Vector2.zero;
             _sensitivityScale = 1f;
+            _aim = Quaternion.identity;
+            _feelTarget = _feel = Vector3.zero;
+            _kick = _recoil = Vector2.zero;
             transform.localEulerAngles = Vector3.zero;
         }
 
@@ -42,6 +57,18 @@ namespace Actor
         {
             if (_assist != null)
                 _assist.Release();
+        }
+
+        /// <summary>Continuous view offset in degrees (x = pitch up, y = yaw right, z = roll), eased in. Moves the aim too.</summary>
+        public void SetFeelOffset(Vector3 offset)
+        {
+            _feelTarget = offset;
+        }
+
+        /// <summary>One-off recoil kick in degrees (x = yaw right, y = pitch up); the camera settles back on its own.</summary>
+        public void AddRecoil(Vector2 kick)
+        {
+            _kick += kick;
         }
 
         public void InitActor(ActorController actor)
@@ -83,7 +110,19 @@ namespace Actor
             if (IsNaN(xQuat) || IsNaN(yQuat))
                 return;
 
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, xQuat * yQuat, TimeScaleUtils.Damp(_followRate, dt));
+            _aim = Quaternion.Slerp(_aim, xQuat * yQuat, TimeScaleUtils.Damp(_followRate, dt));
+            transform.localRotation = _aim * FeelRotation(dt);
+        }
+
+        private Quaternion FeelRotation(float dt)
+        {
+            _feel = Vector3.Lerp(_feel, _feelTarget, TimeScaleUtils.Damp(_feelBlendRate, dt));
+            _recoil = Vector2.Lerp(_recoil, _kick, TimeScaleUtils.Damp(_recoilRiseRate, dt));
+            _kick = Vector2.Lerp(_kick, Vector2.zero, TimeScaleUtils.Damp(_recoilReturnRate, dt));
+
+            float yaw = _feel.y + _recoil.x;
+            float pitch = _feel.x + _recoil.y;
+            return Quaternion.AngleAxis(yaw, Vector3.up) * Quaternion.AngleAxis(pitch, Vector3.left) * Quaternion.AngleAxis(_feel.z, Vector3.forward);
         }
 
         private float TargetSensitivityScale()

@@ -4643,6 +4643,67 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &1492177111649839779
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7428910236168141208}
+  - component: {fileID: 5846243481800864141}
+  m_Layer: 6
+  m_Name: 'Weapon Feel [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7428910236168141208
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492177111649839779}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5567247457124945771}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5846243481800864141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492177111649839779}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944f9306a91e259488c0eac772d70bf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponFeelSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _shooter: {fileID: 5517364864685929375}
+  _fullDrawHaptic: -1
+  _fullDrawKick: 0
+  _tremorDelay: 0
+  _tremorRamp: 1.5
+  _tremorAmplitude: 0
+  _tremorFrequency: 2.5
+  _windupRoll: 0
+  _recoilPitch: 0.3
+  _recoilYaw: 0.3
+  _shotHaptic: 4
 --- !u!1 &1498686845024266466
 GameObject:
   m_ObjectHideFlags: 0
@@ -14503,7 +14564,7 @@ MonoBehaviour:
   OutOfState:
     m_PersistentCalls:
       m_Calls: []
-  _pullSpeed: 1
+  _pullSpeed: 0.8
   _pullCurve:
     serializedVersion: 2
     m_Curve:
@@ -14646,6 +14707,7 @@ Transform:
   - {fileID: 7859182237009813502}
   - {fileID: 1368081649234751457}
   - {fileID: 8491691797470173169}
+  - {fileID: 6602129324610238441}
   m_Father: {fileID: 5569575965143358535}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5365345303401708991
@@ -15192,6 +15254,67 @@ Transform:
   - {fileID: 7404698779610014537}
   m_Father: {fileID: 5113319068779263539}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3985235696899685978
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8182342270876698061}
+  - component: {fileID: 4825830903324571144}
+  m_Layer: 6
+  m_Name: 'Weapon Feel [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8182342270876698061
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3985235696899685978}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4844389724971883406}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4825830903324571144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3985235696899685978}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944f9306a91e259488c0eac772d70bf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponFeelSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _shooter: {fileID: 2303867085848535351}
+  _fullDrawHaptic: 4
+  _fullDrawKick: 0.3
+  _tremorDelay: 2.5
+  _tremorRamp: 1.5
+  _tremorAmplitude: 1
+  _tremorFrequency: 2.5
+  _windupRoll: 0
+  _recoilPitch: 0.6
+  _recoilYaw: 0.15
+  _shotHaptic: 8
 --- !u!1 &4015914498523378119
 GameObject:
   m_ObjectHideFlags: 0
@@ -19831,7 +19954,7 @@ MonoBehaviour:
   OutOfState:
     m_PersistentCalls:
       m_Calls: []
-  _pullSpeed: 1
+  _pullSpeed: 2
   _pullCurve:
     serializedVersion: 2
     m_Curve:
@@ -22481,6 +22604,7 @@ Transform:
   - {fileID: 4081274308877940206}
   - {fileID: 8253819005749628243}
   - {fileID: 1119248296557809325}
+  - {fileID: 8182342270876698061}
   m_Father: {fileID: 190707284555028894}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6451804785301853449
@@ -23168,6 +23292,9 @@ MonoBehaviour:
   _drawSensitivity: 0.8
   _zoomCompensation: 1
   _sensitivityBlendRate: 10
+  _feelBlendRate: 12
+  _recoilRiseRate: 45
+  _recoilReturnRate: 7
 --- !u!1 &6699223363192245293
 GameObject:
   m_ObjectHideFlags: 0
@@ -24807,7 +24934,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   _shootType: 1
-  _profile: {fileID: 11400000, guid: 46a4ca0e2a7b10b47bb5cc0d7cafb8b0, type: 2}
+  _profile: {fileID: 11400000, guid: 87d1a95aaa4565644a464aaf3ed47716, type: 2}
 --- !u!1 &7176339437587616498
 GameObject:
   m_ObjectHideFlags: 0
@@ -25102,6 +25229,7 @@ Transform:
   - {fileID: 7761941166260881178}
   - {fileID: 6098154922767274873}
   - {fileID: 5558617287468262936}
+  - {fileID: 7837707905091742740}
   m_Father: {fileID: 483036230534580900}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7268363109977186061
@@ -25919,8 +26047,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 1
+      inSlope: 1.8
+      outSlope: 1.8
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -25928,8 +26056,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 1
-      outSlope: 0
+      inSlope: 0.25
+      outSlope: 0.25
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -26704,6 +26832,7 @@ Transform:
   - {fileID: 4341551192794825263}
   - {fileID: 2713368003493035911}
   - {fileID: 7009484804433620950}
+  - {fileID: 6461228049205347468}
   m_Father: {fileID: 350957004466519775}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7788721864463013980
@@ -27360,6 +27489,7 @@ Transform:
   - {fileID: 8734798919599963981}
   - {fileID: 4351146008000404603}
   - {fileID: 1206318092275367200}
+  - {fileID: 7428910236168141208}
   m_Father: {fileID: 8729570082477185421}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7922334789278595738
@@ -27780,6 +27910,67 @@ Transform:
   - {fileID: 9117949697526511753}
   m_Father: {fileID: 8516881826071392452}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8233867258673375500
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6461228049205347468}
+  - component: {fileID: 3146784852437124630}
+  m_Layer: 6
+  m_Name: 'Weapon Feel [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6461228049205347468
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8233867258673375500}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9200879282072566096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3146784852437124630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8233867258673375500}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944f9306a91e259488c0eac772d70bf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponFeelSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _shooter: {fileID: 1422440050614556597}
+  _fullDrawHaptic: 4
+  _fullDrawKick: 0.2
+  _tremorDelay: 0
+  _tremorRamp: 1.5
+  _tremorAmplitude: 0
+  _tremorFrequency: 2.5
+  _windupRoll: 5
+  _recoilPitch: 0.5
+  _recoilYaw: 0.2
+  _shotHaptic: 4
 --- !u!1 &8274719999733082462
 GameObject:
   m_ObjectHideFlags: 0
@@ -28536,6 +28727,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8145016261956443014}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8367419375841333379
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7837707905091742740}
+  - component: {fileID: 6668808716293977963}
+  m_Layer: 6
+  m_Name: 'Weapon Feel [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7837707905091742740
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8367419375841333379}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5831763975130205817}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6668808716293977963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8367419375841333379}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944f9306a91e259488c0eac772d70bf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponFeelSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _shooter: {fileID: 7986126311850272625}
+  _fullDrawHaptic: 5
+  _fullDrawKick: 0.2
+  _tremorDelay: 3
+  _tremorRamp: 1.5
+  _tremorAmplitude: 0.7
+  _tremorFrequency: 2.5
+  _windupRoll: -4
+  _recoilPitch: 1.2
+  _recoilYaw: 0.2
+  _shotHaptic: 5
 --- !u!1 &8383218772997407306
 GameObject:
   m_ObjectHideFlags: 0
@@ -30740,6 +30992,67 @@ MonoBehaviour:
   - WeaponId: boomerang_05
     Root: {fileID: 1708763557448462421}
   _defaultWeaponId: boomerang_01
+--- !u!1 &9184208179456513059
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6602129324610238441}
+  - component: {fileID: 8925314925131012854}
+  m_Layer: 6
+  m_Name: 'Weapon Feel [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6602129324610238441
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9184208179456513059}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1999872763513616564}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8925314925131012854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9184208179456513059}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 944f9306a91e259488c0eac772d70bf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponFeelSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _shooter: {fileID: 863632098026740377}
+  _fullDrawHaptic: 0
+  _fullDrawKick: 0
+  _tremorDelay: 0
+  _tremorRamp: 1.5
+  _tremorAmplitude: 0
+  _tremorFrequency: 2.5
+  _windupRoll: 0
+  _recoilPitch: 2.5
+  _recoilYaw: 0.4
+  _shotHaptic: 6
 --- !u!1 &9195911261579589331
 GameObject:
   m_ObjectHideFlags: 0
