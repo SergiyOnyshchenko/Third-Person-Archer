@@ -23,6 +23,7 @@ public class PlayerProjectileShooter : ProjectileShooter
     private HitedEnemyPredictCache _hitedEnemyPredictCache;
     private ProjectileEnemiesLayermask _enemiesLayermask;
     private ShootTypeOverride _shootTypeOverride;
+    private AimAssist _aimAssist;
 
     public TrajectoryProfile Profile => _profile;
 
@@ -38,6 +39,7 @@ public class PlayerProjectileShooter : ProjectileShooter
             _shootType = _shootTypeOverride.Value;
 
         if (actor.TryGetSystem(out _trajectory)) { }
+        if (actor.TryGetSystem(out _aimAssist)) { }
     }
 
     public override void Shoot(Vector3 direction, float multiplier,
@@ -60,15 +62,15 @@ public class PlayerProjectileShooter : ProjectileShooter
                 if (_profile == null || Prefab == null) return;
 
                 Vector3 origin = _trajectory.SafeSpawnPoint(_shootPoint.position);
-                Vector3 dir = _trajectory.ComputeAimDirection(origin);
-                float speed = ComputeSpeedFromPull(1f, _profile);
+                Vector3 dir = _trajectory.AssistedAimDirection(origin);
+                float speed = _trajectory.LaunchSpeed(_profile);
 
                 Projectile arrow = Instantiate(Prefab, origin, Quaternion.LookRotation(dir, Vector3.up));
 
                 if (_damage != null)
                     arrow.SetDamage(_damage.Value);
 
-                if (_trajectory.PredictEnemyHit(out GameObject enemy, out Vector3 hitPoint))
+                if (_trajectory.PredictEnemyHit(dir, out GameObject enemy, out Vector3 hitPoint))
                     _hitedEnemyPredictCache.InitHit(enemy, hitPoint, arrow.Damage);
 
                 arrow.SetGravity(_profile.Gravity);
@@ -77,12 +79,6 @@ public class PlayerProjectileShooter : ProjectileShooter
                 OnShooted?.Invoke(arrow);
                 break;
         }
-    }
-
-    private float ComputeSpeedFromPull(float pull01, TrajectoryProfile profile)
-    {
-        float factor = Mathf.Clamp01(profile.PullToSpeedCurve.Evaluate(Mathf.Clamp01(pull01)));
-        return Mathf.Max(0f, profile.MaxSpeed * factor);
     }
 
     private IEnumerator Shooting(Projectile arrow, Vector3 direction, float multiplier,
@@ -94,6 +90,9 @@ public class PlayerProjectileShooter : ProjectileShooter
             direction = (hit.point - _shootPoint.position).normalized;
         else
             direction = (PointAlongDirection(_aimInput.GetAimRoot(), direction, 100f) - _shootPoint.position).normalized;
+
+        if (_aimAssist != null)
+            direction = _aimAssist.CorrectDirect(_shootPoint.position, direction);
 
         if (Physics.Raycast(_aimInput.GetAimRoot(), direction, out hit, Mathf.Infinity, _enemiesLayermask.Value))
             _hitedEnemyPredictCache.InitHit(hit.transform.gameObject, hit.point, arrow.Damage);

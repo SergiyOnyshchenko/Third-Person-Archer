@@ -14,6 +14,7 @@ public class WeaponPullSubstate : SubState, IActorIniter
     private bool _isPulling;
     private bool _wasHolding;
     private float _rawPull;
+    private float _written;
 
     public void InitActor(ActorController actor)
     {
@@ -46,6 +47,10 @@ public class WeaponPullSubstate : SubState, IActorIniter
             return;
 
         bool isHolding = _attackInput.IsHold;
+
+        // The weapon zeroed the pull itself (threw / shot): don't relax a draw that's already gone.
+        if (!isHolding && _rawPull > 0f && _pull.Value < _written - 0.0001f)
+            _rawPull = 0f;
 
         if (isHolding && !_wasHolding)
         {
@@ -83,10 +88,11 @@ public class WeaponPullSubstate : SubState, IActorIniter
 
     private void HoldPull(float speed)
     {
-        _rawPull += Time.deltaTime * speed;
+        // Real time: the slow-mo while drawing slows the world, not the player's hands.
+        _rawPull += TimeScaleUtils.AimDeltaTime * speed;
         _rawPull = Mathf.Clamp01(_rawPull);
 
-        float curvedValue = _pullCurve.Evaluate(_rawPull);
-        _pull.SetPullValue(curvedValue);
+        _written = Mathf.Clamp01(_pullCurve.Evaluate(_rawPull));
+        _pull.SetPullValue(_written);
     }
 }

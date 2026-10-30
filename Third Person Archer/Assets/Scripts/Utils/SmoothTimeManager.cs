@@ -34,7 +34,8 @@ public class SmoothTimeManager : MMTimeManager
 
         float target = Override ?? _requested;
 
-        if (Override.HasValue || target <= 0f || _current <= 0f)
+        // A lerping feedback already eases (from Time.timeScale), smoothing it again would compound into a crawl.
+        if (Override.HasValue || LerpTimescale || target <= 0f || _current <= 0f)
         {
             _current = target;
             _velocity = 0f;

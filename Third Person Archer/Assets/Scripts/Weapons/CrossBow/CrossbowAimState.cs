@@ -59,12 +59,12 @@ public class CrossbowAimState : ProcessState, IActorIniter
     {
         if (_attackInput.IsHold)
         {
-            _lerp += _lerpInSpeed * Time.deltaTime;
+            _lerp += _lerpInSpeed * TimeScaleUtils.AimDeltaTime;
             _lerp = Mathf.Clamp(_lerp, 0f, 1f);
         }
         else
         {
-            _lerp -= _lerpOutSpeed * Time.deltaTime;
+            _lerp -= _lerpOutSpeed * TimeScaleUtils.AimDeltaTime;
             _lerp = Mathf.Clamp(_lerp, 0f, 1f);
         }
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Actor
@@ -8,6 +8,14 @@ namespace Actor
         [SerializeField] private float _localSensitivity = 25f;
         [SerializeField] private float _overlimitSensitivity = 0.5f;
         [SerializeField] private int _frameLimit = 100;
+        [Header("Touch")]
+        [Tooltip("Screen DPI the sensitivity is tuned for; touch deltas are rescaled to it so a centimetre of swipe turns the same on every phone.")]
+        [SerializeField, Min(1f)] private float _referenceDpi = 400f;
+        [Tooltip("Gain for fast swipes (1 = off). Slow, precise moves keep 1:1.")]
+        [SerializeField, Min(1f)] private float _maxAcceleration = 1.5f;
+        [Tooltip("Swipe speed range (cm/s) over which the gain goes 1 -> max.")]
+        [SerializeField] private Vector2 _accelerationSpeed = new Vector2(8f, 30f);
+        private float _swipeSpeed;
         private Vector2 _delta;
         private Vector2 MousePosition => UnityEngine.Input.mousePosition;
         private Vector2 _inputAccelerator = new Vector2();
@@ -20,6 +28,8 @@ namespace Actor
             
             Horizontal = 0;
             Vertical = 0;
+
+            Vector2 touchDelta = Vector2.zero;
 
             for (int i = 0; i < UnityEngine.Input.touchCount; i++)
             {
@@ -43,9 +53,7 @@ namespace Actor
                     case TouchPhase.Stationary:
                         if (_lastTouchPositions.TryGetValue(fingerId, out Vector2 lastPos))
                         {
-                            Vector2 delta = (pos - lastPos) * (_localSensitivity * SensitivityMultiplier);
-                            Horizontal += delta.x;
-                            Vertical += delta.y;
+                            touchDelta += pos - lastPos;
                             _lastTouchPositions[fingerId] = pos;
                         }
                         else
@@ -59,6 +67,17 @@ namespace Actor
                         _lastTouchPositions.Remove(fingerId);
                         break;
                 }
+            }
+
+            if (touchDelta != Vector2.zero)
+            {
+                Vector2 delta = ScaleTouchDelta(touchDelta) * (_localSensitivity * SensitivityMultiplier);
+                Horizontal += delta.x;
+                Vertical += delta.y;
+            }
+            else
+            {
+                _swipeSpeed = 0f;
             }
 
 #if UNITY_EDITOR
@@ -84,6 +103,26 @@ namespace Actor
             }
 #endif
 
+        }
+
+        // Pixels -> reference-DPI pixels, plus a speed-based gain (smoothed so it doesn't flicker between frames).
+        private Vector2 ScaleTouchDelta(Vector2 pixels)
+        {
+            float dpi = Screen.dpi > 0f ? Screen.dpi : _referenceDpi;
+            Vector2 delta = pixels * (_referenceDpi / dpi);
+
+            float dt = Time.unscaledDeltaTime;
+            if (_maxAcceleration <= 1f || dt <= 0f)
+                return delta;
+
+            float speed = pixels.magnitude / dpi * 2.54f / dt; // cm/s
+            _swipeSpeed = Mathf.Lerp(_swipeSpeed, speed, TimeScaleUtils.Damp(20f, dt));
+            float gain = Mathf.Lerp(1f, _maxAcceleration, Mathf.InverseLerp(_accelerationSpeed.x, _accelerationSpeed.y, _swipeSpeed));
+            return delta * gain;
+        }
+
+        private void LegacyMouseInput()
+        {
             /*
             if (UnityEngine.Input.GetMouseButtonDown(0))
             {

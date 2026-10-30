@@ -81,7 +81,8 @@ public class SpearController : WeaponController, IActorIniter, IPull
         if (!CanAttack())
             return;
 
-        SetPullPower(_pullPower + 1f * Time.fixedDeltaTime);
+        // The draw itself is driven by WeaponPullSubstate (weapon balance speed, real time).
+        _pullPower = _weaponPull.Value;
 
         var lerpPose = _fpv.FpvAnimator.LerpPoses(_idlePose, _pullPose, _pullPower);
         PlayAnimation(lerpPose);

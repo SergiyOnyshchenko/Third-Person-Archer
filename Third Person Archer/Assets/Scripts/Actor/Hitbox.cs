@@ -18,6 +18,8 @@ namespace Actor
         public ActorController ActorHolder => _actorHolder;
         public ActorController Actor => _actorHolder;
         public bool IsTarget => _isTarget;
+        public float DamageMultiplier => _demageMultiplier;
+        public bool IsCritical => _demageMultiplier > 1f;
         
         public event Action<int> OnDamaged;
         public event Action<string, GameObject> OnTriggered;
@@ -41,7 +43,8 @@ namespace Actor
 
         public int GetHealthAfterDamage(int damage)
         {
-            var health = TryDamagedCallback?.Invoke(Mathf.RoundToInt(damage));
+            // Same damage DoDamage would deal, so a lethal headshot is predicted as lethal.
+            var health = TryDamagedCallback?.Invoke(Mathf.RoundToInt(damage * _demageMultiplier));
 
             if (health == null)
                 return 10;

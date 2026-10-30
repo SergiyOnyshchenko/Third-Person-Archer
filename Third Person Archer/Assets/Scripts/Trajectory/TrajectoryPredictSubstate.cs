@@ -8,6 +8,10 @@ public class TrajectoryPredictSubstate : SubState, IActorIniter
 {
     [SerializeField] private PlayerProjectileShooter _shooter;
     [SerializeField] private PlayerTrajectoryController.PreviewOriginMode _previewOriginMode;
+    [Tooltip("Draw at which the weapon can fire (bow: 0.5). Below it the arc is shown as 'not ready yet'.")]
+    [SerializeField, Range(0f, 1f)] private float _readyPull;
+    [Tooltip("Launch strength used for draws weaker than this (a quick tap still throws). The shot speed follows the draw above it.")]
+    [SerializeField, Range(0f, 1f)] private float _minLaunchPull;
     private PlayerTrajectoryController _trajectoryController;
     private ShootTypeOverride _shootTypeOverride;
 
@@ -25,7 +29,8 @@ public class TrajectoryPredictSubstate : SubState, IActorIniter
             return;
 
         _trajectoryController.SetOriginMode(_previewOriginMode);
-        _trajectoryController.InitPredictor(_shooter.Profile, _shooter.ShootPoint);
+        int projectileLayer = _shooter.Prefab != null ? _shooter.Prefab.gameObject.layer : -1;
+        _trajectoryController.InitPredictor(_shooter.Profile, _shooter.ShootPoint, _readyPull, _minLaunchPull, projectileLayer);
     }
 
     private void Update()

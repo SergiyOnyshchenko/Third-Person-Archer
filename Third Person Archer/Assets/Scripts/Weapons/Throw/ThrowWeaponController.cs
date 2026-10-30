@@ -83,7 +83,8 @@ public abstract class ThrowWeaponController : WeaponController, IActorIniter, IP
         if (!CanAttack())
             return;
 
-        SetPullPower(_pullPower + 5f * Time.fixedDeltaTime);
+        // The draw itself is driven by WeaponPullSubstate (weapon balance speed, real time).
+        _pullPower = _weaponPull.Value;
         UpdatePose();
     }
 

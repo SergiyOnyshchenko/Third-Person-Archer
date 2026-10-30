@@ -22,22 +22,18 @@ namespace Actor
         [SerializeField] private LayerMask _aimCollisionMask;
         [SerializeField] private float _minSpawnSeparation = 0.05f;
         [Header("Enemy Preview")]
-        [SerializeField, Min(0f)] private float _enemyDetectionSphereRadius = 0.25f;
         [SerializeField] private LayerMask _enemyDetectionMask;
-        [SerializeField, Range(0f, 1f)] private float _enemyAimSlowFactor = 0.35f;
         private bool _wasDrawing;
-        private bool _wasTargetingEnemy;
-#if UNITY_EDITOR
-        private Vector3 _lastEnemyDetectionPoint;
-        private bool _hasEnemyDetectionPoint;
-#endif
         private Transform _shootPoint;
         private TrajectoryProfile _profile;
         private TrajectoryPreviewView _previewView;
         private WeaponPull _weaponPull;
         private ProjectileEnemiesLayermask _enemyLayermask;
         private ITrajectoryPredictor _predictor;
-        private FpvInput _fpvInput;
+        private float _readyPull;
+        private float _minLaunchPull;
+        private int _projectileMask = ~0;
+        private AimAssist _aimAssist;
         public ITrajectoryPredictor Predictor => _predictor;
 
         public void InitActor(ActorController actor)
@@ -46,12 +42,15 @@ namespace Actor
 
             if (actor.TryGetProperty(out _weaponPull)) { }
             if (actor.TryGetProperty(out _enemyLayermask)) { }
-            actor.TryGetInput(out _fpvInput);
+            actor.TryGetSystem(out _aimAssist);
         }
 
-        public void InitPredictor(TrajectoryProfile profile, Transform shootPoint)
+        public void InitPredictor(TrajectoryProfile profile, Transform shootPoint, float readyPull = 0f, float minLaunchPull = 0f, int projectileLayer = -1)
         {
             _profile = profile;
+            _readyPull = Mathf.Clamp01(readyPull);
+            _minLaunchPull = Mathf.Clamp01(minLaunchPull);
+            _projectileMask = CollisionMaskFor(projectileLayer);
             _predictor = new AnalyticalTrajectoryPredictor(profile.MaxPreviewSegments + 8);
             _shootPoint = shootPoint;
 
@@ -72,67 +71,129 @@ namespace Actor
 
             if (_weaponPull.Value > 0)
             {
-                Vector3 origin = SafeSpawnPoint(_shootPoint.position);
-                Vector3 dir = ComputeAimDirection(origin);
-                float speed = ComputeSpeedFromPull(_weaponPull.Value, _profile);
-                Vector3 v0 = dir * speed;
+                var prediction = _predictor.Predict(BuildParams(_profile.CollisionMask & _projectileMask));
+                AimTarget target = Classify(in prediction);
+                float readiness = _readyPull > 0f ? Mathf.Clamp01(_weaponPull.Value / _readyPull) : 1f;
 
-                var predictParams = new TrajectoryPredictParams
-                {
-                    Origin = origin,
-                    InitialVelocity = v0,
-                    Gravity = _profile.Gravity,
-                    MaxTime = _profile.MaxPreviewTime,
-                    MaxSegments = _profile.MaxPreviewSegments,
-                    CollisionMask = _profile.CollisionMask
-                };
-
-                var prediction = _predictor.Predict(in predictParams);
-                bool targetsEnemy = CheckEnemyNearTrajectoryEnd(in prediction);
-                _previewView.Render(in prediction, targetsEnemy);
+                _previewView.Render(in prediction, target, readiness);
+                if (_aimAssist != null)
+                    _aimAssist.SetPath(in prediction);
                 _wasDrawing = true;
-                ApplyAimSlow(targetsEnemy);
             }
             else
             {
                 _previewView.Clear();
                 _wasDrawing = false;
-                ApplyAimSlow(false);
             }
         }
 
         public void Reset()
         {
             _previewView.Clear();
-            ApplyAimSlow(false);
         }
 
-        public bool PredictEnemyHit(out GameObject enemy, out Vector3 hitPoint)
+        public bool PredictEnemyHit(out GameObject enemy, out Vector3 hitPoint) =>
+            PredictEnemyHit(ComputeAimDirection(SafeSpawnPoint(_shootPoint.position)), out enemy, out hitPoint);
+
+        public bool PredictEnemyHit(Vector3 direction, out GameObject enemy, out Vector3 hitPoint)
         {
             hitPoint = Vector3.zero;
             enemy = null;
             if (_weaponPull == null || _profile == null || _previewView == null) return false;
 
+            return _predictor.TryHitEnemy(BuildParams(_profile.CollisionMask & _projectileMask, direction), _enemyLayermask.Value, out enemy, out hitPoint);
+        }
+
+        /// <summary>
+        /// Launch direction for the shot: the aimed one, quietly corrected onto an enemy body the arc only just misses.
+        /// </summary>
+        public Vector3 AssistedAimDirection(Vector3 origin)
+        {
+            Vector3 aimed = ComputeAimDirection(origin);
+            if (_aimAssist == null || !_aimAssist.IsActive || _profile == null)
+                return aimed;
+
+            LayerMask mask = _profile.CollisionMask & _projectileMask;
+            var prediction = _predictor.Predict(BuildParams(mask, aimed));
+            if (Classify(in prediction) != AimTarget.None)
+                return aimed;
+
+            if (!_aimAssist.TryGetReleaseTarget(prediction.Points, prediction.PointCount, out ActorController actor, out Vector3 body))
+                return aimed;
+
+            // Turn the launch so the closest point of the arc lands on the body; a few passes absorb the arc's bend.
+            Vector3 dir = aimed;
+            for (int i = 0; i < 3; i++)
+            {
+                Vector3 closest = AimAssist.ClosestPoint(prediction.Points, prediction.PointCount, body);
+                dir = Quaternion.FromToRotation(closest - origin, body - origin) * dir;
+                prediction = _predictor.Predict(BuildParams(mask, dir));
+
+                if (HitsActor(in prediction, actor))
+                    return dir;
+            }
+
+            return aimed;
+        }
+
+        private static bool HitsActor(in TrajectoryPrediction prediction, ActorController actor)
+        {
+            return prediction.Hit && prediction.HitInfo.collider != null &&
+                   prediction.HitInfo.collider.TryGetComponent(out Hitbox hitbox) && hitbox.Actor == actor;
+        }
+
+        /// <summary>
+        /// Launch speed for the current draw: a stronger draw throws further. The shooter, the preview and
+        /// the hit prediction all use it, so the arc is exactly where the projectile will fly.
+        /// </summary>
+        public float LaunchSpeed(TrajectoryProfile profile)
+        {
+            float pull = _weaponPull != null ? _weaponPull.Value : 1f;
+            return ComputeSpeedFromPull(Mathf.Max(pull, _minLaunchPull), profile);
+        }
+
+        private TrajectoryPredictParams BuildParams(LayerMask collisionMask) =>
+            BuildParams(collisionMask, ComputeAimDirection(SafeSpawnPoint(_shootPoint.position)));
+
+        private TrajectoryPredictParams BuildParams(LayerMask collisionMask, Vector3 direction)
+        {
             Vector3 origin = SafeSpawnPoint(_shootPoint.position);
-            Vector3 dir = ComputeAimDirection(origin);
-            float speed = ComputeSpeedFromPull(_weaponPull.Value, _profile);
-            Vector3 v0 = dir * speed;
 
-            LayerMask enemyMask = _enemyLayermask.Value;
-            LayerMask hitMask = _profile.CollisionMask;
-
-            var predictParams = new TrajectoryPredictParams
+            return new TrajectoryPredictParams
             {
                 Origin = origin,
-                InitialVelocity = v0,
+                InitialVelocity = direction * LaunchSpeed(_profile),
                 Gravity = _profile.Gravity,
                 MaxTime = _profile.MaxPreviewTime,
                 MaxSegments = _profile.MaxPreviewSegments,
-                CollisionMask = hitMask
+                CollisionMask = collisionMask
             };
+        }
 
-            bool willHitEnemy = _predictor.TryHitEnemy(in predictParams, enemyMask, out enemy, out hitPoint);
-            return willHitEnemy;
+        // Layers the projectile physically collides with (the physics matrix), so the preview doesn't stop
+        // on geometry the projectile flies through. -1 = unknown, no filtering.
+        private static int CollisionMaskFor(int layer)
+        {
+            if (layer < 0 || layer > 31)
+                return ~0;
+
+            int mask = 0;
+            for (int i = 0; i < 32; i++)
+                if (!Physics.GetIgnoreLayerCollision(layer, i))
+                    mask |= 1 << i;
+            return mask;
+        }
+
+        private AimTarget Classify(in TrajectoryPrediction prediction)
+        {
+            if (!prediction.Hit || prediction.HitInfo.collider == null)
+                return AimTarget.None;
+
+            Collider collider = prediction.HitInfo.collider;
+            if ((_enemyDetectionMask.value & (1 << collider.gameObject.layer)) == 0)
+                return AimTarget.None;
+
+            return collider.TryGetComponent(out Hitbox hitbox) && hitbox.IsCritical ? AimTarget.Head : AimTarget.Body;
         }
 
         public float ComputeSpeedFromPull(float pull01, TrajectoryProfile profile)
@@ -159,52 +220,13 @@ namespace Actor
             return ray.GetPoint(depth);
         }
 
-        private void ApplyAimSlow(bool targetsEnemy)
-        {
-            if (_fpvInput == null || targetsEnemy == _wasTargetingEnemy) return;
-            _wasTargetingEnemy = targetsEnemy;
-            _fpvInput.SensitivityMultiplier = targetsEnemy ? _enemyAimSlowFactor : 1f;
-        }
-
-        private bool CheckEnemyNearTrajectoryEnd(in TrajectoryPrediction prediction)
-        {
-            if (_enemyDetectionSphereRadius <= 0f ||
-                _enemyDetectionMask.value == 0 ||
-                prediction.Points == null ||
-                prediction.PointCount <= 0)
-            {
-                return false;
-            }
-
-            Vector3 endPoint = prediction.Points[prediction.PointCount - 1];
-
-#if UNITY_EDITOR
-            //_lastEnemyDetectionPoint = endPoint;
-            //_hasEnemyDetectionPoint = true;
-#endif
-
-            return Physics.CheckSphere(
-                endPoint,
-                _enemyDetectionSphereRadius,
-                _enemyDetectionMask,
-                QueryTriggerInteraction.Collide);
-        }
-
-#if UNITY_EDITOR
-        private void OnDrawGizmosSelected()
-        {
-            if (!_hasEnemyDetectionPoint || _enemyDetectionSphereRadius <= 0f) return;
-            Gizmos.DrawWireSphere(_lastEnemyDetectionPoint, _enemyDetectionSphereRadius);
-        }
-#endif
-
         public Vector3 ComputeAimDirection(Vector3 spawnPos)
         {
             Vector3 camPos = _mainCamera.transform.position;
             Vector3 camForward = _mainCamera.transform.forward;
             // Ray from camera to find desired impact point (where reticle points).
             Ray ray = new Ray(camPos, camForward);
-            if (Physics.Raycast(ray, out RaycastHit hit, _aimRayDistance, _aimCollisionMask, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(ray, out RaycastHit hit, _aimRayDistance, _aimCollisionMask & _projectileMask, QueryTriggerInteraction.Ignore))
             {
                 Vector3 toHit = (hit.point - spawnPos);
                 return toHit.sqrMagnitude > 0.0001f ? toHit.normalized : camForward;

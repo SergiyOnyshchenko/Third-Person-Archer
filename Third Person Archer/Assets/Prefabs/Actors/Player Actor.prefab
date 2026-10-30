@@ -3755,6 +3755,57 @@ MonoBehaviour:
   _springFrequency: 8.25
   _springDamping: 0.25
   _rotator: {fileID: 0}
+--- !u!1 &1287583890746814794
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8491691797470173169}
+  - component: {fileID: 587715047695379223}
+  m_Layer: 6
+  m_Name: 'Aim Assist [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8491691797470173169
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287583890746814794}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1999872763513616564}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &587715047695379223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287583890746814794}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ed79afaadbd46a4299269a8026bf866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AimAssistSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _strength: 0.6
 --- !u!1 &1323647227996459596
 GameObject:
   m_ObjectHideFlags: 0
@@ -4644,6 +4695,8 @@ MonoBehaviour:
       m_Calls: []
   _shooter: {fileID: 1422440050614556597}
   _previewOriginMode: 0
+  _readyPull: 0
+  _minLaunchPull: 0.4
 --- !u!1 &1507764016481145934
 GameObject:
   m_ObjectHideFlags: 0
@@ -6146,6 +6199,8 @@ MonoBehaviour:
       m_Calls: []
   _shooter: {fileID: 2303867085848535351}
   _previewOriginMode: 1
+  _readyPull: 0.5
+  _minLaunchPull: 0
 --- !u!1 &2069111519548655043
 GameObject:
   m_ObjectHideFlags: 0
@@ -6616,6 +6671,57 @@ Transform:
   - {fileID: 1505080636553349685}
   m_Father: {fileID: 5214614545859823187}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2318815375318185300
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7009484804433620950}
+  - component: {fileID: 7065958376485567988}
+  m_Layer: 6
+  m_Name: 'Aim Assist [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7009484804433620950
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2318815375318185300}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9200879282072566096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7065958376485567988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2318815375318185300}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ed79afaadbd46a4299269a8026bf866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AimAssistSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _strength: 1
 --- !u!1 &2321465281887688850
 GameObject:
   m_ObjectHideFlags: 0
@@ -14162,6 +14268,8 @@ MonoBehaviour:
       m_Calls: []
   _shooter: {fileID: 7986126311850272625}
   _previewOriginMode: 0
+  _readyPull: 0
+  _minLaunchPull: 0.4
 --- !u!1 &3662480863262095205
 GameObject:
   m_ObjectHideFlags: 0
@@ -14537,6 +14645,7 @@ Transform:
   - {fileID: 6102360594495321138}
   - {fileID: 7859182237009813502}
   - {fileID: 1368081649234751457}
+  - {fileID: 8491691797470173169}
   m_Father: {fileID: 5569575965143358535}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5365345303401708991
@@ -16651,6 +16760,57 @@ MonoBehaviour:
         WiggleRotationDuration: 0.25
         WiggleScale: 0
         WiggleScaleDuration: 0
+--- !u!1 &4666899325130642131
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1206318092275367200}
+  - component: {fileID: 132614929377248496}
+  m_Layer: 6
+  m_Name: 'Aim Assist [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1206318092275367200
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4666899325130642131}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5567247457124945771}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &132614929377248496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4666899325130642131}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ed79afaadbd46a4299269a8026bf866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AimAssistSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _strength: 1.4
 --- !u!1 &4686165930623743244
 GameObject:
   m_ObjectHideFlags: 0
@@ -18802,6 +18962,57 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4752911162786995739}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5538545629514289007
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1119248296557809325}
+  - component: {fileID: 7049208560376900660}
+  m_Layer: 6
+  m_Name: 'Aim Assist [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1119248296557809325
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5538545629514289007}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4844389724971883406}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7049208560376900660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5538545629514289007}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ed79afaadbd46a4299269a8026bf866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AimAssistSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _strength: 1
 --- !u!1 &5539203408704733911
 GameObject:
   m_ObjectHideFlags: 0
@@ -20191,6 +20402,21 @@ MonoBehaviour:
     ImpactMaterial: {fileID: 2100000, guid: d7e7b2ae20e6ba845becf4fecac0b440, type: 2}
     LineOutlineColor: {r: 1, g: 1, b: 1, a: 1}
     ImpactOutlineColor: {r: 1, g: 1, b: 1, a: 1}
+  _head:
+    LineMaterial: {fileID: 2100000, guid: bc6c60e7f11f61c448240b301535a1e0, type: 2}
+    ImpactMaterial: {fileID: 2100000, guid: bc6c60e7f11f61c448240b301535a1e0, type: 2}
+    LineOutlineColor: {r: 1, g: 1, b: 1, a: 1}
+    ImpactOutlineColor: {r: 1, g: 1, b: 1, a: 1}
+  _notReadyLength: 0.45
+  _notReadyWidth: 0.55
+  _notReadyAlpha: 0.35
+  _readyPunch: 0.8
+  _readyPunchTime: 0.25
+  _dashLength: 0.6
+  _dashSpeed: 2.5
+  _dashGapAlpha: 0.45
+  _headPulse: 0.25
+  _headPulseRate: 9
 --- !u!120 &3888873257921776726
 LineRenderer:
   serializedVersion: 3
@@ -20673,6 +20899,8 @@ MonoBehaviour:
       m_Calls: []
   _shooter: {fileID: 5517364864685929375}
   _previewOriginMode: 0
+  _readyPull: 0
+  _minLaunchPull: 0.4
 --- !u!1 &6167391560206901210
 GameObject:
   m_ObjectHideFlags: 0
@@ -22252,6 +22480,7 @@ Transform:
   - {fileID: 4380864192962251368}
   - {fileID: 4081274308877940206}
   - {fileID: 8253819005749628243}
+  - {fileID: 1119248296557809325}
   m_Father: {fileID: 190707284555028894}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6451804785301853449
@@ -22935,6 +23164,10 @@ MonoBehaviour:
   sensitivity: 2
   xRotationLimit: 75
   yRotationLimit: 60
+  _followRate: 17
+  _drawSensitivity: 0.8
+  _zoomCompensation: 1
+  _sensitivityBlendRate: 10
 --- !u!1 &6699223363192245293
 GameObject:
   m_ObjectHideFlags: 0
@@ -24301,6 +24534,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1861192852743711984}
   - component: {fileID: 8914085647618861517}
+  - component: {fileID: 2377789310670546798}
   m_Layer: 6
   m_Name: TrajectoryController
   m_TagString: Untagged
@@ -24343,11 +24577,34 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 393
   _minSpawnSeparation: 0.05
-  _enemyDetectionSphereRadius: 0.25
   _enemyDetectionMask:
     serializedVersion: 2
     m_Bits: 128
-  _enemyAimSlowFactor: 0.125
+--- !u!114 &2377789310670546798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7127216948099514457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 997243a22524f5a4ba7f4cb0de809976, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Actor.AimAssist
+  _camera: {fileID: 3117714174418682141}
+  _strength: 0
+  _range: 80
+  _refreshInterval: 0.25
+  _bodyRadius: 0.25
+  _occlusionMask:
+    serializedVersion: 2
+    m_Bits: 131336
+  _frictionAngle: 5
+  _friction: 0.45
+  _magnetAngle: 4
+  _magnet: 0.3
+  _releaseAngle: 1.5
 --- !u!1 &7136674671857338530
 GameObject:
   m_ObjectHideFlags: 0
@@ -24844,6 +25101,7 @@ Transform:
   - {fileID: 6668591980707167754}
   - {fileID: 7761941166260881178}
   - {fileID: 6098154922767274873}
+  - {fileID: 5558617287468262936}
   m_Father: {fileID: 483036230534580900}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7268363109977186061
@@ -25309,6 +25567,57 @@ MonoBehaviour:
   OnExit:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &7387117629743948326
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5558617287468262936}
+  - component: {fileID: 1812324381161652924}
+  m_Layer: 6
+  m_Name: 'Aim Assist [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5558617287468262936
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7387117629743948326}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5831763975130205817}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1812324381161652924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7387117629743948326}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ed79afaadbd46a4299269a8026bf866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AimAssistSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _strength: 1
 --- !u!1 &7437028608710621628
 GameObject:
   m_ObjectHideFlags: 0
@@ -26394,6 +26703,7 @@ Transform:
   - {fileID: 5051265201875961424}
   - {fileID: 4341551192794825263}
   - {fileID: 2713368003493035911}
+  - {fileID: 7009484804433620950}
   m_Father: {fileID: 350957004466519775}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7788721864463013980
@@ -27049,6 +27359,7 @@ Transform:
   - {fileID: 1784810071963854453}
   - {fileID: 8734798919599963981}
   - {fileID: 4351146008000404603}
+  - {fileID: 1206318092275367200}
   m_Father: {fileID: 8729570082477185421}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7922334789278595738
@@ -28991,6 +29302,9 @@ MonoBehaviour:
   _localSensitivity: 0.03334
   _overlimitSensitivity: 0.5
   _frameLimit: 100
+  _referenceDpi: 400
+  _maxAcceleration: 1.5
+  _accelerationSpeed: {x: 8, y: 30}
 --- !u!1 &8763247634304594496
 GameObject:
   m_ObjectHideFlags: 0
