@@ -26,6 +26,11 @@ public class Target : MonoBehaviour
     [HideInInspector] public Indicator indicator;
 
     /// <summary>
+    /// 0..1, how close the target is to attacking; the arrow indicator flashes and grows with it. Set at runtime.
+    /// </summary>
+    [HideInInspector] public float Threat;
+
+    /// <summary>
     /// Gets the color for the target indicator.
     /// </summary>
     public Color TargetColor

@@ -9,6 +9,11 @@ public class MainState : State
     [SerializeField] private List<SubState> _subStates = new List<SubState>();
     public List<StateTransition> Transitions { get => _transitions;}
 
+    private bool _childrenEntered;
+
+    /// <summary>False: the state holds its transitions and substates back until it calls <see cref="EnterChildren"/>.</summary>
+    protected virtual bool EnterChildrenOnEnter => true;
+
     protected override void Awake()
     {
         base.Awake();
@@ -21,6 +26,33 @@ public class MainState : State
     {
         base.Enter();
 
+        if (EnterChildrenOnEnter)
+            EnterChildren();
+    }
+
+    public override void Exit()
+    {
+        if (_childrenEntered)
+        {
+            foreach (SubState subState in _subStates)
+                subState.Exit();
+
+            foreach (StateTransition transition in _transitions)
+                transition.Exit();
+
+            _childrenEntered = false;
+        }
+
+        base.Exit();
+    }
+
+    protected void EnterChildren()
+    {
+        if (_childrenEntered)
+            return;
+
+        _childrenEntered = true;
+
         foreach (StateTransition transition in _transitions)
             transition.Enter();
 
@@ -28,20 +60,10 @@ public class MainState : State
             subState.Enter();
     }
 
-    public override void Exit()
-    {
-        foreach (SubState subState in _subStates)
-            subState.Exit();
-
-        foreach (StateTransition transition in _transitions)
-            transition.Exit();
-        
-        base.Exit();
-    }
-
     public MainState GetNextState()
     {
-        if (_transitions == null)
+        // Transitions that haven't entered yet still hold last time's result.
+        if (_transitions == null || !_childrenEntered)
             return null;
 
         foreach (StateTransition transition in _transitions)

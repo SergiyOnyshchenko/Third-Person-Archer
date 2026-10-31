@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using MoreMountains.Tools;
 using UnityEngine;
@@ -99,6 +99,11 @@ namespace Actor
         public void SetTrigger(string name)
         {
             _animator.SetTrigger(name);
+        }
+
+        public void ResetTrigger(string name)
+        {
+            _animator.ResetTrigger(name);
         }
         
         public bool TryGetAnimationEvent(string name, out AnimationEvent animEvent)

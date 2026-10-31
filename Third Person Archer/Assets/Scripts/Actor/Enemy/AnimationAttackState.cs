@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,14 +10,20 @@ public abstract class AnimationAttackState : ProcessState, IActorIniter
     [SerializeField] private string _attackAnimParamName = "Attack";
     [SerializeField] private string _attackAnimEventName = "Attack";
     [SerializeField] private string _finishAnimEventName = "FinishAttack";
+    [Tooltip("Seconds the enemy holds its aim before the attack animation starts, so a quick attack can still be read and stopped.")]
+    [SerializeField, Min(0f)] private float _windup;
+    private ActorController _actor;
     private Animator _animator;
     private AttackInput _attackInput;
     private AnimationEvent _attackEvent;
     private AnimationEvent _finishEvent;
+    private Coroutine _windupRoutine;
     public UnityEvent OnAttacked = new UnityEvent();
 
     public virtual void InitActor(ActorController actor)
     {
+        _actor = actor;
+
         if (actor.TryGetSystem(out Animator animator))
             _animator = animator;
 
@@ -28,16 +34,31 @@ public abstract class AnimationAttackState : ProcessState, IActorIniter
     public override void Enter()
     {
         base.Enter();
-        PlayShootAnimation();
+
+        // The AttackDirector slot this attack was granted stays taken until the attack ends.
+        AttackDirector.NotifyStarted(_actor);
+
+        if (_windup > 0f)
+            _windupRoutine = StartCoroutine(PlayAfterWindup());
+        else
+            PlayShootAnimation();
     }
 
     public override void Exit()
     {
+        if (_windupRoutine != null)
+        {
+            StopCoroutine(_windupRoutine);
+            _windupRoutine = null;
+        }
+
         if (_attackEvent != null)
             _attackEvent.Event.RemoveListener(Attack);
 
         if(_finishEvent != null)
             _finishEvent.Event.RemoveListener(Finish);
+
+        AttackDirector.Release(_actor);
 
         base.Exit();
     }
@@ -51,6 +72,13 @@ public abstract class AnimationAttackState : ProcessState, IActorIniter
     {
         _attackInput.AllowAttack(false);
         FinishProcess();
+    }
+
+    private IEnumerator PlayAfterWindup()
+    {
+        yield return new WaitForSeconds(_windup);
+        _windupRoutine = null;
+        PlayShootAnimation();
     }
 
     private void PlayShootAnimation()

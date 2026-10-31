@@ -14,6 +14,11 @@ public class OffScreenIndicator : MonoBehaviour
     [Tooltip("Distance offset of the indicators from the centre of the screen")]
     [SerializeField] private float screenBoundOffset = 0.9f;
 
+    [Tooltip("Colour the indicator flashes to while its target is about to attack")]
+    [SerializeField] private Color threatColor = new Color(1f, 0.85f, 0.2f, 1f);
+    [Tooltip("Extra scale of the indicator at full threat")]
+    [SerializeField] private float threatScale = 0.6f;
+
     private Camera mainCamera;
     private Vector3 screenCentre;
     private Vector3 screenBounds;
@@ -66,7 +71,11 @@ public class OffScreenIndicator : MonoBehaviour
             }
             if(indicator)
             {
-                indicator.SetImageColor(target.TargetColor);// Sets the image color of the indicator.
+                // A target about to attack flashes faster and brighter the closer the attack is.
+                float threat = Mathf.Clamp01(target.Threat);
+                float flash = threat > 0f ? 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.Lerp(8f, 22f, threat)) : 0f;
+                indicator.SetImageColor(Color.Lerp(target.TargetColor, threatColor, flash * threat));
+                indicator.transform.localScale = Vector3.one * (1f + threatScale * threat * (0.6f + 0.4f * flash));
                 indicator.SetDistanceText(distanceFromCamera); //Set the distance text for the indicator.
                 indicator.transform.position = screenPosition; //Sets the position of the indicator on the screen.
                 indicator.SetTextRotation(Quaternion.identity); // Sets the rotation of the distance text of the indicator.

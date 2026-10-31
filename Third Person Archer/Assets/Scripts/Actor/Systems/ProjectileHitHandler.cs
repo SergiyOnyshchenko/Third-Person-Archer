@@ -96,17 +96,35 @@ namespace Actor
 
                 if (_direction != null)
                 {
+                    HitFlinch flinch = collision.collider.GetComponentInParent<HitFlinch>();
+                    if (flinch != null)
+                    {
+                        bool critical = collision.collider.TryGetComponent(out Hitbox hitbox) && hitbox.IsCritical;
+                        Vector3 point = collision.contactCount > 0 ? collision.GetContact(0).point : collision.collider.bounds.center;
+                        flinch.Flinch(point, _direction.Value, critical);
+                    }
+
                     if (collision.collider.TryGetComponent(out Rigidbody rigidbody))
                     {
-                        Vector3 pushDirection = _direction.Value + (Vector3.up * 0.25f);
-                        float pushPower = 100f;
-                        if (gameObject.activeInHierarchy)
-                            StartCoroutine(PushWithDelay(
-                                rigidbody,
-                                pushDirection.normalized + (Vector3.up * 0.6f),
-                                pushPower,
-                                0.1f
-                            ));
+                        // Ragdoll bones: the body applies the push itself once it goes physical.
+                        RagdollControll ragdoll = rigidbody.GetComponentInParent<RagdollControll>();
+                        if (ragdoll != null)
+                        {
+                            bool critical = collision.collider.TryGetComponent(out Hitbox bone) && bone.IsCritical;
+                            ragdoll.Push(rigidbody, _direction.Value + Vector3.up * 0.3f, critical);
+                        }
+                        else
+                        {
+                            Vector3 pushDirection = _direction.Value + (Vector3.up * 0.25f);
+                            float pushPower = 100f;
+                            if (gameObject.activeInHierarchy)
+                                StartCoroutine(PushWithDelay(
+                                    rigidbody,
+                                    pushDirection.normalized + (Vector3.up * 0.6f),
+                                    pushPower,
+                                    0.1f
+                                ));
+                        }
                     }
                 }
             }

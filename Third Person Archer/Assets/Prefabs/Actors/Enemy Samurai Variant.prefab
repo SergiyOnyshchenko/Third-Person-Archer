@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 839765879769203366}
   - component: {fileID: 5074988477880835761}
   m_Layer: 0
-  m_Name: On Hit [Transition]
+  m_Name: 'On Hit [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -223,6 +223,69 @@ MonoBehaviour:
         MinPitch: 1
         MaxPitch: 1
         SfxAudioMixerGroup: {fileID: 0}
+--- !u!1 &190493989406251912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 392955006273573873}
+  - component: {fileID: 3283028980991611668}
+  m_Layer: 0
+  m_Name: 'Attack Telegraph [Substate]'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &392955006273573873
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190493989406251912}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 319485242412143966}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3283028980991611668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190493989406251912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f882036ecc557f4ab37f4c7372b42b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AttackTelegraphSubstate
+  EnteredState:
+    m_PersistentCalls:
+      m_Calls: []
+  OutOfState:
+    m_PersistentCalls:
+      m_Calls: []
+  _attack: {fileID: 6328383970299584667}
+  _anchor: {fileID: 0}
+  _glintMaterial: {fileID: 2100000, guid: 574fbeb58009bfc46bcde7d58eb972b9, type: 2}
+  _rampTime: 0.65
+  _repeatAfterShot: 0
+  _sizePerMetre: 0.3
+  _minSize: 1.5
+  _startColor: {r: 1, g: 0.95, b: 0.85, a: 0.55}
+  _endColor: {r: 1, g: 0.8, b: 0.55, a: 1}
+  _towardsCamera: 1
+  _cue: {fileID: 0}
+  _cueVolume: 0.6
+  _cuePitch: 0
 --- !u!1 &195057285938892714
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,7 +407,7 @@ GameObject:
   - component: {fileID: 6290325716834227681}
   - component: {fileID: 2427833146283419163}
   m_Layer: 7
-  m_Name: On Alert Action [Transition]
+  m_Name: 'On Alert Action [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -423,6 +486,7 @@ Transform:
   - {fileID: 6765327612743507622}
   - {fileID: 134556696226877264}
   - {fileID: 3427084235767011095}
+  - {fileID: 392955006273573873}
   m_Father: {fileID: 1160201922793861977}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6328383970299584667
@@ -451,6 +515,7 @@ MonoBehaviour:
   _attackAnimParamName: Attack
   _attackAnimEventName: Attack
   _finishAnimEventName: FinishAttack
+  _windup: 0.3
   OnAttacked:
     m_PersistentCalls:
       m_Calls:
@@ -480,6 +545,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 4
+  _maxDistance: 4.5
 --- !u!1 &1148781594492096047
 GameObject:
   m_ObjectHideFlags: 0
@@ -769,7 +835,7 @@ GameObject:
   - component: {fileID: 934937718659845674}
   - component: {fileID: 4693127238679935743}
   m_Layer: 0
-  m_Name: Move Animation [Substate]
+  m_Name: 'Move Animation [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -809,6 +875,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _maxSpeed: 7
+  _clipSpeeds: []
+  _speedSmoothTime: 0.12
+  _directionSmoothTime: 0.15
+  _exitFadeTime: 0.2
 --- !u!1 &2432956668073116762
 GameObject:
   m_ObjectHideFlags: 0
@@ -1114,7 +1184,7 @@ GameObject:
   - component: {fileID: 8604426824463436084}
   - component: {fileID: 4865541332701791895}
   m_Layer: 0
-  m_Name: Hit Animation Trigger [Substate]
+  m_Name: 'Hit Animation Trigger [Substate]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1488,6 +1558,8 @@ MonoBehaviour:
       m_Calls: []
   _transitions: []
   _subStates: []
+  _useDirector: 1
+  _waitTurnSpeed: 180
 --- !u!1 &8090603583360785443
 GameObject:
   m_ObjectHideFlags: 0
@@ -1555,7 +1627,7 @@ GameObject:
   - component: {fileID: 8458720758573226199}
   - component: {fileID: 1781117983429460645}
   m_Layer: 0
-  m_Name: On Hit [Transition]
+  m_Name: 'On Hit [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1610,7 +1682,7 @@ GameObject:
   - component: {fileID: 6024576633084362185}
   - component: {fileID: 6696880937699789099}
   m_Layer: 0
-  m_Name: Move Finished [Transition]
+  m_Name: 'Move Finished [Transition]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2043,6 +2115,22 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5878402221831248973, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
+      propertyPath: _reactionTime.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878402221831248973, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
+      propertyPath: _reactionTime.y
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878402221831248973, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
+      propertyPath: _fieldOfView._viewAngle
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5878402221831248973, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
+      propertyPath: _fieldOfView._maxDistance
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 6304375981355110952, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
       propertyPath: _events.Array.size
       value: 0
@@ -2197,13 +2285,35 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1279814620535136444, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8391697140322436034}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3494374576908840504, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4027497168510317332}
   m_SourcePrefab: {fileID: 100100000, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
 --- !u!4 &581767557747228277 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3684122245570010881, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
   m_PrefabInstance: {fileID: 4265607223046971764}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &814298323237244748 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3494374576908840504, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
+  m_PrefabInstance: {fileID: 4265607223046971764}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4027497168510317332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 814298323237244748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cddb51836dead645a80640d84ec9f8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyGroupReaction
+  _allyRadius: 12
+  _lookHold: 0.8
 --- !u!1 &841507879496297427 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3503758584370399911, guid: a2ffd5725a52bd241a643b3ba0841806, type: 3}
@@ -2503,14 +2613,45 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6742094738557769142, guid: 1257c8680e8971e46a550071587a5b5b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8424945284334227632}
   m_SourcePrefab: {fileID: 100100000, guid: 1257c8680e8971e46a550071587a5b5b, type: 3}
+--- !u!1 &983103340120121916 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6742094738557769142, guid: 1257c8680e8971e46a550071587a5b5b, type: 3}
+  m_PrefabInstance: {fileID: 5779266448154703754}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8424945284334227632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 983103340120121916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05fbbd4933765504795d979c63f68fe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitFlinch
+  _animator: {fileID: 0}
+  _bodyKick: 16
+  _headKick: 28
+  _twist: 10
+  _frequency: 3.5
+  _damping: 0.4
+  _woundedLean: 7
+  _woundedBlendTime: 0.6
+  _startleKick: 9
+  _maxLook: 70
+  _lookTime: 0.15
 --- !u!114 &1554697967650145261 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5019105269760078951, guid: 1257c8680e8971e46a550071587a5b5b, type: 3}
   m_PrefabInstance: {fileID: 5779266448154703754}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 983103340120121916}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f71d6776ec44fdf429e6bf2f5aaef71c, type: 3}
