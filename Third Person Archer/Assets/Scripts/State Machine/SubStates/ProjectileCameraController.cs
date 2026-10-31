@@ -175,6 +175,12 @@ namespace Actor
         [Tooltip("Directed last-shot camera; when set it replaces the projectile follow camera and the speed profile.")]
         [SerializeField] private KillCam _killCam;
 
+        [Header("When the x-ray plays")]
+        [Tooltip("Besides the level's last kill, a headshot on a shooting point's last enemy from at least this far (m) earns the x-ray.")]
+        [SerializeField] private float _earnedXRayDistance = 8f;
+        [SerializeField] private int _earnedXRayPerLevel = 1;
+        private int _earnedXRays;
+
         private IEnumerator _cinematicSpeedRoutine;
 
         private ActorController _actor;
@@ -217,9 +223,50 @@ namespace Actor
 
                 if (_hitedEnemyPredictCache.EnemyWillDie && _shootingTargets.Targets.Count == 1)
                 {
-                    ShootXRayProjectileHandler(projectile, _hitedEnemyPredictCache.Target, _hitedEnemyPredictCache.HitPoint);
+                    // The full x-ray is the level's finale (plus a rare earned one); other points end on a short beat.
+                    if (IsLevelsLastKill() || TryEarnXRay(projectile))
+                        ShootXRayProjectileHandler(projectile, _hitedEnemyPredictCache.Target, _hitedEnemyPredictCache.HitPoint);
+                    else if (_killCam != null)
+                        _killCam.PlayImpactBeat(projectile);
                 }
             }
+        }
+
+        /// <summary>The current shooting point is the level's last one (no shooting point follows it in the level flow).</summary>
+        private static bool IsLevelsLastKill()
+        {
+            PlayerShootingState current = null;
+            foreach (var state in FindObjectsByType<PlayerShootingState>(FindObjectsSortMode.None))
+                if (state.enabled)
+                {
+                    current = state;
+                    break;
+                }
+
+            // No shooting points (boss fights): every last kill is the finale.
+            if (current == null || current.transform.parent == null)
+                return true;
+
+            Transform flow = current.transform.parent;
+            for (int i = current.transform.GetSiblingIndex() + 1; i < flow.childCount; i++)
+                if (flow.GetChild(i).TryGetComponent(out PlayerShootingState _))
+                    return false;
+
+            return true;
+        }
+
+        private bool TryEarnXRay(Projectile projectile)
+        {
+            if (_earnedXRays >= _earnedXRayPerLevel)
+                return false;
+
+            GameObject target = _hitedEnemyPredictCache.Target;
+            bool headshot = target != null && target.TryGetComponent(out Hitbox hitbox) && hitbox.IsCritical;
+            if (!headshot || Vector3.Distance(projectile.transform.position, _hitedEnemyPredictCache.HitPoint) < _earnedXRayDistance)
+                return false;
+
+            _earnedXRays++;
+            return true;
         }
 
         private void ShootXRayProjectileHandler(Projectile projectile, GameObject target, Vector3 hitPoint)

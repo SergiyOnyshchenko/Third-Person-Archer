@@ -19,6 +19,9 @@ namespace Actor
         [SerializeField] private float _criticalMultiplier = 1.6f;
         [Tooltip("A hit counts for the death impulse if the body goes physical within this many real seconds.")]
         [SerializeField] private float _pushLifetime = 0.5f;
+        [Tooltip("Speed (m/s) at which overlapping bones are pushed apart. Physics' default (10) launches the body " +
+                 "when it goes limp in deep slow motion, where the tiny time step makes every overlap resolve at full speed.")]
+        [SerializeField] private float _maxDepenetration = 1f;
 
         private struct PendingPush
         {
@@ -30,6 +33,9 @@ namespace Actor
 
         private readonly List<PendingPush> _pendingPushes = new List<PendingPush>();
         private bool _settling;
+        private float _pushScale = 1f;
+        private float _lift = 1f;
+        private float _spin;
 
         private void Awake()
         {
@@ -37,6 +43,10 @@ namespace Actor
                 _animator = GetComponent<UnityEngine.Animator>();
 
             //_allRigidbodys = GetComponentsInChildren<Rigidbody>();
+
+            foreach (Rigidbody rigidbody in _allRigidbodys)
+                if (rigidbody != null)
+                    rigidbody.maxDepenetrationVelocity = _maxDepenetration;
 
             MakeKinematic();
         }
@@ -50,6 +60,22 @@ namespace Actor
                 rigidbody.isKinematic = true;
 
             _isPhysical = false;
+        }
+
+        /// <summary>
+        /// Goes physical with the death impulse scaled by <paramref name="pushScale"/>, its upward part by
+        /// <paramref name="lift"/>, and the body spun about the hit's sideways axis by <paramref name="spin"/> deg/s
+        /// (cinematic kill shot).
+        /// </summary>
+        public void MakePhysical(float pushScale, float lift, float spin)
+        {
+            if (_isPhysical)
+                return;
+
+            _pushScale = pushScale;
+            _lift = lift;
+            _spin = spin;
+            MakePhysical();
         }
 
         public void MakePhysical()
@@ -130,12 +156,36 @@ namespace Actor
 
         private void Apply(PendingPush push)
         {
+            float strength = push.Strength * _pushScale;
+            push.Direction.y *= _lift;
+            Vector3 spinAxis = Vector3.Cross(Vector3.up, push.Direction);
+            Vector3 spin = spinAxis.sqrMagnitude > 0.0001f ? spinAxis.normalized * (_spin * Mathf.Deg2Rad) : Vector3.zero;
+            Vector3 centre = spin != Vector3.zero ? Centre() : Vector3.zero;
+
             foreach (Rigidbody rigidbody in _allRigidbodys)
                 if (rigidbody != null && !rigidbody.isKinematic)
-                    rigidbody.AddForce(push.Direction * (_bodySpeed * push.Strength), ForceMode.VelocityChange);
+                {
+                    // The spin turns the whole body as one: each bone also moves around the body's centre.
+                    Vector3 tumble = Vector3.Cross(spin, rigidbody.worldCenterOfMass - centre);
+                    rigidbody.AddForce(push.Direction * (_bodySpeed * strength) + tumble, ForceMode.VelocityChange);
+                    rigidbody.AddTorque(spin, ForceMode.VelocityChange);
+                }
 
             if (push.Body != null && !push.Body.isKinematic)
-                push.Body.AddForce(push.Direction * (_hitBoneSpeed * push.Strength), ForceMode.VelocityChange);
+                push.Body.AddForce(push.Direction * (_hitBoneSpeed * strength), ForceMode.VelocityChange);
+        }
+
+        private Vector3 Centre()
+        {
+            Vector3 sum = Vector3.zero;
+            float mass = 0f;
+            foreach (Rigidbody rigidbody in _allRigidbodys)
+                if (rigidbody != null)
+                {
+                    sum += rigidbody.worldCenterOfMass * rigidbody.mass;
+                    mass += rigidbody.mass;
+                }
+            return mass > 0f ? sum / mass : transform.position;
         }
 
         private IEnumerator Freeze()

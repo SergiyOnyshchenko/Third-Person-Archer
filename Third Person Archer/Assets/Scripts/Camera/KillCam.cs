@@ -52,6 +52,21 @@ public class KillCam : MonoBehaviour
     [SerializeField] private Actor.CameraPOV _pov;
     [SerializeField] private float _maxHold = 2f;
 
+    [Header("Impact beat (a shooting point's last kill without the x-ray)")]
+    [SerializeField] private float _beatFreeze = 0.1f;
+    [SerializeField, Range(0.01f, 1f)] private float _beatTimeScale = 0.15f;
+    [Tooltip("Real seconds time stays slowed after the freeze before it starts coming back.")]
+    [SerializeField] private float _beatHold = 0.25f;
+    [Tooltip("Real seconds from the hit until time is back to normal.")]
+    [SerializeField] private float _beatTime = 0.9f;
+    [SerializeField, Range(0f, 1f)] private float _beatImpact = 0.85f;
+
+    [Header("Skip")]
+    [Tooltip("A tap after this many real seconds plays the rest at normal speed.")]
+    [SerializeField] private float _skipAfter = 0.25f;
+    [Tooltip("Real seconds the camera stays on the target after a skipped impact.")]
+    [SerializeField] private float _skipAftermath = 0.35f;
+
     [Header("Grade")]
     [SerializeField, Range(0f, 1f)] private float _flightVignette = 0.38f;
     [SerializeField, Range(-100f, 0f)] private float _flightSaturation = -30f;
@@ -66,6 +81,8 @@ public class KillCam : MonoBehaviour
     private Shot _lastShot = Shot.Side;
     private Coroutine _routine;
     private bool _hit;
+    private bool _skipped;
+    private float _elapsed;
     private double _lastRealTime;
     private float _dt;
 
@@ -91,6 +108,56 @@ public class KillCam : MonoBehaviour
         _routine = StartCoroutine(Run(projectile, hitPoint, onImpact, onFinished));
     }
 
+    /// <summary>
+    /// A short beat for a kill that doesn't get the full kill cam: the gameplay camera stays, the hit freezes
+    /// for a moment and time comes back from slow motion within <see cref="_beatTime"/>.
+    /// </summary>
+    public void PlayImpactBeat(Projectile projectile)
+    {
+        if (_routine != null)
+            return;
+
+        _routine = StartCoroutine(Beat(projectile));
+    }
+
+    private IEnumerator Beat(Projectile projectile)
+    {
+        _hit = false;
+        _lastRealTime = Time.realtimeSinceStartupAsDouble;
+        _dt = 0f;
+        projectile.OnHited.AddListener(OnHit);
+
+        for (float t = 0f; !_hit && projectile != null && t < _maxFlightTime; t += _dt)
+        {
+            yield return null;
+            Tick();
+        }
+
+        if (projectile != null)
+            projectile.OnHited.RemoveListener(OnHit);
+
+        if (_hit)
+        {
+            for (float ta = 0f; ta < _beatTime; ta += _dt)
+            {
+                float slowEnd = _beatFreeze + _beatHold;
+                float k = Mathf.Clamp01((ta - slowEnd) / Mathf.Max(0.01f, _beatTime - slowEnd));
+                SetTimeScale(ta < _beatFreeze ? 0.001f : Mathf.Lerp(_beatTimeScale, 1f, k * k));
+                // Desaturated, vignetted while slowed, with a chromatic kick on the hit.
+                SetGrade(1f - k, _beatImpact * Mathf.Exp(-ta * 5f));
+
+                yield return null;
+                Tick();
+            }
+        }
+
+        SetGrade(0f, 0f);
+        _routine = null;
+        SmoothTimeManager.Override = null;
+        if (SmoothTimeManager.Instance == null)
+            Time.timeScale = 1f;
+    }
+
     private IEnumerator Run(Projectile projectile, Vector3 hitPoint, Action onImpact, Action onFinished)
     {
         Transform arrow = projectile.transform;
@@ -103,6 +170,8 @@ public class KillCam : MonoBehaviour
         Shot shot = PickShot(distance);
 
         _hit = false;
+        _skipped = false;
+        _elapsed = 0f;
         _lastRealTime = Time.realtimeSinceStartupAsDouble;
         _dt = 0f;
         projectile.OnHited.AddListener(OnHit);
@@ -134,7 +203,7 @@ public class KillCam : MonoBehaviour
                 launch = Mathf.Min(_launchSpeed, worldSpeed);
 
             float wanted = Mathf.Lerp(_approachSpeed, launch > 0f ? launch : _launchSpeed, Mathf.SmoothStep(0f, 1f, remaining / _slowZone));
-            SetTimeScale(worldSpeed > 0.1f ? Mathf.Clamp(wanted / worldSpeed, _minTimeScale, 1f) : CurrentTimeScale());
+            SetTimeScale(_skipped ? 1f : worldSpeed > 0.1f ? Mathf.Clamp(wanted / worldSpeed, _minTimeScale, 1f) : CurrentTimeScale());
 
             switch (shot)
             {
@@ -171,10 +240,21 @@ public class KillCam : MonoBehaviour
             float startFov = fov, startRoll = roll;
             float seed = UnityEngine.Random.value * 100f;
 
-            for (float ta = 0f; ta < _aftermath || (ta < _aftermath + _maxHold && _pov != null && !_pov.IsThirdPerson); ta += _dt)
+            float skippedAt = -1f;
+
+            for (float ta = 0f; ; ta += _dt)
             {
+                if (_skipped && skippedAt < 0f)
+                    skippedAt = ta;
+
+                bool done = _skipped
+                    ? ta - skippedAt >= _skipAftermath
+                    : ta >= _aftermath && (ta >= _aftermath + _maxHold || _pov == null || _pov.IsThirdPerson);
+                if (done)
+                    break;
+
                 float k = Mathf.Min(1f, ta / _aftermath);
-                SetTimeScale(ta < _freezeFrame ? 0.001f : Mathf.Lerp(_impactTimeScale, 1f, Mathf.Pow(k, 2.2f)));
+                SetTimeScale(_skipped ? 1f : ta < _freezeFrame ? 0.001f : Mathf.Lerp(_impactTimeScale, 1f, Mathf.Pow(k, 2.2f)));
 
                 if (arrow != null)
                     focus = Vector3.SmoothDamp(focus, arrow.position, ref focusVelocity, 0.18f, Mathf.Infinity, _dt);
@@ -220,6 +300,22 @@ public class KillCam : MonoBehaviour
         double now = Time.realtimeSinceStartupAsDouble;
         _dt = Mathf.Min(0.1f, (float)(now - _lastRealTime));
         _lastRealTime = now;
+
+        _elapsed += _dt;
+        if (!_skipped && _elapsed > _skipAfter && Tapped())
+            _skipped = true;
+    }
+
+    private static bool Tapped()
+    {
+        if (UnityEngine.Input.GetMouseButtonDown(0))
+            return true;
+
+        for (int i = 0; i < UnityEngine.Input.touchCount; i++)
+            if (UnityEngine.Input.GetTouch(i).phase == TouchPhase.Began)
+                return true;
+
+        return false;
     }
 
     private void Release()
