@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f65fa8e24962ff4c8be05b62db52c68, type: 3}
+  m_Name: Graphics Look
+  m_EditorClassIdentifier: Assembly-CSharp::GraphicsLookConfig
+  SkyMultiplier: 1.05
+  EquatorMultiplier: 0.8
+  GroundMultiplier: 0.6
+  GroundTint: {r: 0.45, g: 0.38, b: 0.35, a: 1}
+  GroundTintAmount: 0.5
+  MinCasterSize: 1.5
+  VignetteIntensity: 0.2
+  VignetteSmoothness: 0.5
+  BloomIntensity: 0.5
+  BloomThreshold: 1
+  BloomScatter: 0.6
+  Grades:
+  - Name: Night
+    SceneTokens:
+    - (Night)
+    Contrast: 8
+    Saturation: 0
+    PostExposure: 0.1
+    ColorFilter: {r: 1, g: 1, b: 1, a: 1}
+  - Name: Japan
+    SceneTokens:
+    - Level1
+    - Level 1-
+    - Level0
+    - Cutscene1
+    Contrast: 10
+    Saturation: 12
+    PostExposure: 0.15
+    ColorFilter: {r: 1, g: 1, b: 1, a: 1}
+  - Name: North
+    SceneTokens:
+    - Level2
+    - Level 2-
+    Contrast: 12
+    Saturation: 6
+    PostExposure: 0.15
+    ColorFilter: {r: 1, g: 1, b: 1, a: 1}
+  - Name: Wild West
+    SceneTokens:
+    - Level3
+    Contrast: 12
+    Saturation: 10
+    PostExposure: 0.15
+    ColorFilter: {r: 1, g: 0.97, b: 0.92, a: 1}
+  DefaultGrade:
+    Name: Default
+    SceneTokens: []
+    Contrast: 8
+    Saturation: 8
+    PostExposure: 0.15
+    ColorFilter: {r: 1, g: 1, b: 1, a: 1}
