@@ -1264,6 +1264,51 @@ MonoBehaviour:
   OnExit:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &520012656465314400
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2642980288187568030}
+  - component: {fileID: 1579205577240524356}
+  m_Layer: 0
+  m_Name: Shot Release Effect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2642980288187568030
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520012656465314400}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4246737578809437759}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1579205577240524356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520012656465314400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a02cd63f3f3a710488e328e362c0463b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Actor.ShotReleaseEffect
+  _forward: 0.35
 --- !u!1 &537770142804361072
 GameObject:
   m_ObjectHideFlags: 0
@@ -29920,6 +29965,8 @@ MonoBehaviour:
     MinTargetDistance: 2
     CurveSamples: 64
   _killCam: {fileID: 5017857313552871256}
+  _earnedXRayDistance: 8
+  _earnedXRayPerLevel: 1
 --- !u!114 &5017857313552871256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29956,6 +30003,13 @@ MonoBehaviour:
   _orbitSpeed: 14
   _pov: {fileID: 1779930282026826351}
   _maxHold: 2
+  _beatFreeze: 0.1
+  _beatTimeScale: 0.15
+  _beatHold: 0.25
+  _beatTime: 0.9
+  _beatImpact: 0.85
+  _skipAfter: 0.25
+  _skipAftermath: 0.35
   _flightVignette: 0.38
   _flightSaturation: -30
   _impactChromatic: 0.85
@@ -32493,6 +32547,7 @@ MonoBehaviour:
   _bodySpeed: 2.5
   _criticalMultiplier: 1.6
   _pushLifetime: 0.5
+  _maxDepenetration: 1
 --- !u!114 &3325896208773528389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37455,6 +37510,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 557883306131764195, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1861192852743711984}
+    - targetCorrespondingSourceObject: {fileID: 557883306131764195, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2642980288187568030}
     - targetCorrespondingSourceObject: {fileID: 5297645603638645973, guid: 6e006dc4cf542cc4e9c7b27954ade929, type: 3}
       insertIndex: 0
       addedObject: {fileID: 2745450161574437392}
@@ -41040,6 +41098,7 @@ MonoBehaviour:
   _bodySpeed: 2.5
   _criticalMultiplier: 1.6
   _pushLifetime: 0.5
+  _maxDepenetration: 1
 --- !u!114 &4449799942071113102
 MonoBehaviour:
   m_ObjectHideFlags: 0

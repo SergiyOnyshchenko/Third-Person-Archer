@@ -1,5 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &670346565403241041
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 377309205372137785}
+  - component: {fileID: 4755064211887659577}
+  m_Layer: 0
+  m_Name: Impact
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &377309205372137785
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670346565403241041}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8041266967751376943}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4755064211887659577
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670346565403241041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f85e759f1bae0042bdb0210684a821d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Actor.ProjectileImpact
+  _onActors: 0
 --- !u!1001 &3179321333430328335
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -178,6 +223,10 @@ PrefabInstance:
       propertyPath: managedReferences[2913465622058500096].BoundParticleSystem
       value: 
       objectReference: {fileID: 7739120122025209669}
+    - target: {fileID: 5084451409020558400, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7014120761498455768, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
       propertyPath: m_Size.z
       value: 1.7378985
@@ -249,6 +298,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3820073615994074672, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 377309205372137785}
     - targetCorrespondingSourceObject: {fileID: 1650948729897433435, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8394783544874060536}
@@ -256,7 +308,59 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1753321294188073216, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
       insertIndex: 1
       addedObject: {fileID: 3016390202637246452}
+    - targetCorrespondingSourceObject: {fileID: 8605701996803476667, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8584935146262224867}
+    - targetCorrespondingSourceObject: {fileID: 8605701996803476667, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9143428782122323135}
   m_SourcePrefab: {fileID: 100100000, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
+--- !u!1 &3311950412178471588 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8605701996803476667, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
+  m_PrefabInstance: {fileID: 6529077089483388447}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8584935146262224867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3311950412178471588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b68ad24e65fac94993f9d51eaef458f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectileTrailStyle
+  _projectile: {fileID: 8995011375383387871}
+  _trail: {fileID: 5458146514867467944}
+  _width: 0.1
+  _time: 0.3
+  _fullDrawWidth: 0.1
+  _fullDrawTime: 0.3
+  _head: {r: 1, g: 0.62, b: 0.25, a: 0.95}
+  _tail: {r: 1, g: 0.3, b: 0.1, a: 0}
+  _fullDrawHead: {r: 1, g: 0.62, b: 0.25, a: 0.95}
+  _glowMaterial: {fileID: 2100000, guid: 574fbeb58009bfc46bcde7d58eb972b9, type: 2}
+  _glowColor: {r: 1, g: 0.45, b: 0.15, a: 0.9}
+  _glowSize: 0.45
+--- !u!114 &9143428782122323135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3311950412178471588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b7c5cf0f2ae48341a0c200f2d5a8e75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectileNearMiss
+  _projectile: {fileID: 8995011375383387871}
+  _radius: 3
+  _clip: {fileID: 8300000, guid: 36ba8c573d5c7224e91121140bda5b9f, type: 3}
+  _volume: 0.7
+  _pitch: {x: 1.1, y: 1.35}
 --- !u!1 &4814063675914135327 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1753321294188073216, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
@@ -279,6 +383,11 @@ MonoBehaviour:
   OnLifetimeEnded:
     m_PersistentCalls:
       m_Calls: []
+--- !u!96 &5458146514867467944 stripped
+TrailRenderer:
+  m_CorrespondingSourceObject: {fileID: 1235334655695798455, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
+  m_PrefabInstance: {fileID: 6529077089483388447}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5508650125429788484 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1650948729897433435, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
@@ -289,3 +398,19 @@ ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 3602054769250638170, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
   m_PrefabInstance: {fileID: 6529077089483388447}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &8041266967751376943 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3820073615994074672, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
+  m_PrefabInstance: {fileID: 6529077089483388447}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8995011375383387871 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2760497892029327552, guid: fc444c24dbee6d14b86f44053adefd5d, type: 3}
+  m_PrefabInstance: {fileID: 6529077089483388447}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4814063675914135327}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f592f32a6e0886b45a4b7d73df59cb1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

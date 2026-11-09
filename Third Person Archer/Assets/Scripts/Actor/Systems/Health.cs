@@ -12,6 +12,7 @@ namespace Actor
         [SerializeField] private int _health;
         private IDamageReciever[] _damageRecievers;
         public int Value { get => _health; }
+        public int MaxValue { get => _maxHealth.Value; }
         public float Ratio { get => _health / _maxHealth.Value; }
         public bool IsDead { get => _health <= 0; }
         public UnityEvent<int> OnDamaged = new UnityEvent<int>();
@@ -51,6 +52,15 @@ namespace Actor
 
             if (_health == 0)
                 OnHealthZero?.Invoke();
+        }
+
+        public void Heal(int amount)
+        {
+            if (_health <= 0 || amount <= 0 || _health >= _maxHealth.Value)
+                return;
+
+            _health = Mathf.Min(_health + amount, _maxHealth.Value);
+            OnHealthModified?.Invoke(_health, _maxHealth.Value);
         }
 
         public void Die()

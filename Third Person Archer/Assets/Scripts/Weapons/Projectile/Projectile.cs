@@ -33,6 +33,8 @@ public class Projectile : MonoBehaviour, IActorIniter
     public int Damage { get => _damage.Value; }
     public Speed Speed { get => _speed; }
     public bool IsShooted { get; private set; }
+    /// <summary>Draw strength of the shot, 0..1 (1 for weapons without a draw).</summary>
+    public float Power { get; private set; } = 1f;
 
     public UnityEvent OnShooted = new UnityEvent();
     public UnityEvent OnHited = new UnityEvent();
@@ -67,6 +69,7 @@ public class Projectile : MonoBehaviour, IActorIniter
     public void Shoot(Vector3 direction, float power, UnityAction<ActorController> onTargetHited, UnityAction onAnyHit)
     {
         _direction.SetValue(direction);
+        Power = Mathf.Clamp01(power);
 
         IsShooted = true;
         OnShooted?.Invoke();
