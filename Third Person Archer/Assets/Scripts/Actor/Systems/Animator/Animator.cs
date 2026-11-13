@@ -64,10 +64,22 @@ namespace Actor
             return _animator != null && _animator.HasState(layer, UnityEngine.Animator.StringToHash(stateName));
         }
 
-        /// <summary>Blends into the state from its start (duration in seconds).</summary>
-        public void CrossFade(string stateName, float duration, int layer = 0)
+        /// <summary>Blends into the state (duration in seconds), from its start or <paramref name="timeOffset"/> seconds into it.</summary>
+        public void CrossFade(string stateName, float duration, int layer = 0, float timeOffset = 0f)
         {
-            _animator.CrossFadeInFixedTime(stateName, duration, layer);
+            _animator.CrossFadeInFixedTime(stateName, duration, layer, timeOffset);
+        }
+
+        /// <summary>True while the layer is in <paramref name="stateName"/> or blending into it.</summary>
+        public bool IsInState(string stateName, int layer = 0)
+        {
+            if (_animator == null || !_animator.isActiveAndEnabled)
+                return false;
+
+            if (_animator.GetCurrentAnimatorStateInfo(layer).IsName(stateName))
+                return true;
+
+            return _animator.IsInTransition(layer) && _animator.GetNextAnimatorStateInfo(layer).IsName(stateName);
         }
 
         /// <summary>Switches to the state instantly at the given normalized time.</summary>

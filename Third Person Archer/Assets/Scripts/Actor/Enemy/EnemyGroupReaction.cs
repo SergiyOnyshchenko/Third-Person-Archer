@@ -35,6 +35,11 @@ public class EnemyGroupReaction : MonoBehaviour, IActorIniter
             _perception.OnNoticed.AddListener(Startle);
     }
 
+    /// <summary>Enemies currently in the scene (enabled).</summary>
+    public static IReadOnlyList<EnemyGroupReaction> Active => All;
+
+    public bool IsAlive => _actor != null && !_actor.IsDead && (_health == null || !_health.IsDead);
+
     private void OnEnable() => All.Add(this);
 
     private void OnDisable() => All.Remove(this);
